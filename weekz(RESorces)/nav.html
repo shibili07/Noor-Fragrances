@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOOR Fragrance</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Import Akshar font -->
+    <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        .navbar-brand {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar-brand img {
+            max-height: 40px; /* Adjust to match your original NR text height */
+            width: auto;
+        }
+        
+        /* Custom responsive margin replacing fixed px values */
+        .mx-auto {
+            margin-right: 2.5rem !important; /* Changed from 43px to responsive rem unit */
+            margin-left: 2.75rem !important; /* Changed from 46px to responsive rem unit */
+        }
+        
+        .nav-link {
+            margin: 0 15px;
+            font-family: 'Akshar', sans-serif;
+            font-weight: 400; /* Regular weight for non-active items */
+            font-size: 1.1rem;
+            color: #807D7E; /* Color for non-active items */
+            transition: all 0.3s ease;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        .nav-link:hover {
+            color: #000;
+            text-decoration: none;
+        }
+        
+        /* Style for active items - font size 22px, semi-bold, black */
+        .nav-item.active .nav-link {
+            font-weight: 600; /* Semi-bold for active items */
+            font-size: 22px; /* 22px font size for active items */
+            color: #000; /* Black color for active items */
+        }
+        
+        /* Custom hamburger menu styles - UPDATED WIDTH TO 45px */
+        .hamburger-label {
+            display: flex;
+            flex-direction: column;
+            width: 37px; /* Updated to 45px as requested */
+            cursor: pointer;
+            /* Hide by default on larger screens */
+            display: none;
+            padding: 2px 0; /* Added padding for better touch target */
+            border: none; /* Remove border */
+            outline: none; /* Remove outline */
+            box-shadow: none; /* Remove box-shadow */
+        }
+        
+        /* Remove navbar-toggler default border and styles */
+        .navbar-toggler {
+            border: none;
+            padding: 0;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        
+        .hamburger-label span {
+            background: #000000;
+            border-radius: 10px;
+            height: 4px; /* Increased from 3px */
+            margin: 4px 0; /* Increased from 3px */
+            transition: .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+        }
+        
+        .hamburger-label span:nth-of-type(1) {
+            width: 50%;
+        }
+        
+        .hamburger-label span:nth-of-type(2) {
+            width: 100%;
+        }
+        
+        .hamburger-label span:nth-of-type(3) {
+            width: 75%;
+        }
+        
+        .hamburger-input {
+            display: none;
+        }
+        
+        .hamburger-input:checked ~ span:nth-of-type(1) {
+            transform-origin: bottom;
+            transform: rotatez(45deg) translate(5px, 0px);
+        }
+        
+        .hamburger-input:checked ~ span:nth-of-type(2) {
+            transform-origin: top;
+            transform: rotatez(-45deg);
+        }
+        
+        .hamburger-input:checked ~ span:nth-of-type(3) {
+            transform-origin: bottom;
+            width: 50%;
+            transform: translate(20px, -8px) rotatez(45deg); /* Adjusted for wider toggle */
+        }
+        
+        .search-container {
+            position: relative;
+            background-color: #f5f5f5;
+            border-radius: 25px;
+            padding: 5px 15px;
+        }
+        
+        .search-container input {
+            border: none;
+            background-color: transparent;
+            padding-left: 30px;
+            width: 300px;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
+        
+        .navbar-icons {
+            display: flex;
+            align-items: center;
+            margin-right: 4.5rem; /* Updated margin-right to 4.5rem as requested */
+        }
+        
+        .navbar-icons a {
+            margin-left: 20px;
+            color: #555;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 50%;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .navbar-icons a:hover {
+            color: #000;
+            transform: scale(1.1);
+            text-decoration: none;
+        }
+        
+        /* Added styles for active state with pink background and white icon */
+        .navbar-icons a.active {
+            background-color: #FD334E; /* Pink background color */
+            color: white; /* White icon color */
+            border-radius: 8px; /* Make the active state more square */
+            text-decoration: none;
+        }
+        
+        @media (max-width: 991px) {
+            .navbar-brand {
+                text-align: center;
+                margin: 0 auto;
+            }
+            
+            /* Show hamburger menu on smaller screens */
+            .hamburger-label {
+                display: flex;
+            }
+            
+            .search-container {
+                margin: 15px auto;
+                width: 90%;
+            }
+            
+            .search-container input {
+                width: 100%;
+            }
+            
+            .navbar-icons {
+                justify-content: flex-end;
+                margin-right: 1.5rem; /* Adjusted for mobile view */
+            }
+            
+            .navbar-icons a {
+                margin-left: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+    <div class="container-fluid">
+        <!-- Custom Hamburger Toggle Button -->
+        <label for="menu-toggle" class="hamburger-label navbar-toggler">
+            <input type="checkbox" id="menu-toggle" class="hamburger-input" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+                   aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+        
+        <!-- Brand (centered) with logo -->
+        <a class="navbar-brand mx-auto order-0" href="#">
+            <img src="/public/img/Black White Minimalist Initials Monogram Jewelry Logo (1).png" alt="NOOR FRAGRANCE">
+        </a>
+       
+        
+        <!-- Always visible icons -->
+        <div class="navbar-icons order-lg-2">
+            <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
+                <i class="far fa-heart"></i>
+            </a>
+            <a href="#" aria-label="Account" class="icon-link" data-icon="account">
+                <i class="far fa-user"></i>
+            </a>
+            <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
+                <i class="fas fa-shopping-cart"></i>
+            </a>
+        </div>
+        
+        <!-- Collapsible Content -->
+        <div class="collapse navbar-collapse order-lg-1" id="navbarContent">
+            <!-- Navigation Links -->
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-page="home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-page="shop">Shop</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-page="blogs">Blogs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-page="about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-page="contact">Contact</a>
+                </li>
+            </ul>
+            
+            <!-- Search Bar -->
+            <div class="search-container mx-auto">
+                <span class="search-icon">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" placeholder="Search" aria-label="Search">
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Custom JavaScript for navbar active state -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the current page from URL or set default to 'home'
+        let currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'home';
+        
+        // If the URL has no specific page, default to home
+        if(currentPage === '' || currentPage === '/') {
+            currentPage = 'home';
+        }
+        
+        // Set the initial active class based on the current page
+        setActiveNavItem(currentPage);
+        
+        // Add click event listeners to each nav item
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Prevent default link behavior if you're handling navigation with JS
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Add active class to clicked nav item's parent
+                this.parentElement.classList.add('active');
+                
+                // Get the page identifier from data attribute
+                const page = this.getAttribute('data-page');
+                
+                // Here you would typically navigate to the page
+                // You can uncomment this if you want actual navigation
+                // window.location.href = page + '.html';
+                
+                // For demo purposes, just log the navigation
+                console.log('Navigating to:', page);
+            });
+        });
+        
+        // Add click event listeners to icon links
+        const iconLinks = document.querySelectorAll('.icon-link');
+        iconLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Prevent default link behavior
+                e.preventDefault();
+                
+                // Toggle active class on clicked icon
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+                } else {
+                    // Remove active class from all icon links
+                    document.querySelectorAll('.icon-link').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked icon link
+                    this.classList.add('active');
+                }
+                
+                // Get the icon identifier from data attribute
+                const iconType = this.getAttribute('data-icon');
+                
+                // For demo purposes, just log the icon click
+                console.log('Clicked icon:', iconType);
+            });
+        });
+        
+        // Function to set the active nav item based on page name
+        function setActiveNavItem(pageName) {
+            // Remove active class from all items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find the link with matching data-page attribute and set its parent as active
+            const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
+            if (activeLink) {
+                activeLink.parentElement.classList.add('active');
+            }
+        }
+        
+        // Handle toggle state on menu open/close
+        document.getElementById('navbarContent').addEventListener('shown.bs.collapse', function() {
+            document.getElementById('menu-toggle').checked = true;
+        });
+        
+        document.getElementById('navbarContent').addEventListener('hidden.bs.collapse', function() {
+            document.getElementById('menu-toggle').checked = false;
+        });
+    });
+</script>
+</body>
+</html>
