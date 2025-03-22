@@ -893,3 +893,137 @@ body {
       right: 10px;
     }
   }
+  /* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Section Title */
+  .section-title {
+    font-size: 24px;
+    color: #333;
+    margin: 20px 0;
+    position: relative;
+    padding-left: 20px; /* Keep the heading aligned with the red line on the left */
+  }
+  
+  .section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 5px;
+    background-color: #ff4d4d;
+  }
+  
+  /* Feedback Grid */
+  .feedback-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    max-width: 1200px; /* Limit the grid width for larger screens */
+    margin: 0 auto; /* Center the grid horizontally */
+    padding: 20px;
+  }
+  
+  /* Feedback Card */
+  .feedback-card {
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    text-align: left; /* Keep text aligned left within the card */
+  }
+  
+  /* Feedback Header */
+  .feedback-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .user-name {
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+    flex-grow: 1; /* Push the rating to the right */
+  }
+  
+  .rating {
+    display: flex;
+    gap: 2px;
+  }
+  
+  .star {
+    font-size: 16px;
+    color: #ff4d4d; /* Filled stars */
+  }
+  
+  .star:last-child {
+    color: #ccc; /* Empty star */
+  }
+  
+  /* Feedback Text */
+  .feedback-text {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.5;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 20px;
+    }
+  
+    .feedback-grid {
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+  
+    .user-name {
+      font-size: 16px;
+    }
+  
+    .star {
+      font-size: 14px;
+    }
+  
+    .feedback-text {
+      font-size: 12px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .section-title {
+      font-size: 18px;
+    }
+  
+    .feedback-grid {
+      grid-template-columns: 1fr; /* Stack cards on very small screens */
+      gap: 10px;
+      padding: 15px;
+    }
+  
+    .user-name {
+      font-size: 14px;
+    }
+  
+    .star {
+      font-size: 12px;
+    }
+  
+    .feedback-text {
+      font-size: 12px;
+    }
+  }
