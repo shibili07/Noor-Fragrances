@@ -1,0 +1,109 @@
+<%- include("../../views/partials/user/header") %>
+
+<style>
+    .error-page-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 200px); /* Adjust based on your header/footer height */
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .error-container {
+        padding: 10px;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .error-code {
+        font-size: 150px;
+        font-weight: bold;
+        color: #333;
+        line-height: 1.2;
+    }
+    
+    .error-title {
+        font-size: 36px;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #000;
+    }
+    
+    .error-message {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.5;
+    }
+    
+    .home-button {
+        display: inline-block;
+        background-color: #ff3a54;
+        color: white;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 30px;
+        font-size: 18px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    
+    .home-button:hover {
+        background-color: #e0314a;
+    }
+    
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+        .error-code {
+            font-size: 120px;
+        }
+        
+        .error-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 25px;
+        }
+        
+        .home-button {
+            padding: 12px 25px;
+            font-size: 16px;
+        }
+    }
+    
+    /* Further reductions for very small screens */
+    @media (max-width: 480px) {
+        .error-code {
+            font-size: 100px;
+        }
+        
+        .error-title {
+            font-size: 24px;
+        }
+        
+        .error-message {
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .home-button {
+            padding: 10px 20px;
+            font-size: 15px;
+        }
+    }
+</style>
+
+<div class="error-page-wrapper">
+    <div class="error-container">
+        <h1 class="error-code">404</h1>
+        <h2 class="error-title">Oops! Page not found</h2>
+        <p class="error-message">The page you are looking for might have been removed or temporarily unavailable.</p>
+        <a href="/" class="home-button">Back to HomePage</a>
+    </div>
+</div>
+
+<%- include("../../views/partials/user/footer") %>
