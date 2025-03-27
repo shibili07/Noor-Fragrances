@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+        .verification-container {
+            width: 100%;
+            max-width: 450px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 40px;
+            text-align: center;
+        }
+        .logo {
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            color: #5a5a5a;
+            letter-spacing: 2px;
+        }
+        .verification-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        .verification-title::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 2px;
+            background-color: #c5a66e;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .otp-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+        .otp-input:focus {
+            outline: none;
+            border-color: #c5a66e;
+        }
+        .verification-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #c5a66e;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .verification-btn:hover {
+            background-color: #a88b5a;
+        }
+        .timer-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .timer {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5a5a5a;
+            margin-right: 15px;
+        }
+        .resend-btn {
+            background-color: #f4f4f4;
+            color: #5a5a5a;
+            border: 1px solid #e0e0e0;
+            font-weight: 500;
+        }
+        .resend-btn:hover {
+            background-color: #e0e0e0;
+        }
+        .login-link {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+        .login-link a {
+            color: #c5a66e;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+        .login-link a:hover {
+            color: #a88b5a;
+        }
+    </style>
+</head>
+<body>
+<div class="verification-container">
+    <div class="logo">
+        <h1>NOOR FRAGRANCES</h1>
+    </div>
+    <h2 class="verification-title">Email Verification</h2>
+    
+    <form id="otpForm" onsubmit="return validateOTPForm()">
+        <input 
+            type="text" 
+            id="otp" 
+            class="otp-input" 
+            maxlength="6" 
+            pattern="\d*" 
+            placeholder="ENTER OTP" 
+            required
+        />
+        
+        <button type="submit" class="verification-btn">Verify Email</button>
+        
+        <div class="timer-section">
+            <div class="timer" id="timerValue">60</div>
+            <button type="button" class="verification-btn resend-btn" onclick="resendOTP()">Resend OTP</button>
+        </div>
+    </form>
+    
+    <div class="login-link">
+        Already verified? <a href="/login">Login now</a>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+let timer = 60; // Declare the timer variable globally
+let timerInterval; // Declare the timer interval variable globally
+
+function startTimer() {
+    // Reset timer to 60 seconds
+    timer = 60;
+    document.getElementById("timerValue").textContent = timer;
+    document.getElementById("otp").disabled = false; // Enable OTP input field
+
+    // Clear any existing interval to avoid multiple intervals running at once
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Set up a new interval for the timer countdown
+    timerInterval = setInterval(() => {
+        timer--;
+        document.getElementById("timerValue").textContent = timer;
+
+        if (timer <= 0) {
+            clearInterval(timerInterval);
+            document.getElementById("timerValue").textContent = "00"; // Reset the timer display
+            document.getElementById("otp").disabled = true; // Disable OTP input after timer runs out
+        }
+    }, 1000); // 1000 ms interval for each second
+}
+
+// Initialize the timer when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("otp").focus(); // Focus on OTP input
+    startTimer(); // Initialize the timer
+});
+
+function validateOTPForm() {
+    const otpInput = document.getElementById("otp").value;   
+    $.ajax({
+        type: "POST",
+        url: "verify-otp",
+        data: { otp: otpInput },
+        success: function(response) {
+            // Close the loading state before showing the result
+            Swal.close();
+
+            if (response.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "OTP Verified Successfully",
+                    showConfirmButton: false,
+                    timer: 1500,
+                }).then(() => {
+                    window.location.href = response.redirectUrl;
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: response.message,
+                });
+            }
+        },
+        error: function() {
+            // Close loading and show error alert
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                title: "Invalid OTP",
+                text: "Please try again",
+            });
+        }
+    });
+    return false;
+}
+
+function resendOTP() {
+    // Show loading for resend OTP
+    Swal.fire({
+        title: 'Sending OTP...',
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        type: "POST",
+        url: "resend-otp",
+        success: function(response) {
+            // Close loading and show success/error alert
+            Swal.close();
+            
+            if (response.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "OTP Resent Successfully",
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+
+                // Restart the timer
+                startTimer();
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "An error occurred while sending OTP. Please try again"
+                });
+            }
+        },
+        error: function() {
+            Swal.close();
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Network error. Please try again"
+            });
+        }
+    });
+}
+</script>
+</body>
+</html>

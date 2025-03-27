@@ -22,22 +22,16 @@
         }
         
         .navbar-brand img {
-            max-height: 40px; /* Adjust to match your original NR text height */
+            max-height: 40px;
             width: auto;
-        }
-        
-        /* Custom responsive margin replacing fixed px values */
-        .mx-auto {
-            margin-right: 2.5rem !important; /* Changed from 43px to responsive rem unit */
-            margin-left: 2.75rem !important; /* Changed from 46px to responsive rem unit */
         }
         
         .nav-link {
             margin: 0 15px;
             font-family: 'Akshar', sans-serif;
-            font-weight: 400; /* Regular weight for non-active items */
+            font-weight: 400;
             font-size: 1.1rem;
-            color: #807D7E; /* Color for non-active items */
+            color: #807D7E;
             transition: all 0.3s ease;
             position: relative;
             padding-bottom: 5px;
@@ -50,23 +44,22 @@
         
         /* Style for active items - font size 22px, semi-bold, black */
         .nav-item.active .nav-link {
-            font-weight: 600; /* Semi-bold for active items */
-            font-size: 22px; /* 22px font size for active items */
-            color: #000; /* Black color for active items */
+            font-weight: 600;
+            font-size: 22px;
+            color: #000;
         }
         
-        /* Custom hamburger menu styles - UPDATED WIDTH TO 45px */
+        /* Custom hamburger menu styles */
         .hamburger-label {
             display: flex;
             flex-direction: column;
-            width: 37px; /* Updated to 45px as requested */
+            width: 37px;
             cursor: pointer;
-            /* Hide by default on larger screens */
             display: none;
-            padding: 2px 0; /* Added padding for better touch target */
-            border: none; /* Remove border */
-            outline: none; /* Remove outline */
-            box-shadow: none; /* Remove box-shadow */
+            padding: 2px 0;
+            border: none;
+            outline: none;
+            box-shadow: none;
         }
         
         /* Remove navbar-toggler default border and styles */
@@ -80,8 +73,8 @@
         .hamburger-label span {
             background: #000000;
             border-radius: 10px;
-            height: 4px; /* Increased from 3px */
-            margin: 4px 0; /* Increased from 3px */
+            height: 4px;
+            margin: 4px 0;
             transition: .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
         }
         
@@ -114,7 +107,7 @@
         .hamburger-input:checked ~ span:nth-of-type(3) {
             transform-origin: bottom;
             width: 50%;
-            transform: translate(20px, -8px) rotatez(45deg); /* Adjusted for wider toggle */
+            transform: translate(20px, -8px) rotatez(45deg);
         }
         
         .search-container {
@@ -122,13 +115,16 @@
             background-color: #f5f5f5;
             border-radius: 25px;
             padding: 5px 15px;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 300px;
         }
         
         .search-container input {
             border: none;
             background-color: transparent;
             padding-left: 30px;
-            width: 300px;
+            width: 100%;
         }
         
         .search-container input:focus {
@@ -146,18 +142,21 @@
         .navbar-icons {
             display: flex;
             align-items: center;
-            margin-right: 4.5rem; /* Updated margin-right to 4.5rem as requested */
         }
         
         .navbar-icons a {
-            margin-left: 20px;
+            margin: 0 8px;
             color: #555;
-            font-size: 1.2rem;
             transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 50%;
             text-decoration: none;
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .navbar-icons a i {
+            font-size: 1.1rem;
+            padding: 8px;
         }
         
         .navbar-icons a:hover {
@@ -168,10 +167,36 @@
         
         /* Added styles for active state with pink background and white icon */
         .navbar-icons a.active {
-            background-color: #FD334E; /* Pink background color */
-            color: white; /* White icon color */
-            border-radius: 8px; /* Make the active state more square */
+            background-color: #FD334E;
+            color: white;
+            border-radius: 8px;
             text-decoration: none;
+        }
+        
+        /* Login button with small gap */
+        .btn-outline-secondary {
+            margin-left: 10px;
+            padding: 5px 15px;
+            font-size: 0.9rem;
+        }
+        
+        /* Desktop layout for navbar-icons (visible at the top right) */
+        .navbar-icons-desktop {
+            display: flex;
+            margin-left: auto;
+        }
+        
+        /* Mobile layout for navbar-icons (inside collapse) */
+        .navbar-icons-mobile {
+            display: none;
+            justify-content: center;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        /* Center menu items properly */
+        .navbar-nav {
+            margin: 0 auto;
         }
         
         @media (max-width: 991px) {
@@ -185,22 +210,92 @@
                 display: flex;
             }
             
+            /* Hide desktop icons */
+            .navbar-icons-desktop {
+                display: none;
+            }
+            
+            /* Show mobile icons */
+            .navbar-icons-mobile {
+                display: flex;
+            }
+            
             .search-container {
                 margin: 15px auto;
-                width: 90%;
-            }
-            
-            .search-container input {
-                width: 100%;
-            }
-            
-            .navbar-icons {
-                justify-content: flex-end;
-                margin-right: 1.5rem; /* Adjusted for mobile view */
+                max-width: 90%;
             }
             
             .navbar-icons a {
+                margin: 0 10px;
+            }
+            
+            .navbar-icons a i {
+                font-size: 1.2rem;
+                padding: 8px;
+            }
+            
+            .btn-outline-secondary {
+                padding: 4px 10px;
+                font-size: 0.9rem;
                 margin-left: 15px;
+            }
+            
+            /* Responsive text size adjustments for nav items */
+            .nav-link {
+                font-size: 1rem;
+                margin: 0 10px;
+            }
+            
+            .nav-item.active .nav-link {
+                font-size: 1.2rem;
+            }
+        }
+        
+        /* Additional media query for very small screens */
+        @media (max-width: 576px) {
+            .nav-link {
+                font-size: 0.9rem;
+                margin: 0 5px;
+            }
+            
+            .nav-item.active .nav-link {
+                font-size: 1.1rem;
+            }
+            
+            .navbar-icons a {
+                margin: 0 5px;
+            }
+            
+            .navbar-icons a i {
+                font-size: 1rem;
+                padding: 6px;
+            }
+            
+            .btn-outline-secondary {
+                padding: 3px 8px;
+                font-size: 0.8rem;
+                margin-left: 8px;
+            }
+        }
+        
+        /* Added an extra breakpoint for extra small devices */
+        @media (max-width: 375px) {
+            .nav-link {
+                font-size: 0.85rem;
+                margin: 0 3px;
+            }
+            
+            .nav-item.active .nav-link {
+                font-size: 1rem;
+            }
+            
+            .navbar-brand img {
+                max-height: 35px;
+            }
+            
+            .navbar-icons a i {
+                font-size: 0.9rem;
+                padding: 5px;
             }
         }
     </style>
@@ -220,12 +315,11 @@
         
         <!-- Brand (centered) with logo -->
         <a class="navbar-brand mx-auto order-0" href="#">
-            <img src="/img/logo/image.png" alt="Nr">
+            <img src="/img/logo/image.png" alt="NOOR">
         </a>
        
-        
-        <!-- Always visible icons -->
-        <div class="navbar-icons order-lg-2">
+        <!-- Desktop icons (visible only on desktop) -->
+        <div class="navbar-icons navbar-icons-desktop order-lg-2">
             <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                 <i class="far fa-heart"></i>
             </a>
@@ -235,12 +329,13 @@
             <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
                 <i class="fas fa-shopping-cart"></i>
             </a>
+            <a  href="/login" type="button" class="btn btn-outline-secondary">login</a>
         </div>
         
         <!-- Collapsible Content -->
         <div class="collapse navbar-collapse order-lg-1" id="navbarContent">
             <!-- Navigation Links -->
-            <ul class="navbar-nav mx-auto">
+            <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link" href="#" data-page="home">Home</a>
                 </li>
@@ -265,7 +360,21 @@
                 </span>
                 <input type="text" placeholder="Search" aria-label="Search">
             </div>
-        </div>
+            
+            <!-- Mobile icons (visible only on mobile within collapse) -->
+            <div class="navbar-icons navbar-icons-mobile">
+                <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
+                    <i class="far fa-heart"></i>
+                </a>
+                <a href="#" aria-label="Account" class="icon-link" data-icon="account">
+                    <i class="far fa-user"></i>
+                </a>
+                <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
+                    <i class="fas fa-shopping-cart"></i>
+                </a>
+                <a  href="/login" type="button" class="btn btn-outline-secondary">login</a>
+            </div>
+        </div> 
     </div>
 </nav>
 
@@ -313,28 +422,35 @@
             });
         });
         
-        // Add click event listeners to icon links
+        // Add click event listeners to all icon links (both mobile and desktop)
         const iconLinks = document.querySelectorAll('.icon-link');
         iconLinks.forEach(link => {
             link.addEventListener('click', function(e) {
                 // Prevent default link behavior
                 e.preventDefault();
                 
-                // Toggle active class on clicked icon
+                // Get the icon identifier from data attribute
+                const iconType = this.getAttribute('data-icon');
+                
+                // Find all matching icons with the same data-icon attribute
+                const matchingIcons = document.querySelectorAll(`.icon-link[data-icon="${iconType}"]`);
+                
+                // Toggle active class across all matching icons
                 if (this.classList.contains('active')) {
-                    this.classList.remove('active');
+                    matchingIcons.forEach(icon => {
+                        icon.classList.remove('active');
+                    });
                 } else {
                     // Remove active class from all icon links
                     document.querySelectorAll('.icon-link').forEach(item => {
                         item.classList.remove('active');
                     });
                     
-                    // Add active class to clicked icon link
-                    this.classList.add('active');
+                    // Add active class to all matching icons
+                    matchingIcons.forEach(icon => {
+                        icon.classList.add('active');
+                    });
                 }
-                
-                // Get the icon identifier from data attribute
-                const iconType = this.getAttribute('data-icon');
                 
                 // For demo purposes, just log the icon click
                 console.log('Clicked icon:', iconType);
