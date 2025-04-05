@@ -5,7 +5,8 @@ const env = require("dotenv").config()
 const session = require("express-session")
 const passport = require("./config/passport")
 const db = require("./config/db")
-const userRouter = require("./routes/userRouter")
+const userRouter = require("./routes/userRouter");
+const adminRouter = require("./routes/adminRouter")
 db();
 
 app.use(express.json())
@@ -19,7 +20,7 @@ app.use(session({
     cookie:{
         secure:false,
         httpOnly:true,
-        maxAge:72*60*1000
+        maxAge:72*60*10000
     }
 }))
 
@@ -37,12 +38,24 @@ app.use((req,res,next)=>{
 app.set("view engine", "ejs");
 app.set("views", [path.join(__dirname, "views/user"), path.join(__dirname, "views/admin")]);
 app.use(express.static(path.join(__dirname,"public")))
+app.use('/uploads', express.static('uploads'));
 
-//userRouter set 
+//userRouter for handling all request in user path
 app.use("/",userRouter)
+//adminRouter for handling all request in admin path
+app.use("/admin",adminRouter)
+
+
 app.listen(process.env.PORT,()=>{
     console.log("server port 7000 running....");
 
 })
 
 module.exports = app;
+
+
+//   admin informations //
+// ----------------------- //
+
+// email : admin@noorFragrances.com  //
+// password : shibil7034    //

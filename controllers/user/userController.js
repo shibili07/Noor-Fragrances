@@ -1,4 +1,7 @@
 const User = require("../../models/userSchema")
+const Product = require("../../models/productSchema")
+const Category = require("../../models/categorySchema")
+
 const env = require("dotenv").config()
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt")
@@ -14,18 +17,55 @@ const pageNotFound = async (req,res) =>{
  }
 
 }
+
+const logout = (req,res)=>{
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                console.log(err);
+                return res.status(500).send("Error logging out");
+            }
+            res.redirect('/'); 
+        });
+    } catch (error) {
+        res.redirect("/pageError")
+    }
+}
+
+
 const loadHomepage = async (req,res) =>{
     try {
+        // in this time session il udavuka nammal login cheythappol ulla user de objectid aan  store aav
         const user = req.session.user;
+        const name = req.session.name;
+        console.log(name);
+        const category = await Category.find({isListed:true})
+
+        let productData = await Product.find({
+            isBlocked:false,
+            category:{$in:category.map(category=>category._id)},
+            quantity:{$gt:0}, 
+        })
+        productData.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
+        productData = productData.slice(0,4)
+        
         if(user){
-            const userData = await User.findOne({_id:user._id})
-            res.render("home",{user:userData})
+            const userData = await User.find({_id:user._id})
+            
+            
+                return res.render("home",{
+                user:userData,
+                name:name,
+                products:productData
+                
+                })
         }else{
-            return res.render("home")
+            res.render("home",{products:productData})
         }
+
        
     } catch (error) {
-        console.log("home page is not found");
+        console.log("home page is not found",error);
         res.status(500).send("Server error") //pass to backend
         
     }
@@ -37,7 +77,7 @@ const loadSignup = async (req,res)=>{
         if(!req.session.user){
             return res.render("signup")
         }else{
-            res.redirect("/")
+            return res.redirect("/")
         }
     } catch (error) {
         console.log("signup is not found");
@@ -88,12 +128,12 @@ async function sendVerificationEmail(email,otp) {
 }
 const signup = async (req,res)=>{
     try{
-        //collect the datas in req.body 
+        
         const {name,phone,email,password,confirmPassword} = req.body;
         if(password !== confirmPassword){
             return res.render("signup",{message:"Password do not match"})
         }
-        // find user for already exists
+        
         const findUser= await User.findOne({email})
         if(findUser){ 
             return res.render("signup",{message:"User with this email already exists"})
@@ -145,7 +185,7 @@ const verifyOtp = async(req,res)=>{
             })
             await saveUserData.save();
             req.session.user = saveUserData._id;  // user id for authorisation
-            res.json({success:true,redirectUrl:"/"})
+            res.json({success:true,redirectUrl:"/login"})
 
         }else if(otp===req.session.emailOtp){
 
@@ -191,6 +231,7 @@ const resendOtp = async(req,res)=>{
 
 const loadLogin = async (req,res) =>{
     try {
+
         if(!req.session.user){
             return res.render("login")
         }else{
@@ -219,6 +260,7 @@ const login = async(req,res)=>{
              return res.render("login",{message:"Incorrect Password"})
         }
         req.session.user = findUser._id;
+        req.session.name = findUser.name
         res.redirect("/")
 
     } catch (error) {
@@ -320,9 +362,64 @@ const changePassword = async(req,res)=>{
 
 }
 
+const loadShopPage = async (req, res) => {
+  try {
+    
+    const userId = req.session.user;
+    
+   
+    let userData = null;
+    if (userId) {
+      userData = await User.findOne({_id: userId});
+    }
+    
+ 
+    const category = await Category.find({isListed: true});
+    const categoryIds = category.map(category => category._id.toString());
+    
+    // Pagination variables
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9;
+    const skip = (page - 1) * limit;
+    
+    // Get products - fixed the variable declaration (remove 'const' from reassignment)
+    let products = await Product.find({
+      isBlocked: false,
+      category: {$in: categoryIds},
+      quantity: {$gt: 0},
+    }).sort({createdAt: -1}).skip(skip).limit(limit);
+    
+    // Count total products for pagination
+    const totalProducts = await Product.countDocuments({
+      isBlocked: false,
+      category: {$in: categoryIds},
+      quantity: {$gt: 0}
+    });
+    
+    const totalPages = Math.ceil(totalProducts / limit);
+    const categoriesWithIds = category.map(category => ({
+      _id: category._id, 
+      name: category.name
+    }));
+      
+    res.render("shop", {
+      user: userData,
+      products: products,
+      category: categoriesWithIds,
+      totalProducts: totalProducts,
+      currentPage: page,
+      totalPages: totalPages
+    });
+
+  } catch (error) {
+    console.log("Error loading shop page:", error);
+    res.status(500).send("Server error");
+  }
+};
 
 module.exports={
     pageNotFound,
+    logout,
     loadHomepage,
     loadSignup,
     signup,
@@ -334,5 +431,6 @@ module.exports={
     verifyEmail,
     loadChangePasswordPage,
     changePassword,
+    loadShopPage
     
 }

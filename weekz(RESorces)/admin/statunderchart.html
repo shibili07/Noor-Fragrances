@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .dashboard {
+            display: flex;
+            width: 100%;
+            max-width: 1000px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .stat-card {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            position: relative;
+        }
+
+        .stat-card:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background-color: #e0e0e0;
+        }
+
+        .icon-container {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+        }
+
+        .blue {
+            background-color: #5a5aff;
+        }
+
+        .green {
+            background-color: #00ab8e;
+        }
+
+        .red {
+            background-color: #ff5b5b;
+        }
+
+        .icon {
+            color: white;
+            font-size: 24px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .label {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .sub-info {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .rate {
+            color: #10b981;
+            margin-right: 8px;
+        }
+
+        .sub-label {
+            color: #9ca3af;
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .bar {
+            width: 4px;
+            margin: 0 2px;
+            border-radius: 1px;
+        }
+
+        .blue-bar {
+            background-color: #d1d1ff;
+        }
+
+        .blue-bar.active {
+            background-color: #5a5aff;
+        }
+
+        .red-bar {
+            background-color: #ffd1d1;
+        }
+
+        .red-bar.active {
+            background-color: #ff5b5b;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .stat-card:not(:last-child)::after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Total Sales Card -->
+        <div class="stat-card">
+            <div class="icon-container blue">
+                <div class="icon">₹</div>
+            </div>
+            <div class="content">
+                <div class="label">Total Sales</div>
+                <div class="value">₹72324</div>
+                <div class="sub-info">
+                    <div class="rate">+3.5%</div>
+                    <div class="sub-label">invoices sent</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Income Card -->
+        <div class="stat-card">
+            <div class="icon-container green">
+                <div class="icon">✓</div>
+            </div>
+            <div class="content">
+                <div class="label">Income</div>
+                <div class="value">₹30422.00</div>
+                <div class="sub-info">
+                    <div class="sub-label">Average from last month</div>
+                </div>
+            </div>
+            <div class="chart">
+                <div class="bar blue-bar" style="height: 60%;"></div>
+                <div class="bar blue-bar" style="height: 80%;"></div>
+                <div class="bar blue-bar active" style="height: 100%;"></div>
+                <div class="bar blue-bar" style="height: 70%;"></div>
+            </div>
+        </div>
+
+        <!-- Purchases Card -->
+        <div class="stat-card">
+            <div class="icon-container red">
+                <div class="icon">^</div>
+            </div>
+            <div class="content">
+                <div class="label">Purchases This Month</div>
+                <div class="value">₹53300</div>
+            </div>
+            <div class="chart">
+                <div class="bar red-bar active" style="height: 90%;"></div>
+                <div class="bar red-bar active" style="height: 100%;"></div>
+                <div class="bar red-bar" style="height: 60%;"></div>
+                <div class="bar red-bar" style="height: 75%;"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

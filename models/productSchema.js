@@ -11,7 +11,27 @@ const productSchema = new Schema({
         type:String,
         required:true,
     },
+    gender:{
+        type:String,
+        required:true, 
+    },
     brand:{
+        type:String,
+        required:true, 
+    },
+    productType:{
+        type:String,
+        required:true, 
+    },
+    fragranceFamily:{
+        type:String,
+        required:true, 
+    },
+    size: {
+        type: [String],
+        required: true,
+    },
+    usage:{
         type:String,
         required:true, 
     },
@@ -23,7 +43,10 @@ const productSchema = new Schema({
     regularPrice:{
         type : Number,
         required : true,
-
+    },
+    longevity:{
+        type:String,
+        required:true,
     },
     salePrice:{
         type : Number,
@@ -45,6 +68,15 @@ const productSchema = new Schema({
         type:Boolean,
         default :false 
     },
+    isListed:{
+        type:Boolean,
+        default : true
+    },
+    isDeleted:{
+        type:Boolean,
+        default : false
+    },
+    
     status :{
         type:String,
         enum:["Available","out of stock","Discountinued"],

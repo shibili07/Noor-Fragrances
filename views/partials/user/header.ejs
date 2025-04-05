@@ -20,6 +20,36 @@
             align-items: center;
             justify-content: center;
         }
+
+        .dropdown{
+            position: relative;
+            display: inline-block;
+
+        }
+        .dropdown-content{
+            display: none;
+            position: absolute;
+            background-color: white;
+            min-width:160px ;
+            box-shadow:black ;
+            z-index: 1000;
+            right: 0;
+
+        }
+        .dropdown-content a{
+            color :black;
+            padding: 12px 16px;
+            text-align: none;
+            display: block;
+            width: 100%;
+        }
+        .dropdown-content a:hover{
+            background-color: #f1f1f1;
+
+        }
+        .dropdown:hover .dropdown-content{
+            display: block;
+        }
         
         .navbar-brand img {
             max-height: 40px;
@@ -298,6 +328,399 @@
                 padding: 5px;
             }
         }
+        
+        /* Professional styling for mobile navigation buttons */
+        @media (max-width: 991px) {
+            .navbar-icons-mobile {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 20px 0 10px;
+                padding-top: 10px;
+                border-top: 1px solid #eaeaea;
+            }
+            
+            /* Icon buttons - clean, professional style */
+            .navbar-icons-mobile .icon-link {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                border-radius: 4px;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                transition: all 0.2s ease;
+            }
+            
+            .navbar-icons-mobile .icon-link:hover {
+                background-color: #e9ecef;
+            }
+            
+            .navbar-icons-mobile .icon-link:active {
+                background-color: #dee2e6;
+            }
+            
+            .navbar-icons-mobile .icon-link i {
+                font-size: 16px;
+                color: #495057;
+            }
+            
+            /* Login/Sign up buttons - classic professional style */
+            .navbar-icons-mobile .btn-outline-secondary,
+            .navbar-icons-mobile .sign-in-link,
+            .navbar-icons-mobile .sign-up-link {
+                padding: 8px 16px;
+                background-color: white;
+                border: 1px solid #6c757d;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                color: #495057;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                text-align: center;
+                margin: 0 4px;
+            }
+            
+            .navbar-icons-mobile .btn-outline-secondary:hover,
+            .navbar-icons-mobile .sign-in-link:hover,
+            .navbar-icons-mobile .sign-up-link:hover {
+                background-color: #f8f9fa;
+                color: #212529;
+            }
+            
+            /* Username button when logged in */
+            .navbar-icons-mobile .user-name-link {
+                padding: 8px 16px;
+                background-color: #f8f9fa;
+                border: 1px solid #dee2e6;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 500;
+                color: #212529;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                position: relative;
+                display: flex;
+                align-items: center;
+            }
+            
+            .navbar-icons-mobile .user-name-link:after {
+                content: '\f107';
+                font-family: 'Font Awesome 6 Free';
+                font-weight: 900;
+                margin-left: 5px;
+            }
+            
+            /* Dropdown styling */
+            .navbar-icons-mobile .dropdown-menu {
+                border-radius: 4px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                border: 1px solid #dee2e6;
+                min-width: 180px;
+                padding: 8px 0;
+            }
+            
+            .navbar-icons-mobile .dropdown-item {
+                padding: 8px 16px;
+                font-size: 14px;
+                color: #495057;
+                transition: all 0.2s ease;
+            }
+            
+            .navbar-icons-mobile .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #212529;
+            }
+            
+            .navbar-icons-mobile .dropdown-divider {
+                margin: 4px 0;
+                border-top: 1px solid #e9ecef;
+            }
+            
+            .navbar-icons-mobile .dropdown-item.logout {
+                color: #dc3545;
+            }
+        }
+        
+        /* Small mobile adjustments */
+        @media (max-width: 576px) {
+            .navbar-icons-mobile {
+                gap: 6px;
+            }
+            
+            .navbar-icons-mobile .icon-link {
+                width: 36px;
+                height: 36px;
+            }
+            
+            .navbar-icons-mobile .btn-outline-secondary,
+            .navbar-icons-mobile .sign-in-link,
+            .navbar-icons-mobile .sign-up-link,
+            .navbar-icons-mobile .user-name-link {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+        }
+        
+        /* Extra small screens */
+        @media (max-width: 375px) {
+            .navbar-icons-mobile {
+                gap: 4px;
+            }
+            
+            .navbar-icons-mobile .icon-link {
+                width: 32px;
+                height: 32px;
+            }
+            
+            .navbar-icons-mobile .icon-link i {
+                font-size: 14px;
+            }
+            
+            .navbar-icons-mobile .btn-outline-secondary,
+            .navbar-icons-mobile .sign-in-link,
+            .navbar-icons-mobile .sign-up-link,
+            .navbar-icons-mobile .user-name-link {
+                padding: 5px 10px;
+                font-size: 12px;
+            }
+        }
+        
+        /* Professional menu highlighting with dark bold styling - only on click/active */
+        .nav-item .nav-link {
+            position: relative;
+            padding: 8px 0;
+            margin: 0 15px;
+            color: #555;
+            font-weight: normal;
+            transition: all 0.3s ease;
+        }
+        
+        /* Bold dark color for active/clicked menu items only */
+        .nav-item.active .nav-link {
+            color: #111;
+            font-weight: 600;
+            font-size: 1.15rem;
+        }
+        
+        /* Remove all hover effects */
+        .nav-item .nav-link:hover {
+            /* No special styling on hover */
+            color: #555; /* Same as default */
+        }
+        
+        /* Remove the underline effect completely */
+        .nav-item .nav-link::after {
+            display: none;
+        }
+        
+        /* Mobile menu highlight adjustments - active only */
+        @media (max-width: 991px) {
+            .nav-item .nav-link {
+                padding: 10px;
+                border-left: 3px solid transparent;
+                padding-left: 10px;
+                border-radius: 4px;
+            }
+            
+            .nav-item.active .nav-link {
+                border-left: 3px solid #333;
+                background-color: #f8f9fa;
+            }
+            
+            .nav-item .nav-link:hover {
+                /* No hover styling */
+                background-color: transparent;
+                border-left: 3px solid transparent;
+            }
+        }
+        
+        /* Sign in and Login button styles */
+        .sign-in-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .sign-in-link:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            color: #000;
+            text-decoration: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Different styling for Sign up button to make it stand out */
+        .sign-up-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #007bff;
+            border: 1px solid #0069d9;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .sign-up-link:hover {
+            background-color: #0069d9;
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        
+        /* Username link with icon */
+        .user-name-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            position: relative;
+        }
+        
+        .user-name-link:after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            margin-left: 8px;
+            font-size: 12px;
+        }
+        
+        .user-name-link:hover {
+            background-color: #e9ecef;
+            color: #000;
+            text-decoration: none;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        /* Enhanced dropdown styling */
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-radius: 6px;
+            top: 100%;
+            right: 0;
+            overflow: hidden;
+            border: 1px solid #eaeaea;
+            margin-top: 5px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            border-bottom: 1px solid #f5f5f5;
+            transition: all 0.2s ease;
+        }
+        
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+        
+        .dropdown-content a:before {
+            margin-right: 10px;
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .dropdown-content a[href="/userProfile"]:before {
+            content: '\f007'; /* user icon */
+        }
+        
+        .dropdown-content a[href="/logout"]:before {
+            content: '\f2f5'; /* sign-out icon */
+            color: #dc3545;
+        }
+        
+        .dropdown-content a:hover {
+            background-color: #f8f9fa;
+            padding-left: 20px;
+        }
+        
+        .dropdown-content a[href="/logout"] {
+            color: #dc3545;
+        }
+        
+        .dropdown-content a[href="/logout"]:hover {
+            background-color: #fff8f8;
+        }
+        
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        
+        /* Ensure proper spacing */
+        .navbar-icons a.sign-in-link,
+        .navbar-icons a.sign-up-link,
+        .navbar-icons a.user-name-link {
+            margin: 0 5px;
+        }
+        
+        /* Make sure responsive styles are maintained */
+        @media (max-width: 991px) {
+            .navbar-icons-mobile .sign-in-link,
+            .navbar-icons-mobile .sign-up-link,
+            .navbar-icons-mobile .user-name-link {
+                padding: 7px 14px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .navbar-icons-mobile .sign-in-link,
+            .navbar-icons-mobile .sign-up-link,
+            .navbar-icons-mobile .user-name-link {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            
+            .navbar-icons-mobile .dropdown-content {
+                min-width: 160px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -317,19 +740,29 @@
         <a class="navbar-brand mx-auto order-0" href="#">
             <img src="/img/logo/image.png" alt="NOOR">
         </a>
-       
+        
         <!-- Desktop icons (visible only on desktop) -->
         <div class="navbar-icons navbar-icons-desktop order-lg-2">
             <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                 <i class="far fa-heart"></i>
             </a>
-            <a href="#" aria-label="Account" class="icon-link" data-icon="account">
-                <i class="far fa-user"></i>
-            </a>
+           
             <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
                 <i class="fas fa-shopping-cart"></i>
             </a>
-            <a  href="/login" type="button" class="btn btn-outline-secondary">login</a>
+            
+            <%if(locals.user&&locals.name){%>
+                <div class="dropdown">
+                    <a href="#" class="user-name-link"><%=locals.name%></a>
+                    <div class="dropdown-content">
+                        <a href="/userProfile">Profile</a>
+                        <a href="/logout">Logout</a>
+                    </div>
+                </div>
+            <%}else{%> 
+                <a href="/login" class="sign-in-link">Log in</a> 
+                <a href="/signUp" class="sign-up-link">Sign up</a>
+            <%}%>
         </div>
         
         <!-- Collapsible Content -->
@@ -337,42 +770,42 @@
             <!-- Navigation Links -->
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="home">Home</a>
+                    <a class="nav-link" href="/" data-page="home">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="shop">Shop</a>
+                    <a class="nav-link" href="/shop" data-page="shop">Shop</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="blogs">Blogs</a>
+                    <a class="nav-link" href="/Blog" data-page="blogs">Blogs</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="about">About</a>
+                    <a class="nav-link" href="/about" data-page="about">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#" data-page="contact">Contact</a>
+                    <a class="nav-link" href="/contact" data-page="contact">Contact</a>
                 </li>
             </ul>
             
-            <!-- Search Bar -->
-            <div class="search-container mx-auto">
-                <span class="search-icon">
-                    <i class="fas fa-search"></i>
-                </span>
-                <input type="text" placeholder="Search" aria-label="Search">
-            </div>
-            
-            <!-- Mobile icons (visible only on mobile within collapse) -->
             <div class="navbar-icons navbar-icons-mobile">
                 <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                     <i class="far fa-heart"></i>
                 </a>
-                <a href="#" aria-label="Account" class="icon-link" data-icon="account">
-                    <i class="far fa-user"></i>
-                </a>
                 <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
-                <a  href="/login" type="button" class="btn btn-outline-secondary">login</a>
+                
+                <%if(locals.user&&locals.name){%>
+                    <div class="dropdown">
+                        <a href="#" class="user-name-link"><%=locals.name%></a>
+                        <div class="dropdown-content">
+                            <a href="/userProfile">Profile</a>
+                            <a href="/logout">Logout</a>
+                        </div>
+                    </div>
+                <%}else{%> 
+                    <a href="/login" class="sign-in-link">Log in</a> 
+                    <a href="/signUp" class="sign-up-link">Sign up</a>
+                <%}%>
             </div>
         </div> 
     </div>
@@ -384,100 +817,32 @@
 <!-- Custom JavaScript for navbar active state -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get the current page from URL or set default to 'home'
-        let currentPage = window.location.pathname.split('/').pop().replace('.html', '') || 'home';
-        
-        // If the URL has no specific page, default to home
-        if(currentPage === '' || currentPage === '/') {
-            currentPage = 'home';
-        }
-        
-        // Set the initial active class based on the current page
-        setActiveNavItem(currentPage);
-        
-        // Add click event listeners to each nav item
+        // Get all nav links
         const navLinks = document.querySelectorAll('.nav-link');
+        
+        // Get current page path
+        const currentPath = window.location.pathname;
+        
+        // Set active class based on current path
         navLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Prevent default link behavior if you're handling navigation with JS
-                e.preventDefault();
-                
+            const linkPath = link.getAttribute('href');
+            
+            // Handle both exact matches and sub-pages
+            if (linkPath === currentPath || 
+                (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+                link.parentElement.classList.add('active');
+            }
+            
+            // Add click handler to set active class
+            link.addEventListener('click', function() {
                 // Remove active class from all nav items
                 document.querySelectorAll('.nav-item').forEach(item => {
                     item.classList.remove('active');
                 });
                 
-                // Add active class to clicked nav item's parent
+                // Add active class to clicked nav item
                 this.parentElement.classList.add('active');
-                
-                // Get the page identifier from data attribute
-                const page = this.getAttribute('data-page');
-                
-                // Here you would typically navigate to the page
-                // You can uncomment this if you want actual navigation
-                // window.location.href = page + '.html';
-                
-                // For demo purposes, just log the navigation
-                console.log('Navigating to:', page);
             });
-        });
-        
-        // Add click event listeners to all icon links (both mobile and desktop)
-        const iconLinks = document.querySelectorAll('.icon-link');
-        iconLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                // Prevent default link behavior
-                e.preventDefault();
-                
-                // Get the icon identifier from data attribute
-                const iconType = this.getAttribute('data-icon');
-                
-                // Find all matching icons with the same data-icon attribute
-                const matchingIcons = document.querySelectorAll(`.icon-link[data-icon="${iconType}"]`);
-                
-                // Toggle active class across all matching icons
-                if (this.classList.contains('active')) {
-                    matchingIcons.forEach(icon => {
-                        icon.classList.remove('active');
-                    });
-                } else {
-                    // Remove active class from all icon links
-                    document.querySelectorAll('.icon-link').forEach(item => {
-                        item.classList.remove('active');
-                    });
-                    
-                    // Add active class to all matching icons
-                    matchingIcons.forEach(icon => {
-                        icon.classList.add('active');
-                    });
-                }
-                
-                // For demo purposes, just log the icon click
-                console.log('Clicked icon:', iconType);
-            });
-        });
-        
-        // Function to set the active nav item based on page name
-        function setActiveNavItem(pageName) {
-            // Remove active class from all items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            
-            // Find the link with matching data-page attribute and set its parent as active
-            const activeLink = document.querySelector(`.nav-link[data-page="${pageName}"]`);
-            if (activeLink) {
-                activeLink.parentElement.classList.add('active');
-            }
-        }
-        
-        // Handle toggle state on menu open/close
-        document.getElementById('navbarContent').addEventListener('shown.bs.collapse', function() {
-            document.getElementById('menu-toggle').checked = true;
-        });
-        
-        document.getElementById('navbarContent').addEventListener('hidden.bs.collapse', function() {
-            document.getElementById('menu-toggle').checked = false;
         });
     });
 </script>

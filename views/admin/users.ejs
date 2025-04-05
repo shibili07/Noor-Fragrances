@@ -1,0 +1,303 @@
+<%- include("../../views/partials/admin/header") %>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    .content-wrapper {
+        padding: 20px;
+        margin-top: 70px;
+        margin-left: 280px;
+        transition: all 0.3s ease;
+        background-color: #f5f5f7;
+        min-height: calc(100vh - 70px);
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .table thead th {
+        background-color: #1c1c24;
+        color: white;
+        font-weight: normal;
+        border: none;
+        padding: 15px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .user-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: #cddbe7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border: 2px solid #6a9eca;
+    }
+
+    .user-icon {
+        color: #6a9eca;
+        font-size: 20px;
+    }
+
+    .block-button {
+        background-color: #ff3b30;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-weight: bold;
+    }
+
+    .block-button:hover {
+        background-color: #681309;
+        color:white
+    }
+
+    .unblock-button {
+        background-color: #34c759;  
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-weight: bold;
+    }
+    .unblock-button:hover {
+        background-color: #094723;
+        color:white
+    }
+    
+    .add-button {
+        width: 45px;
+        height: 45px;
+        background-color: #5e5ce6;
+        color: white;
+        font-size: 24px;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .action-icon {
+        cursor: pointer;
+        margin: 0 5px;
+    }
+
+    /* Responsive adjustments */
+    @media screen and (max-width: 992px) {
+        .content-wrapper {
+            margin-left: 0;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .responsive-header {
+            flex-direction: column;
+            align-items: start !important;
+        }
+        
+        .search-container {
+            width: 100%;
+        }
+        
+        .actions-container {
+            width: 100%;
+            justify-content: space-between !important;
+            margin-top: 10px;
+        }
+    }
+
+    .clear-search {
+        position: absolute;
+        right: 0;
+        z-index: 3;
+        border: none;
+        background: transparent;
+        padding: 8px 12px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .clear-search:hover {
+        color: #333;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .clear-search-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .clear-search-btn:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+    }
+
+    @media screen and (max-width: 768px) {
+        .d-flex.gap-2 {
+            gap: 0.5rem !important;
+        }
+        
+        .clear-search-btn {
+            padding: 6px 12px;
+        }
+    }
+</style>
+
+<body>
+    <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center responsive-header">
+                <h1 class="mb-0 fs-4 fw-bold">Users Management</h1>
+                
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="card">
+            <div class="card-body">
+                <form action="/admin/users" method="GET">
+                    <div class="row">
+                        <div class="col-md-8 mb-2 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" name="search" placeholder="Search users by name, email or ID...">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <input type="submit" id="searchBtn" class="btn btn-primary flex-grow-1" style="background-color: #5e5ce6; border-color: #5e5ce6;" value="Search">
+                                <button type="button" class="btn btn-secondary clear-search-btn" onclick="clearSearch()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>USER ID</th>
+                                <th>USER IMAGE</th>
+                                <th>NAME</th>
+                                <th>EMAIL</th>
+                                <th>PHONE</th>
+                                <th>DATE OF CREATION</th>
+                                <th>ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <%for(let i=0;i<data.length;i++){%>
+                            <tr>
+                                <td><%=i+1%></td>
+                                <td>
+                                    <div class="user-image">
+                                        <span class="user-icon">👤</span>
+                                    </div>
+                                </td>
+                                <td><%=data[i].name%></td>
+                                <td><%=data[i].email%></td>
+                                <td><%=data[i].phone%></td>
+                                <td><%= new Date(data[i].createdAt).toLocaleDateString() %></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        
+                                        <% if (data[i].isBlocked === false) { %>
+                                            <button class="btn block-button" onclick="return actionValidate('<%=data[i]._id%>')">BLOCK</button>
+                                        <% } else { %>
+                                            <a href="/admin/unblockCustomer?id=<%= data[i]._id %>" class="btn unblock-button">UNBLOCK</a>
+                                        <% } %>
+                                </td>
+                            </tr>
+                            <%}%>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <%for(let i=1;i<=totalPages;i++){%>
+
+                <li class="page-item <%=(i===currentPage)?'active' : ''%>">
+                    <a class="page-link" href="?page=<%=i%>"><%= i %></a>
+                </li> 
+                <%}%>
+            </ul>
+        </nav>
+    </div>
+  
+
+    <div class="modal" tabindex="-1" id="userAction">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">BLOCK USER</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>ARE YOU SURE ABOUT BLOCKING THIS USER ?</p>
+              <form action="/admin/blockCustomer" method="post">
+                <input type="text" id="user_actionID" name="id" hidden>
+                
+                <button class="btn btn-primary">BLOCK</button>
+
+              </form>
+              
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+
+
+        function actionValidate(userID){
+
+            document.getElementById('user_actionID').value=userID
+
+            let modalShow =  new bootstrap.Modal(document.getElementById('userAction'))
+            modalShow.show()
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('searchBtn').click();
+        }
+
+    </script>
+    
+</body>

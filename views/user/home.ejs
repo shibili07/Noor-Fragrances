@@ -1,282 +1,919 @@
 <%-include("../../views/partials/user/header")%>
 <link rel="stylesheet" href="/styles/home.css">
+<style>
+  /* Classic Professional Home Page Styling with Animations */
+  body {
+    font-family: 'Akshar', sans-serif;
+    color: #333;
+    background-color: #fff;
+    line-height: 1.6;
+  }
+  
+  .section-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+  
+  /* Elegant Main Banner with Animation */
+  .main-banner {
+    position: relative;
+    margin-bottom: 80px;
+    overflow: hidden;
+    max-height: 600px;
+    box-shadow: 0 3px 20px rgba(0,0,0,0.1);
+  }
+  
+  .main-banner img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transform: scale(1.02);
+    transition: transform 8s ease;
+    animation: subtle-zoom 15s infinite alternate;
+  }
+  
+  @keyframes subtle-zoom {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.05); }
+  }
+  
+  .banner-content {
+    position: absolute;
+    top: 50%;
+    left: 50px;
+    transform: translateY(-50%);
+    max-width: 450px;
+    color: #fff;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    animation: fade-in-slide 1.2s ease-out;
+  }
+  
+  @keyframes fade-in-slide {
+    0% { opacity: 0; transform: translateY(-60%); }
+    100% { opacity: 1; transform: translateY(-50%); }
+  }
+  
+  /* Enhanced Classic Typography */
+  .elegant-heading {
+    position: relative;
+    font-family: 'Akshar', serif;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 40px;
+  }
+  
+  .elegant-heading:before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 2px;
+    background-color: #333;
+    bottom: -10px;
+    left: 0;
+  }
+  
+  .elegant-heading:after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 2px;
+    background-color: #333;
+    bottom: -16px;
+    left: 0;
+  }
+  
+  /* Featured Products Section with Enhanced Title */
+  .section-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    text-align: center;
+    margin: 70px 0 50px;
+    position: relative;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-family: 'Akshar', serif;
+    color: #222;
+  }
+  
+  .section-title:before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 1px;
+    background-color: #333;
+  }
+  
+  .section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background-color: #333;
+  }
+  
+  .section-subtitle {
+    display: block;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #777;
+    margin-top: 10px;
+    text-transform: none;
+    letter-spacing: 1px;
+  }
+  
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 30px;
+    margin-bottom: 80px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fade-up 0.8s forwards;
+    animation-delay: 0.3s;
+  }
+  
+  @keyframes fade-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  .product-card {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 3px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+  }
+  
+  .product-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transform: translateY(-8px);
+  }
+  
+  .product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease;
+  }
+  
+  .product-card:hover img {
+    transform: scale(1.05);
+  }
+  
+  .product-info {
+    padding: 20px 15px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .product-info:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 25%;
+    width: 50%;
+    height: 1px;
+    background: rgba(0,0,0,0.1);
+  }
+  
+  .product-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  .product-card:hover .product-title {
+    color: #000;
+  }
+  
+  .product-brand {
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+  
+  .product-price {
+    font-weight: 600;
+    color: #333;
+    font-size: 1.1rem;
+    position: relative;
+    display: inline-block;
+  }
+  
+  .product-price:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #333;
+    transition: width 0.3s ease;
+  }
+  
+  .product-card:hover .product-price:after {
+    width: 100%;
+  }
+  
+  .favorite-icon {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    background-color: rgba(255,255,255,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .product-card:hover .favorite-icon {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .favorite-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: #333;
+    stroke-width: 2;
+    transition: all 0.3s ease;
+  }
+  
+  .favorite-icon:hover {
+    background-color: #fff;
+    transform: scale(1.1) translateY(0);
+  }
+  
+  .favorite-icon:hover svg {
+    fill: #fd334e;
+    stroke: #fd334e;
+  }
+  
+  /* Feedback Section with light gray background highlight */
+  .feedback-section {
+    padding: 60px 0;
+    background-color: #f8f8f8; /* Light gray background */
+    position: relative;
+    border-top: 1px solid #eaeaea;
+    border-bottom: 1px solid #eaeaea;
+  }
+  
+  .feedback-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+  }
+  
+  /* Add subtle pattern or texture to the background */
+  .feedback-section:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23f0f0f0' fill-opacity='0.4' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.4;
+    z-index: 0;
+  }
+  
+  /* Make the title stand out more against light background */
+  .feedback-section .section-title {
+    margin-bottom: 50px;
+    position: relative;
+    z-index: 1;
+    color: #333;
+  }
+  
+  /* Adjust card styling for better contrast against the light gray */
+  .feedback-card-simple {
+    flex: 0 0 calc(33.333% - 20px);
+    max-width: calc(33.333% - 20px);
+    background: #fff; /* White cards on light gray */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 25px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+    z-index: 1;
+  }
+  
+  .feedback-card-simple:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    transform: translateY(-5px);
+  }
+  
+  .rating-stars {
+    text-align: right;
+    color: #ffc107;
+    font-size: 20px;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+  
+  .star.empty {
+    color: #e0e0e0;
+  }
+  
+  .star.half {
+    position: relative;
+  }
+  
+  .star.half:after {
+    content: '☆';
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #e0e0e0;
+    width: 50%;
+    overflow: hidden;
+  }
+  
+  .customer-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .customer-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+  
+  .customer-name {
+    font-size: 18px;
+    color: #333;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .feedback-text {
+    color: #666;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    max-height: 120px;
+    overflow: hidden;
+  }
+  
+  /* Enhanced Feedback Section */
+  .feedback-slider-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+  
+  .feedback-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 30px;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  /* Enhance the pagination dots for better visibility */
+  .simple-pagination .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ddd;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .simple-pagination .dot.active {
+    background-color: #444;
+    border-color: #444;
+    transform: scale(1.2);
+  }
+  
+  /* Mobile Responsive */
+  @media (max-width: 992px) {
+    .feedback-row {
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding-bottom: 20px;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .feedback-card-simple {
+      flex: 0 0 calc(50% - 15px);
+      max-width: calc(50% - 15px);
+      scroll-snap-align: start;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .feedback-card-simple {
+      flex: 0 0 85%;
+      max-width: 85%;
+    }
+  }
+  
+  /* Animated mobile card visibility for small screens */
+  @media (max-width: 768px) {
+    .feedback-card-simple {
+      opacity: 0.5;
+      transform: scale(0.9);
+      transition: all 0.3s ease;
+    }
+    
+    .feedback-card-simple.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  /* Enhanced Footer Spacing */
+  .pre-footer-space {
+    height: 60px;
+  }
+  
+  /* Improved Animation Timings */
+  .staggered-item {
+    opacity: 0;
+    animation: fade-in 0.8s forwards;
+  }
+  
+  .staggered-item:nth-child(1) { animation-delay: 0.1s; }
+  .staggered-item:nth-child(2) { animation-delay: 0.3s; }
+  .staggered-item:nth-child(3) { animation-delay: 0.5s; }
+  .staggered-item:nth-child(4) { animation-delay: 0.7s; }
+  
+  @keyframes fade-in {
+    0% { opacity: 0; transform: translateY(15px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .banner-content {
+      left: 30px;
+      max-width: 400px;
+    }
+    
+    .section-title {
+      font-size: 1.8rem;
+    }
+    
+    .feedback-card {
+      padding: 25px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .banner-content {
+      left: 20px;
+      max-width: 350px;
+    }
+    
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 25px;
+    }
+    
+    .section-title {
+      font-size: 1.6rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .main-banner {
+      max-height: 450px;
+    }
+    
+    .banner-content {
+      left: 15px;
+      max-width: 300px;
+    }
+    
+    .section-title {
+      font-size: 1.4rem;
+      margin: 50px 0 30px;
+    }
+    
+    .feedback-card:before {
+      font-size: 40px;
+    }
+    
+    .user-avatar {
+      width: 50px;
+      height: 50px;
+    }
+  }
+  
+  /* Classic Testimonial Styling */
+  .testimonial-carousel {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 30px 0 60px;
+  }
+  
+  .testimonial-slides {
+    position: relative;
+    height: 350px;
+    overflow: hidden;
+  }
+  
+  .testimonial-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .testimonial-slide.active {
+    opacity: 1;
+    z-index: 1;
+  }
+  
+  .classic-testimonial {
+    max-width: 800px;
+    text-align: center;
+    padding: 20px 40px 40px;
+    position: relative;
+    animation: fade-in 1s ease-out forwards;
+  }
+  
+  .quote-mark {
+    font-family: "Georgia", serif;
+    font-size: 120px;
+    line-height: 0;
+    color: rgba(0,0,0,0.08);
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: -1;
+  }
+  
+  .testimonial-content {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    font-style: italic;
+    color: #333;
+    margin-bottom: 30px;
+    position: relative;
+    font-family: "Georgia", serif;
+    font-weight: 300;
+  }
+  
+  .testimonial-author {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .author-line {
+    width: 40px;
+    height: 1px;
+    background-color: #333;
+    margin-bottom: 15px;
+  }
+  
+  .author-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  
+  .author-title {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+  }
+  
+  /* Classic Pagination Styling */
+  .testimonial-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 40px;
+    position: relative;
+  }
+  
+  .testimonial-pagination:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 1px;
+    background-color: rgba(0,0,0,0.1);
+    z-index: -1;
+  }
+  
+  .pagination-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 1px solid #ccc;
+    position: relative;
+  }
+  
+  .pagination-dot:hover {
+    background-color: #bbb;
+  }
+  
+  .pagination-dot.active {
+    background-color: #333;
+    border-color: #333;
+    transform: scale(1.2);
+  }
+  
+  .pagination-dot.active:before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(0,0,0,0.2);
+    border-radius: 50%;
+    animation: ripple 1.5s infinite;
+  }
+  
+  @keyframes ripple {
+    0% {
+      width: 12px;
+      height: 12px;
+      opacity: 1;
+    }
+    100% {
+      width: 24px;
+      height: 24px;
+      opacity: 0;
+    }
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .testimonial-content {
+      font-size: 1.3rem;
+    }
+    
+    .quote-mark {
+      font-size: 100px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .testimonial-slides {
+      height: 380px;
+    }
+    
+    .testimonial-content {
+      font-size: 1.2rem;
+    }
+    
+    .quote-mark {
+      font-size: 80px;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .testimonial-slides {
+      height: 420px;
+    }
+    
+    .testimonial-content {
+      font-size: 1.1rem;
+    }
+    
+    .quote-mark {
+      font-size: 70px;
+      top: 20px;
+    }
+    
+    .classic-testimonial {
+      padding: 10px 20px 30px;
+    }
+  }
+</style>
+
 <body>
-    <div class="container-fluid">
-        <!-- Hero Banner -->
-        <div class="hero-banner">
-            <div class="hero-content">
-                <div class="hero-image "><img src="/img/home/banner1.jpg" class="object-fit-cover border rounded" alt=""></div>
-                <div class="promo-text">
-                    <h3>Unisex perfumes</h3>
-                    <h3>Move with style & comfort</h3>
-                    <h2>UPTO 50% OFF</h2>
-                    <a href="#" class="btn btn-outline-light">SHOP NOW</a>
-                </div>
-            </div>
-        
-        </div>
-        
-        <!-- Collection Cards -->
-        <div class="collection-row">
-            <!-- Card 1 -->
-            <div class="collection-card">
-                <div class="collection-image" style="background-image: url('/img/home/cozy1.jpg');"></div>
-                <div class="collection-info">
-                    <div class="collection-title">High Coziness</div>
-                    <div class="collection-price">UPTO 50% OFF</div>
-                    <a href="#" class="explore-btn">Explore Items</a>
-                </div>
-            </div>
-            
-            <!-- Card 2 -->
-            <div class="collection-card">
-                <div class="collection-image" style="background-image: url('/img/home/cozy2.jpg');"></div>
-                <div class="collection-info">
-                    <div class="collection-title">Breezy Summer Style</div>
-                    <div class="collection-price">UPTO 50% OFF</div>
-                    <a href="#" class="explore-btn">Explore Items</a>
-                </div>
-            </div>
-        </div>
-        
-        <!-- New Arrivals -->
-        <h2 class="section-title">New Arrival</h2>
-        <div class="new-arrivals-row">
-            <!-- Product 1 -->
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('/img/home/bellaVitaGOAT.png');"></div>
-                <div class="product-info">
-                    <div class="product-name">Bella vita</div>
-                </div>
-            </div>
-            
-            <!-- Product 2 -->
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('/img/home/sabizAhla.jpeg');"></div>
-                <div class="product-info">
-                    <div class="product-name">SABIZ AHLA</div>
-                </div>
-            </div>
-            
-            <!-- Product 3 -->
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('/img/home/spiritual.jpeg');"></div>
-                <div class="product-info">
-                    <div class="product-name">Spiritual Awakening</div>
-                </div>
-            </div>
-            
-            <!-- Product 4 -->
-            <div class="product-card">
-                <div class="product-image" style="background-image: url('/img/home/era.jpg');"></div>
-                <div class="product-info">
-                    <div class="product-name">The Extrait Era</div>
-                </div>
-            </div>
-            
-            <div class="carousel-arrows">
-                <div class="carousel-arrow">❮</div>
-                <div class="carousel-arrow">❯</div>
-            </div>
-        </div>
+  <div class="section-container">
+    <!-- Main Banner with Subtle Animation -->
+    <div class="main-banner">
+      <img src="/img/home/m-banner.png" alt="NOOR Fragrances" class="banner-image">
+      <div class="banner-content">
+        <!-- You can add content here if needed -->
+      </div>
     </div>
-    <br>
-    <div class="container-fluid">
-        <div class="category-header">
-            <h1 style="font-weight: bold;">Categories For Men</h1>
+    
+    <!-- Featured Products Section with Enhanced Classic Title -->
+    <h2 class="section-title">
+      Signature Collections
+      <span class="section-subtitle">Carefully crafted fragrances for discerning tastes</span>
+    </h2>
+    
+    <div class="products-grid">
+        <%for(let i=0;i<products.length;i++){%>
+      <!-- Product 1 -->
+      <div class="product-card staggered-item">
+        <div class="favorite-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+          </svg>
+        </div>
+        <a href="/productDetails?id=<%=products[i]._id%>" style="text-decoration: none;" >
+          <img src="/uploads/product-images/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>" class="product-image">
+          <div class="product-info">
+            <div class="product-title"><%=products[i].productName%></div>
+            <div class="product-brand"><%=products[i].brand%></div>
+            <div class="product-price">₹<%=products[i].salePrice%></div>
+          </div>
+        </a>
+      </div>
+<%}%>
+  </div>
+  
+  <!-- Feedback Section styled like the reference -->
+  <div class="feedback-section">
+    <div class="feedback-container">
+      <h2 class="section-title">
+        Feedback
+        <span class="section-subtitle">What our customers say</span>
+      </h2>
+      
+      <div class="feedback-slider-container">
+        <!-- Feedback Cards Row -->
+        <div class="feedback-row">
+          <!-- Card 1 -->
+          <div class="feedback-card-simple active" data-index="0">
+            <div class="rating-stars">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star empty">☆</span>
+            </div>
+            <div class="customer-info">
+              <img src="/img/home/avatar1.jpg" alt="Ronald Richards" class="customer-avatar">
+              <h3 class="customer-name">Ronald Richards</h3>
+            </div>
+            <p class="feedback-text">Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.</p>
+          </div>
+          
+          <!-- Card 2 -->
+          <div class="feedback-card-simple" data-index="1">
+            <div class="rating-stars">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star half">★</span>
+              <span class="star empty">☆</span>
+            </div>
+            <div class="customer-info">
+              <img src="/img/home/avatar2.jpg" alt="Savannah Nguyen" class="customer-avatar">
+              <h3 class="customer-name">Savannah Nguyen</h3>
+            </div>
+            <p class="feedback-text">Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.</p>
+          </div>
+          
+          <!-- Card 3 -->
+          <div class="feedback-card-simple" data-index="2">
+            <div class="rating-stars">
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+              <span class="star">★</span>
+            </div>
+            <div class="customer-info">
+              <img src="/img/home/avatar3.jpg" alt="Ronald Richards" class="customer-avatar">
+              <h3 class="customer-name">Ronald Richards</h3>
+            </div>
+            <p class="feedback-text">Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.</p>
+          </div>
         </div>
         
-        <div class="hero-banner">
-            <div class="hero-content">
-                <div class="hero-image "><img src="https://hips.hearstapps.com/hmg-prod/images/mhlcologne-opener-0086-66ba5fbb0c4cf.jpg?crop=0.737xw:0.737xh;0.119xw,0.194xh&resize=1120:*" class="object-fit-cover border rounded" alt=""></div>
-                <div class="promo-text">
-                    <h1>mens perfumes</h1>
-                    <h3>Move with style & comfort</h3>
-                    <h2>UPTO 30% OFF</h2>
-                    <a href="#" class="btn btn-outline-light">SHOP NOW</a>
-                </div>
-            </div>
-           
-        </div>
-    <div class="container-fluid">
-        <div class="banner-section">
-            <div class="banner-left" style="background-image:url('/img/home/peakpx\ \(1\).jpg')">
-                <div class="banner-content" >
-                    <h2>WE MADE YOUR EVERYDAY FASHION BETTER!</h2>
-                    <p>Fashion and perfumes blend seamlessly, defining elegance and individuality. A fragrance, like an outfit, makes a statement—classic, bold, or modern. From floral to musky scents, perfumes reflect trends and moods.</p>
-                    <a href="#" class="shop-now">Shop Now</a>
-                </div>
-            </div>
-            <div class="banner-right">
-                <img src="/img/home/model.png" alt="Fashion Model">
-            </div>
-        </div>
+        <!-- Simple Pagination Dots -->
+        
+      </div>
     </div>
-        
-    <div class="container-fluid">
-        <!-- Hero Banner -->
-        <div class="hero-banner">
-            <div class="hero-content">
-                <div class="hero-image "><img src="/img/home/2024-07_prada_brand-treatment_33-teaser_onwards-journey_luna-rossa-collection.dam.ts=1722854380245.webp" class="object-fit-cover border rounded" alt=""></div>
-                <div class="promo-text">
-                    <a href="#" class="btn btn-outline-light">SHOP NOW</a>
-                </div>
-            </div>
-        
-        </div>
-    </div>
-    <div class="container-fluid">
-        <!-- Women's Categories Section -->
-        <h2 class="section-title">Categories For Womens</h2>
-        <div class="hero-banner">
-            <div class="hero-content">
-                <div class="hero-image "><img src="/img/home/womensbanner.jpg" class="object-fit-cover border rounded" alt=""></div>
-                <div class="promo-text">
-                    <h3>womens perfumes</h3>
-                    <h3>Move with style & comfort</h3>
-                    <h2>UPTO 50% OFF</h2>
-                    <a href="#" class="btn btn-outline-light">SHOP NOW</a>
-                </div>
-            </div>
-        
-        </div>
-        <!-- Noor Fragrances Banner -->
-        <div class="hero-banner">
-            <div class="hero-content">
-                <div class="hero-image "><img src="/img/home/noorBAnner.png" class="object-fit-cover border rounded" alt=""></div>
-            </div>
-        
-        </div>
-        <!-- Best Selling Perfumes -->
-        <h2 class="section-title">Best Selling Perfumes</h2>
-        <div class="products-grid">
-            <!-- Product 1 -->
-            <div class="product-card">
-                <div class="favorite-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-                <img src="/img/home/bestselling/sabizInspire.webp" alt="SABIZ Inspire Perfume" class="product-image">
-                <div class="product-info">
-                    <div class="product-title">SABIZ Inspire perfume...</div>
-                    <div class="product-brand">Sabiz Brand</div>
-                </div>
-            </div>
-            
-            <!-- Product 2 -->
-            <div class="product-card">
-                <div class="favorite-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-                <img src="/img/home/bestselling/perfume2.png" alt="Line Pattern Black" class="product-image">
-                <div class="product-info">
-                    <div class="product-title">Line Pattern Black II...</div>
-                    <div class="product-brand">JO's Brand</div>
-                </div>
-            </div>
-            
-            <!-- Product 3 -->
-            <div class="product-card">
-                <div class="favorite-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-                <img src="/img/home/bestselling/myway.avif" alt="no way" class="product-image">
-                <div class="product-info">
-                    <div class="product-title">No Way</div>
-                    <div class="product-brand">MR's Brand</div>
-                </div>
-            </div>
-            
-            <!-- Product 4 -->
-            <div class="product-card">
-                <div class="favorite-icon">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                    </svg>
-                </div>
-                <img src="/img/home/bestselling/bellaViteFresh.webp" alt="bellaVite Fresh" class="product-image">
-                <div class="product-info">
-                    <div class="product-title">bellaViteFresh ...</div>
-                    <div class="product-brand">BellaViteas Brand</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pagination Dots -->
-        <div class="pagination">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-        
-        <!-- Feedback Section -->
-        <h2 class="section-title">Feedback</h2>
-        <div class="feedback-grid">
-            <!-- Feedback 1 -->
-            <div class="feedback-card">
-                <div class="feedback-header">
-                    <img src="https://via.placeholder.com/40x40/ccccff/333333" alt="User Avatar" class="user-avatar">
-                    <div class="user-name">Ronald Richards</div>
-                    <div class="rating">
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">☆</span>
-                    </div>
-                </div>
-                <div class="feedback-text">
-                    Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Exercitation veniam consequat sunt nostrud amet.
-                </div>
-            </div>
-            
-            <!-- Feedback 2 -->
-            <div class="feedback-card">
-                <div class="feedback-header">
-                    <img src="https://via.placeholder.com/40x40/ffcc66/333333" alt="User Avatar" class="user-avatar">
-                    <div class="user-name">Savannah Nguyen</div>
-                    <div class="rating">
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">☆</span>
-                    </div>
-                </div>
-                <div class="feedback-text">
-                    Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.
-                </div>
-            </div>
-            
-            <!-- Feedback 3 -->
-            <div class="feedback-card">
-                <div class="feedback-header">
-                    <img src="https://via.placeholder.com/40x40/cc99cc/333333" alt="User Avatar" class="user-avatar">
-                    <div class="user-name">Ronald Richards</div>
-                    <div class="rating">
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">★</span>
-                        <span class="star">☆</span>
-                    </div>
-                </div>
-                <div class="feedback-text">
-                    Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet. Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit.
-                </div>
-            </div>
-        </div>
-        
-        <!-- Pagination Dots for Feedback -->
-        <div class="pagination">
-            <div class="dot active"></div>
-            <div class="dot"></div>
-        </div>
-    </div>
+  </div>
+  
+  <!-- Add space before footer -->
+  <div class="pre-footer-space"></div>
 </body>
 <%-include("../../views/partials/user/footer")%>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // For desktop, all cards are visible
+  // For mobile, handle pagination
+  const isMobile = window.innerWidth <= 768;
+  const dots = document.querySelectorAll('.simple-pagination .dot');
+  const cards = document.querySelectorAll('.feedback-card-simple');
+  
+  // Handle dot clicks
+  dots.forEach(dot => {
+    dot.addEventListener('click', function() {
+      const slideIndex = this.getAttribute('data-slide');
+      
+      // Update active dot
+      dots.forEach(d => d.classList.remove('active'));
+      this.classList.add('active');
+      
+      if (isMobile) {
+        // On mobile, update active card and scroll to it
+        cards.forEach(card => card.classList.remove('active'));
+        cards[slideIndex].classList.add('active');
+        cards[slideIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      } else {
+        // On desktop, could add some highlighting effect if desired
+        cards.forEach(card => card.classList.remove('active'));
+        cards[slideIndex].classList.add('active');
+      }
+    });
+  });
+  
+  // For mobile devices, handle scroll snap
+  if (isMobile) {
+    const feedbackRow = document.querySelector('.feedback-row');
+    
+    // When user scrolls the row, update the active dot
+    feedbackRow.addEventListener('scroll', function() {
+      const cardWidth = cards[0].offsetWidth + 30; // width + gap
+      const scrollPosition = feedbackRow.scrollLeft;
+      const activeIndex = Math.round(scrollPosition / cardWidth);
+      
+      if (activeIndex >= 0 && activeIndex < cards.length) {
+        // Update dots
+        dots.forEach(d => d.classList.remove('active'));
+        dots[activeIndex].classList.add('active');
+        
+        // Update cards
+        cards.forEach(card => card.classList.remove('active'));
+        cards[activeIndex].classList.add('active');
+      }
+    });
+  }
+  
+  // Auto rotation for the slides every 4 seconds
+  let currentIndex = 0;
+  
+  setInterval(() => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    
+    // Update dots
+    dots.forEach(d => d.classList.remove('active'));
+    dots[currentIndex].classList.add('active');
+    
+    // Update cards
+    cards.forEach(card => card.classList.remove('active'));
+    cards[currentIndex].classList.add('active');
+    
+    // Scroll to the card on mobile
+    if (isMobile) {
+      cards[currentIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
+  }, 4000);
+});
+</script>
