@@ -34,10 +34,12 @@ const productInfo = async (req, res) => {
       $or: searchConditions
     })
     .populate('category') // Populate category details
-    .sort({productName: 1})
+    .sort({productName: -1})
     .limit(limit)
     .skip((page-1) * limit)
     .exec();
+    
+    
     
     const count = await Product.countDocuments({
       $or: searchConditions
@@ -85,7 +87,7 @@ const addProducts = async (req, res) => {
           const originalPath = req.files[i].path;
           const filename = req.files[i].filename;
           // Create a new filename for the resized image
-          const resizedFilename = `resized-${filename}`;
+          const resizedFilename = `${products. productName}-${filename}`;
           const resizedPath = path.join(
             path.dirname(originalPath),
             resizedFilename
@@ -112,6 +114,7 @@ const addProducts = async (req, res) => {
       const newProduct = new Product({
         productName: products.productName,
         description: products.description,
+        shortDescription:products.shortDescription,
         gender: products.gender,
         category: categoryId._id,
         brand: products.brand,
@@ -314,7 +317,7 @@ const editProduct = async(req, res) => {
         
        
         const filename = file.filename;
-        const resizedFilename = `resized-${filename}`;
+        const resizedFilename = `${productData.productName}-${filename}`;
         const resizedPath = path.join(path.dirname(originalPath), resizedFilename);
         
         console.log("Processing file:", filename);
@@ -355,6 +358,7 @@ const editProduct = async(req, res) => {
     const updateData = {
       productName: productData.productName,
       description: productData.description,
+      shortDescription:productData.shortDescription,
       gender: productData.gender,
       brand: productData.brand,
       productType: productData.productType,

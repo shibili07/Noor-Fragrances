@@ -20,10 +20,13 @@
             align-items: center;
             justify-content: center;
         }
+        nav {
+  box-shadow: 0 4px 6px rgba(182, 167, 167, 0.1);
+}
 
         .dropdown{
             position: relative;
-            display: inline-block;
+            display: i;
 
         }
         .dropdown-content{
@@ -47,9 +50,9 @@
             background-color: #f1f1f1;
 
         }
-        .dropdown:hover .dropdown-content{
-            display: block;
-        }
+        .dropdown.show .dropdown-content {
+        display: block;
+    }
         
         .navbar-brand img {
             max-height: 40px;
@@ -140,34 +143,6 @@
             transform: translate(20px, -8px) rotatez(45deg);
         }
         
-        .search-container {
-            position: relative;
-            background-color: #f5f5f5;
-            border-radius: 25px;
-            padding: 5px 15px;
-            margin-bottom: 15px;
-            width: 100%;
-            max-width: 300px;
-        }
-        
-        .search-container input {
-            border: none;
-            background-color: transparent;
-            padding-left: 30px;
-            width: 100%;
-        }
-        
-        .search-container input:focus {
-            outline: none;
-        }
-        
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #777;
-        }
         
         .navbar-icons {
             display: flex;
@@ -569,8 +544,8 @@
             align-items: center;
             padding: 8px 16px;
             margin: 0 5px;
-            background-color: #007bff;
-            border: 1px solid #0069d9;
+            background-color: #ece391;
+            
             border-radius: 4px;
             color: white;
             text-decoration: none;
@@ -581,7 +556,7 @@
         }
         
         .sign-up-link:hover {
-            background-color: #0069d9;
+            background-color: #d9cb00;
             transform: translateY(-2px);
             color: white;
             text-decoration: none;
@@ -594,15 +569,12 @@
             align-items: center;
             padding: 8px 16px;
             margin: 0 5px;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
             color: #333;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+          
             position: relative;
         }
         
@@ -615,10 +587,10 @@
         }
         
         .user-name-link:hover {
-            background-color: #e9ecef;
+         
             color: #000;
             text-decoration: none;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+           
         }
         
         /* Enhanced dropdown styling */
@@ -688,10 +660,9 @@
             background-color: #fff8f8;
         }
         
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-        
+        .dropdown.show .dropdown-content {
+           display: block;
+         }
         /* Ensure proper spacing */
         .navbar-icons a.sign-in-link,
         .navbar-icons a.sign-up-link,
@@ -721,6 +692,15 @@
                 min-width: 160px;
             }
         }
+        .user-photo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%; /* Makes it circular */
+    object-fit: cover;  /* Ensures the image doesn't stretch */
+    margin-right: 8px;
+    vertical-align: middle;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
+}
     </style>
 </head>
 <body>
@@ -743,26 +723,35 @@
         
         <!-- Desktop icons (visible only on desktop) -->
         <div class="navbar-icons navbar-icons-desktop order-lg-2">
-            <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
+            <a href="/wishlist" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                 <i class="far fa-heart"></i>
             </a>
            
-            <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
+            <a href="/cart" aria-label="Cart" class="icon-link" data-icon="cart">
                 <i class="fas fa-shopping-cart"></i>
             </a>
             
-            <%if(locals.user&&locals.name){%>
+            <% if (locals.user) { %>
                 <div class="dropdown">
-                    <a href="#" class="user-name-link"><%=locals.name%></a>
+                    <a href="" class="user-name-link">
+                        <% if (user.photo) { %>
+                            <img src="/uploads/user-photos/<%= user.photo %>" alt="User Photo" class="user-photo">
+                          <% } else { %>
+                            <img src="/img/default-avatar.png" alt="Default Avatar" class="user-photo">
+                          <% } %>
+                        
+                    </a>
                     <div class="dropdown-content">
                         <a href="/userProfile">Profile</a>
                         <a href="/logout">Logout</a>
                     </div>
                 </div>
-            <%}else{%> 
+            <% } else { %> 
                 <a href="/login" class="sign-in-link">Log in</a> 
                 <a href="/signUp" class="sign-up-link">Sign up</a>
-            <%}%>
+            <% } %>
+            
+            
         </div>
         
         <!-- Collapsible Content -->
@@ -787,10 +776,10 @@
             </ul>
             
             <div class="navbar-icons navbar-icons-mobile">
-                <a href="#" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
+                <a href="/wishlist" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                     <i class="far fa-heart"></i>
                 </a>
-                <a href="#" aria-label="Cart" class="icon-link" data-icon="cart">
+                <a href="/cart" aria-label="Cart" class="icon-link" data-icon="cart">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
                 
@@ -816,35 +805,75 @@
 
 <!-- Custom JavaScript for navbar active state -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all nav links
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        // Get current page path
+ document.addEventListener('DOMContentLoaded', function () {
+    // === Handle Navigation Active State ===
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    if (navLinks.length) {
         const currentPath = window.location.pathname;
-        
-        // Set active class based on current path
+
         navLinks.forEach(link => {
             const linkPath = link.getAttribute('href');
-            
-            // Handle both exact matches and sub-pages
-            if (linkPath === currentPath || 
+
+            // Match exact path or sub-path
+            if (linkPath === currentPath ||
                 (linkPath !== '/' && currentPath.startsWith(linkPath))) {
-                link.parentElement.classList.add('active');
+                const parent = link.closest('.nav-item');
+                if (parent) parent.classList.add('active');
             }
-            
-            // Add click handler to set active class
-            link.addEventListener('click', function() {
-                // Remove active class from all nav items
+
+            link.addEventListener('click', function () {
                 document.querySelectorAll('.nav-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                
-                // Add active class to clicked nav item
-                this.parentElement.classList.add('active');
+
+                const parent = this.closest('.nav-item');
+                if (parent) parent.classList.add('active');
             });
         });
-    });
+    }
+
+    // === Handle Dropdown Toggle ===
+    const dropdowns = document.querySelectorAll('.dropdown');
+
+    if (dropdowns.length) {
+        dropdowns.forEach(dropdown => {
+            const button = dropdown.querySelector('.user-name-link');
+            if (!button) return;
+
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Close other dropdowns
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.classList.remove('show');
+                    }
+                });
+
+                // Toggle this dropdown
+                dropdown.classList.toggle('show');
+            });
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.dropdown')) {
+                dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+            }
+        });
+
+        // Close dropdown when clicking on dropdown item
+        document.querySelectorAll('.dropdown-content a').forEach(item => {
+            item.addEventListener('click', function () {
+                dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+            });
+        });
+    }
+});
+
+
 </script>
 </body>
 </html>

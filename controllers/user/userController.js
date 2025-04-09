@@ -1,7 +1,6 @@
 const User = require("../../models/userSchema")
 const Product = require("../../models/productSchema")
 const Category = require("../../models/categorySchema")
-
 const env = require("dotenv").config()
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt")
@@ -22,7 +21,7 @@ const logout = (req,res)=>{
     try {
         req.session.destroy((err) => {
             if (err) {
-                console.log(err);
+                console.log(err)
                 return res.status(500).send("Error logging out");
             }
             res.redirect('/'); 
@@ -38,7 +37,6 @@ const loadHomepage = async (req,res) =>{
         // in this time session il udavuka nammal login cheythappol ulla user de objectid aan  store aav
         const user = req.session.user;
         const name = req.session.name;
-        console.log(name);
         const category = await Category.find({isListed:true})
 
         let productData = await Product.find({
@@ -47,7 +45,7 @@ const loadHomepage = async (req,res) =>{
             quantity:{$gt:0}, 
         })
         productData.sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt))
-        productData = productData.slice(0,4)
+        productData = productData.slice(0,6)
         
         if(user){
             const userData = await User.find({_id:user._id})
@@ -141,8 +139,6 @@ const signup = async (req,res)=>{
         // genarate otp
         const otp = generateOtp(); 
         //sent otp through email
-        
-        
         const emailSent = await sendVerificationEmail(email,otp);
 
         if(!emailSent){
@@ -250,7 +246,6 @@ const login = async(req,res)=>{
         const findUser = await User.findOne({isAdmin:0,email:email});
         if(!findUser){
             return res.render("login",{message:"User not found"})
-
         }
         if(findUser.isBlocked){
             return res.render("login",{message:"User is blocked by admin"})
@@ -327,7 +322,6 @@ const changePassword = async(req,res)=>{
     try {
         const {password,confirmPassword} = req.body
         console.log(password)
-
         if (!password || !confirmPassword) {
             return res.status(400).json({ message: "Both password fields are required" });
         }
@@ -335,24 +329,19 @@ const changePassword = async(req,res)=>{
             return res.status(400).json({ message: "Passwords do not match" });
         }
         const email = req.session.emailData
-        
         if(!email){
             return res.status(400).json({message:"Session expired or email not found"});
         }
         const saltRounds = 10
         const hashedPassword = await bcrypt.hash(password,saltRounds);
-
-        // update the password
         const updatedUser = await User.findOneAndUpdate(
             {email},
             {$set:{password:hashedPassword}},
             {new:true}
         )
-
         if (!updatedUser) {
             return res.status(404).json({ message: "User not found" });
-        }
-        
+        } 
         return res.status(200).json({ message: "Password updated successfully!" });
     } catch (error) {
         console.error("Error changing password:", error);
@@ -362,60 +351,7 @@ const changePassword = async(req,res)=>{
 
 }
 
-const loadShopPage = async (req, res) => {
-  try {
-    
-    const userId = req.session.user;
-    
-   
-    let userData = null;
-    if (userId) {
-      userData = await User.findOne({_id: userId});
-    }
-    
- 
-    const category = await Category.find({isListed: true});
-    const categoryIds = category.map(category => category._id.toString());
-    
-    // Pagination variables
-    const page = parseInt(req.query.page) || 1;
-    const limit = 9;
-    const skip = (page - 1) * limit;
-    
-    // Get products - fixed the variable declaration (remove 'const' from reassignment)
-    let products = await Product.find({
-      isBlocked: false,
-      category: {$in: categoryIds},
-      quantity: {$gt: 0},
-    }).sort({createdAt: -1}).skip(skip).limit(limit);
-    
-    // Count total products for pagination
-    const totalProducts = await Product.countDocuments({
-      isBlocked: false,
-      category: {$in: categoryIds},
-      quantity: {$gt: 0}
-    });
-    
-    const totalPages = Math.ceil(totalProducts / limit);
-    const categoriesWithIds = category.map(category => ({
-      _id: category._id, 
-      name: category.name
-    }));
-      
-    res.render("shop", {
-      user: userData,
-      products: products,
-      category: categoriesWithIds,
-      totalProducts: totalProducts,
-      currentPage: page,
-      totalPages: totalPages
-    });
 
-  } catch (error) {
-    console.log("Error loading shop page:", error);
-    res.status(500).send("Server error");
-  }
-};
 
 module.exports={
     pageNotFound,
@@ -431,6 +367,6 @@ module.exports={
     verifyEmail,
     loadChangePasswordPage,
     changePassword,
-    loadShopPage
+    
     
 }

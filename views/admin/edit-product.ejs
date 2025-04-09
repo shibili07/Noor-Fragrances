@@ -616,8 +616,8 @@
                                             <div class="col-md-6 mb-4">
                                                 <label class="form-label required-label">Gender</label>
                                                 <select class="form-select" name="gender">
-                                                    <option value="Male" <%= product.gender === "Male" ? "selected" : "" %>>Male</option>
-                                                    <option value="Female" <%= product.gender === "Female" ? "selected" : "" %>>Female</option>
+                                                    <option value="Men" <%= product.gender === "Men" ? "selected" : "" %>>Men</option>
+                                                    <option value="Women" <%= product.gender === "Women" ? "selected" : "" %>>Women</option>
                                                     <option value="Kids" <%= product.gender === "Kids" ? "selected" : "" %>>Kids</option>
                                                     <option value="Unisex" <%= product.gender === "Unisex" ? "selected" : "" %>>Unisex</option>
                                                 </select>
@@ -659,9 +659,18 @@
                                     <div class="mb-4">
                                         <label for="usage-field" class="form-label required-label">Usage</label>
                                         <input type="text" value="<%= product.usage %>" name="usage"
-                                            class="form-control" id="usage-field">
+                                            class="form-control" id="usage">
                                         <div id="usage-error" class="error-message"></div>
                                     </div>
+                                     
+                                    <div class="mb-4">
+                                        <label for="shortDescription-field" class="form-label required-label">Short Description</label>
+                                        <input type="text" value="<%= product.shortDescription %>" name="shortDescription"
+                                            class="form-control" id="shortDescription">
+                                        <div id="shortDescription-error" class="error-message"></div>
+                                    </div>
+
+                                    
                                     
                                 </div>
                                     <div class="form-section">
@@ -775,8 +784,7 @@
                                 
                                     <div id="images-error" class="error-message"></div>
                                     <div class="mt-2">
-                                        <span class="text-muted" style="font-size: 12px;">Click on any box to upload
-                                            image</span>
+                                        <span class="text-muted" style="font-size: 12px;">Only support the png or jpeg image formates</span>
                                     </div>
                                     <div id="croppedThumbnails" class="thumbnails-container"></div>
                                 </div>
@@ -999,12 +1007,14 @@
         
                 validateField("productName", "productName-error", /^[a-zA-Z0-9\s]+$/, "Product name should contain only alphanumeric characters.");
                 validateField("productDescription", "description-error", /.+/, "Please enter a product description.");
+                validateField("shortDescription", "shortDescription-error", /.+/, "Please enter a product short description.");
                 validateField("productAmount", "regularPrice-error", /^\d+(\.\d{1,2})?$/, "Please enter a valid price.");
                 validateField("stockCount", "quantity-error", /^\d+$/, "Please enter a valid stock quantity.");
                 validateField("productType", "productType-error", /.+/, "Please enter a fragrance type.");
                 validateField("productFamily", "fragranceFamily-error", /.+/, "Please enter a fragrance family.");
                 validateField("longevity", "longevity-error", /.+/, "Please enter fragrance longevity.");
                 validateField("brand", "brand-error", /.+/, "Please enter brand name.");
+                validateField("usage", "usage-error", /.+/, "Please enter usage");
         
                 const hasImage = document.getElementById("imagePreview0").style.backgroundImage ||
                                  document.getElementById("imagePreview1").style.backgroundImage ||

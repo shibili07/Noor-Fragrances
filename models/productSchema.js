@@ -7,14 +7,20 @@ const productSchema = new Schema({
         type :String,
         required:true,
     },
+    shortDescription:{
+        type:String,
+        required:true,
+    },
     description:{
         type:String,
         required:true,
     },
-    gender:{
-        type:String,
-        required:true, 
+    gender: {
+        type: String,
+        required: true,
+        enum: ["Men", "Women", "Kids", "Unisex"]
     },
+
     brand:{
         type:String,
         required:true, 
@@ -28,7 +34,7 @@ const productSchema = new Schema({
         required:true, 
     },
     size: {
-        type: [String],
+        type: String,
         required: true,
     },
     usage:{

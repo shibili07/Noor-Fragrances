@@ -1,6 +1,8 @@
 const express = require("express")
 const router = express.Router()
 const userController = require("../controllers/user/userController")
+const productController = require("../controllers/user/productController")
+const cartController = require("../controllers/user/cartController")
 const passport = require("passport")
 const { adminAuth, userAuth } = require("../middlewares/auth")
 
@@ -27,6 +29,11 @@ router.get("/logout",userAuth,userController.logout)
 //home
 router.get("/",userController.loadHomepage)
 //shop page 
-router.get("/shop",userAuth,userController.loadShopPage)
+router.get("/shop",productController.loadShopPage)
+router.get("/productDetails/:id",productController.productDetails)
 
+router.get("/addToCart",userAuth,cartController.addToCart)
+router.get("/cart",userAuth,cartController.cart)
+router.delete("/deleteFromCart/:id",userAuth,cartController.deleteFromCart)
+// router.get("/deleteFromCart",userAuth,productController.deleteFromCart)
 module.exports=router

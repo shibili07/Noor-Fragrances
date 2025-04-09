@@ -1,230 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Euphoria Footer</title>
-    <style>
-        /* Reset and Base Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-        }
-        
-        /* Footer Styles */
-        .footer {
-            background-color: #3c4144;
-            color: white;
-            padding: 60px 0 30px;
-        }
-        
-        .container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -15px;
-        }
-        
-        .col-md-3 {
-            width: 25%;
-            padding: 0 15px;
-        }
-        
-        h3 {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-        
-        ul.footer-links {
-            list-style: none;
-        }
-        
-        .footer-links li {
-            margin-bottom: 15px;
-        }
-        
-        .footer-links a {
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-        }
-        
-        .footer-links a:hover {
-            text-decoration: underline;
-        }
-        
-        .address-info li {
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        /* Social Media Icons */
-        .social-icons {
-            display: flex;
-            list-style: none;
-            margin-top: 40px;
-            margin-bottom: 40px;
-        }
-        
-        .social-icon {
-            width: 40px;
-            height: 40px;
-            background-color: transparent;
-            border: 2px solid white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 15px;
-            cursor: pointer;
-        }
-        
-        .social-icon:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Categories Section */
-        .categories-section {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 15px 0;
-            margin: 20px 0 30px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .categories-title {
-            margin-bottom: 0;
-        }
-        
-        .dropdown-icon {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-        }
-        
-        /* Copyright */
-        .copyright {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            width: 100%;
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .col-md-3 {
-                width: 50%;
-                margin-bottom: 30px;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .col-md-3 {
-                width: 100%;
-            }
-        }
-    </style>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: white;
+    }
+    
+    #logo-container {
+      width: 300px;
+      height: 150px;
+    }
+    
+    @keyframes drawN {
+      0% { stroke-dashoffset: 500; }
+      40% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    @keyframes drawR {
+      0% { stroke-dashoffset: 500; }
+      40% { stroke-dashoffset: 500; }
+      80% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: 0; }
+    }
+    
+    @keyframes fillIn {
+      0%, 70% { fill-opacity: 0; }
+      100% { fill-opacity: 1; }
+    }
+    
+    .letter-n {
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+      animation: drawN 2.5s ease forwards, fillIn 3s ease forwards;
+    }
+    
+    .letter-r {
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+      animation: drawR 2.5s ease forwards, fillIn 3s ease forwards;
+    }
+  </style>
 </head>
 <body>
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <!-- Need Help Section -->
-                <div class="col-md-3">
-                    <h3>Need Help</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Contact Us</a></li>
-                        <li><a href="#">Track Order</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">FAQ's</a></li>
-                        <li><a href="#">Career</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Company Section -->
-                <div class="col-md-3">
-                    <h3>Company</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">euphoria Blog</a></li>
-                        <li><a href="#">euphoriastan</a></li>
-                        <li><a href="#">Collaboration</a></li>
-                        <li><a href="#">Media</a></li>
-                    </ul>
-                </div>
-                
-                <!-- More Info Section -->
-                <div class="col-md-3">
-                    <h3>More Info</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Term and Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Sitemap</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Location Section -->
-                <div class="col-md-3">
-                    <h3>Location</h3>
-                    <ul class="address-info footer-links">
-                        <li>support@euphoria.in</li>
-                        <li>Eklingpura Chouraha, Ahmedabad Main Road</li>
-                        <li>(NH 8- Near Mahadev Hotel) Udaipur, India- 313002</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- Social Media Icons -->
-            <div class="row">
-                <ul class="social-icons">
-                    <li class="social-icon">
-                        <span>f</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>i</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>t</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>in</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Popular Categories Section -->
-            <div class="row">
-                <div class="categories-section">
-                    <h3 class="categories-title">Popular Categories</h3>
-                    <button class="dropdown-icon">▼</button>
-                </div>
-            </div>
-            
-            <!-- Copyright -->
-            <div class="row">
-                <div class="copyright">
-                    <p>Copyright © 2025 Noor Fragrances Pvt Ltd. All rights reserved.</p>
-                </div>
-            </div>
-        </div>
-    </footer>
+  <div id="logo-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 150">
+      <!-- White background -->
+      <rect width="300" height="150" fill="white"/>
+      
+      <!-- NR text logo with classic styling -->
+      <g transform="translate(50, 75)">
+        <!-- N letter with animation -->
+        <path class="letter-n" d="M0,40 V-40 H15 L75,25 V-40 H90 V40 H75 L15,-25 V40 Z" 
+              fill="black" fill-opacity="0" stroke="black" stroke-width="2" />
+        
+        <!-- R letter with animation -->
+        <path class="letter-r" d="M110,-40 H170 C195,-40 210,-20 210,0 C210,15 200,25 185,30 L215,40 H195 L165,30 H125 V40 H110 V-40 Z M125,-25 V15 H170 C180,15 190,10 190,0 C190,-10 180,-25 170,-25 Z" 
+              fill="black" fill-opacity="0" stroke="black" stroke-width="2" />
+      </g>
+    </svg>
+  </div>
 </body>
 </html>

@@ -27,22 +27,19 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-//setting cache control the cache datas are never stored
-//middleware
+
 app.use((req,res,next)=>{
     res.set('cache-control','no-store')
     next()
 })
 
-//view engine
 app.set("view engine", "ejs");
 app.set("views", [path.join(__dirname, "views/user"), path.join(__dirname, "views/admin")]);
 app.use(express.static(path.join(__dirname,"public")))
 app.use('/uploads', express.static('uploads'));
 
-//userRouter for handling all request in user path
 app.use("/",userRouter)
-//adminRouter for handling all request in admin path
+
 app.use("/admin",adminRouter)
 
 

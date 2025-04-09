@@ -595,3 +595,30 @@
     </div>
 </body>
 </html>
+
+
+
+
+<div class="similar-products">
+    <h2 class="section-title">Similar Products</h2>
+    <div class="product-grid">
+        <!-- Product 1 -->
+        <div class="product-card">
+            <%for(let i=0;i<similer.length;i++){%>
+                <%if(similer[i]!==product){%>
+            <a href=""><img src="/uploads/product-images/<%= similer[i].productImage[0] %>" alt="Yves Saint Laurent perfume"></a>
+            <div class="product-card-wishlist">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </div>
+            <div class="product-card-info">
+                <h3 class="product-card-title">Yves Saint Laurent Eau de Parfum</h3>
+                <div class="product-card-brand">YSL Luxury Brand</div>
+                <div class="product-card-price">₹8999</div>
+            </div>
+            <%}%>
+            <%}%>
+        </div>
+    </div>
+</div>
