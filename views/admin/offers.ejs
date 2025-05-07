@@ -1,0 +1,655 @@
+<%- include("../../views/partials/admin/header") %>
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<style>
+    .content-wrapper {
+        padding: 20px;
+        margin-top: 70px;
+        margin-left: 280px;
+        transition: all 0.3s ease;
+        background-color: #f5f5f7;
+        min-height: calc(100vh - 70px);
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .text-white {
+        text-decoration: none;
+    }
+
+    .table thead th {
+        background-color: #1c1c24;
+        color: white;
+        font-weight: normal;
+        border: none;
+        padding: 15px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .add-button {
+        width: 45px;
+        height: 45px;
+        background-color: #5e5ce6;
+        color: white;
+        font-size: 24px;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .add-button:hover {
+        background-color: #4a48d4;
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media screen and (max-width: 992px) {
+        .content-wrapper {
+            margin-left: 0;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .responsive-header {
+            flex-direction: column;
+            align-items: start !important;
+        }
+
+        .search-container {
+            width: 100%;
+        }
+
+        .actions-container {
+            width: 100%;
+            justify-content: space-between !important;
+            margin-top: 10px;
+        }
+    }
+
+    .pagination .page-link {
+        color: #5e5ce6;
+        border-color: #5e5ce6;
+    }
+
+    .pagination .active .page-link {
+        background-color: #5e5ce6;
+        border-color: #5e5ce6;
+        color: white;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 15px;
+    }
+
+    .clear-search {
+        position: absolute;
+        right: 0;
+        z-index: 3;
+        border: none;
+        background: transparent;
+        padding: 8px 12px;
+        cursor: pointer;
+        color: #666;
+    }
+
+    .clear-search:hover {
+        color: #333;
+    }
+
+    .input-group {
+        position: relative;
+    }
+
+    .clear-search-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .clear-search-btn:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+    }
+
+    @media screen and (max-width: 768px) {
+        .d-flex.gap-2 {
+            gap: 0.5rem !important;
+        }
+
+        .clear-search-btn {
+            padding: 6px 12px;
+        }
+    }
+
+    /* Table and Button Styling */
+    .table td {
+        vertical-align: middle;
+        padding: .75rem;
+    }
+
+    /* Status Badge Styles */
+    .badge.rounded-pill {
+        padding: 8px 15px;
+        font-weight: 500;
+        display: inline-block;
+        min-width: 90px;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #34c759;
+    }
+
+    .alert-danger {
+        background-color: #ff3b30;
+    }
+
+    /* List/Unlist Button Styles */
+    td .btn-success, 
+    td .btn-danger {
+        width: 90px !important;
+        margin: 3px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    td .btn-success {
+        background-color: #34c759;
+    }
+
+    td .btn-success:hover {
+        background-color: #2aa548;
+        transform: translateY(-1px);
+    }
+
+    td .btn-danger {
+        background-color: #ff3b30;
+    }
+
+    td .btn-danger:hover {
+        background-color: #e52e27;
+        transform: translateY(-1px);
+    }
+
+    /* Action Button Styles */
+    td .btn-info, 
+    td .btn-danger.delete-btn {
+        width: 90px !important;
+        margin: 3px;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    td .btn-info {
+        background-color: #5e5ce6;
+    }
+
+    td .btn-info:hover {
+        background-color: #4a48d4;
+        transform: translateY(-1px);
+    }
+
+    td .btn-danger.delete-btn {
+        background-color: #ff3b30;
+    }
+
+    td .btn-danger.delete-btn:hover {
+        background-color: #e52e27;
+        transform: translateY(-1px);
+    }
+
+    /* Common Button Properties */
+    td .btn {
+        padding: 8px 15px;
+        font-size: 14px;
+        font-weight: 500;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Link Styles */
+    .text-white {
+        text-decoration: none;
+        color: white !important;
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    /* Cell Alignment */
+    .text-start {
+        text-align: left !important;
+    }
+
+    td.text-start {
+        padding-right: 10px;
+    }
+
+    /* Responsive table adjustments */
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    /* Date fields style */
+    .date-field {
+        min-width: 110px;
+        display: inline-block;
+    }
+
+    /* Responsive Adjustments for buttons */
+    @media screen and (max-width: 768px) {
+        td .btn {
+            padding: 6px 12px;
+            font-size: 13px;
+            width: 85px !important;
+        }
+
+        .badge.rounded-pill {
+            padding: 6px 12px;
+            min-width: 80px;
+        }
+
+        td .btn-info,
+        td .btn-danger {
+            width: 85px !important;
+        }
+        
+        .table {
+            min-width: 900px;
+        }
+    }
+
+    /* Add these styles to your existing style section */
+    .form-select {
+        background-color: white;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        padding: 8px 12px;
+        font-size: 14px;
+        color: #1c1c24;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .form-select:focus {
+        border-color: #5e5ce6;
+        box-shadow: 0 0 0 0.2rem rgba(94, 92, 230, 0.25);
+    }
+
+    .form-select:hover {
+        border-color: #5e5ce6;
+    }
+
+    @media screen and (max-width: 768px) {
+        .col-md-3 {
+            margin-bottom: 10px;
+        }
+    }
+
+    /* Add these styles to your existing style section */
+    .form-select optgroup {
+        font-weight: 600;
+        color: #5e5ce6;
+        background-color: #f8f9fa;
+    }
+
+    .form-select option {
+        padding-left: 20px;
+    }
+
+    .form-select optgroup option {
+        font-weight: normal;
+        color: #1c1c24;
+    }
+
+    @media screen and (max-width: 768px) {
+        .form-select {
+            font-size: 13px;
+        }
+    }
+</style>
+
+<body>
+    <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center responsive-header">
+                <h1 class="mb-0 fs-4 fw-bold">Offers Management</h1>
+                <a href="/admin/addOffer" class="add-button">+</a>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="card">
+            <div class="card-body">
+                <form action="/admin/offers" method="GET">
+                    <div class="row">
+                        <div class="col-md-5 mb-2 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" name="search"
+                                    placeholder="Search offers by name..." value="<%= search || '' %>">
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-2 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-sort text-muted"></i>
+                                </span>
+                                <select class="form-select" name="sortBy" id="sortBy">
+                                    <optgroup label="Date">
+                                        <option value="newest" <%= sortBy === 'newest' ? 'selected' : '' %>>Newest First</option>
+                                        <option value="oldest" <%= sortBy === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+                                    </optgroup>
+                                    <optgroup label="Offer Name">
+                                        <option value="offer_name" <%= sortBy === 'offer_name' ? 'selected' : '' %>>A-Z</option>
+                                        <option value="offer_name_desc" <%= sortBy === 'offer_name_desc' ? 'selected' : '' %>>Z-A</option>
+                                    </optgroup>
+                                    <optgroup label="Category Name">
+                                        <option value="category_name" <%= sortBy === 'category_name' ? 'selected' : '' %>>A-Z</option>
+                                        <option value="category_name_desc" <%= sortBy === 'category_name_desc' ? 'selected' : '' %>>Z-A</option>
+                                    </optgroup>
+                                    <optgroup label="Product Name">
+                                        <option value="product_name" <%= sortBy === 'product_name' ? 'selected' : '' %>>A-Z</option>
+                                        <option value="product_name_desc" <%= sortBy === 'product_name_desc' ? 'selected' : '' %>>Z-A</option>
+                                    </optgroup>
+                                    <optgroup label="Discount">
+                                        <option value="discount_high" <%= sortBy === 'discount_high' ? 'selected' : '' %>>High to Low</option>
+                                        <option value="discount_low" <%= sortBy === 'discount_low' ? 'selected' : '' %>>Low to High</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <input type="submit" id="searchBtn" class="btn btn-primary flex-grow-1"
+                                    style="background-color: #5e5ce6; border-color: #5e5ce6;" value="Search">
+                                <button type="button" class="btn btn-secondary clear-search-btn"
+                                    onclick="clearSearch()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Table Section -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Offer Name</th>
+                                <th>Offer Type</th>
+                                <th>Applicable</th>
+                                <th>Type</th>
+                                <th>Offer Amount</th>
+                                <th>Valid From</th>
+                                <th>Valid Upto</th>
+                                <th>Status</th>
+                                <th>List/Unlist</th>
+                                <th class="text-start">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (offers && offers.length > 0) { %>
+                                <% offers.forEach(of => { %>
+                                    <tr>
+                                        <td><%= of.offerName %></td>
+                                        <td><%= of.offerType %></td>
+                                        <td>
+                                            <% if (of.offerType === 'Category') { %>
+                                                <%= of.applicableTo?.categoryName || of.applicableTo?.name || 'Category ID: ' + of.applicableTo %>
+                                            <% } else if (of.offerType === 'Product') { %>
+                                                <%= of.applicableTo?.productName || of.applicableTo?.name || 'Product ID: ' + of.applicableTo %>
+                                            <% } else if (of.offerType === 'Brand') { %>
+                                                <%= of.applicableTo?.brandName || of.applicableTo?.name || 'Brand ID: ' + of.applicableTo %>
+                                            <% } %>
+                                        </td>
+                                        <td><%= of.discountType.charAt(0).toUpperCase() + of.discountType.slice(1) %></td>
+                                        <td>
+                                            <%= of.discountType === 'percentage' ? of.discountAmount + '%' : '₹' + of.discountAmount %>
+                                        </td>
+                                        <td><span class="date-field"><%= of.validFrom.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span></td>
+                                        <td><span class="date-field"><%= of.validUpto.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span></td>
+                                        <td class="text-start">
+                                            <span class="badge rounded-pill <%= of.isListed ? 'alert-success' : 'alert-danger' %>">
+                                                <%= of.isListed ? 'Active' : 'Inactive' %>
+                                            </span>
+                                        </td>
+                                        <td class="text-start">
+                                            <button class="btn <%= of.isListed ? 'btn-danger' : 'btn-success' %> list-unlist-btn" 
+                                                    data-id="<%= of._id %>" 
+                                                    data-action="<%= of.isListed ? 'unlist' : 'list' %>">
+                                                <%= of.isListed ? 'Unlist' : 'List' %>
+                                            </button>
+                                        </td>
+                                        <td class="text-start">
+                                            <a href="/admin/editOffer?id=<%= of._id %>" class="btn btn-info text-white">Edit</a>
+                                            <button class="btn btn-danger delete-btn" data-id="<%= of._id %>">Delete</button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="10" class="text-center">No offers found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <% if (page > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= page - 1 %>&search=<%= search || '' %>&offerType=<%= offerType || '' %>" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                <% } else { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-left"></i>
+                        </span>
+                    </li>
+                <% } %>
+
+                <% 
+                    let startPage = Math.max(1, page - 2);
+                    let endPage = Math.min(totalPages, startPage + 4);
+                    if (endPage - startPage < 4) {
+                        startPage = Math.max(1, endPage - 4);
+                    }
+                %>
+
+                <% if (startPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1&search=<%= search || '' %>&offerType=<%= offerType || '' %>">1</a>
+                    </li>
+                    <% if (startPage > 2) { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    <% } %>
+                <% } %>
+
+                <% for (let i = startPage; i <= endPage; i++) { %>
+                    <li class="page-item <%= page === i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>&search=<%= search || '' %>&offerType=<%= offerType || '' %>"><%= i %></a>
+                    </li>
+                <% } %>
+
+                <% if (endPage < totalPages) { %>
+                    <% if (endPage < totalPages - 1) { %>
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    <% } %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= totalPages %>&search=<%= search || '' %>&offerType=<%= offerType || '' %>"><%= totalPages %></a>
+                    </li>
+                <% } %>
+
+                <% if (page < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= page + 1 %>&search=<%= search || '' %>&offerType=<%= offerType || '' %>" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                <% } else { %>
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            <i class="fas fa-chevron-right"></i>
+                        </span>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+
+        <!-- Bootstrap JS Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+            function clearSearch() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('sortBy').value = 'newest';
+                document.getElementById('searchBtn').click();
+            }
+
+            // Add automatic form submission when sort option changes
+            document.getElementById('sortBy').addEventListener('change', function() {
+                document.getElementById('searchBtn').click();
+            });
+
+            // Handle List/Unlist
+            document.querySelectorAll('.list-unlist-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const offerId = this.dataset.id;
+                    const action = this.dataset.action;
+                    const actionText = action === 'list' ? 'list' : 'unlist';
+
+                    Swal.fire({
+                        title: `Are you sure you want to ${actionText} this offer?`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#5e5ce6',
+                        cancelButtonColor: '#ff3b30',
+                        confirmButtonText: `Yes, ${actionText} it!`
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await fetch(`/admin/${action}Offer`, {
+                                    method: 'PATCH',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ id: offerId })
+                                });
+
+                                const data = await response.json();
+                                if (!response.ok) {
+                                    throw new Error(data.error || `Failed to ${actionText} offer`);
+                                }
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Success!',
+                                    text: `Offer ${actionText}ed successfully`,
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } catch (error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: error.message || `An error occurred while ${actionText}ing the offer`
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Handle Delete
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', async function() {
+                    const offerId = this.dataset.id;
+
+                    Swal.fire({
+                        title: 'Are you sure you want to delete this offer?',
+                        text: "This action cannot be undone!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#5e5ce6',
+                        cancelButtonColor: '#ff3b30',
+                        confirmButtonText: 'Yes, delete it!'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            try {
+                                const response = await fetch('/admin/deleteOffer', {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({ id: offerId })
+                                });
+
+                                const data = await response.json();
+                                if (!response.ok) {
+                                    throw new Error(data.error || 'Failed to delete offer');
+                                }
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Deleted!',
+                                    text: 'Offer has been deleted successfully',
+                                    timer: 1500
+                                }).then(() => {
+                                    window.location.reload();
+                                });
+                            } catch (error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: error.message || 'An error occurred while deleting the offer'
+                                });
+                            }
+                        }
+                    });
+                });
+            });
+        </script>
+</body>

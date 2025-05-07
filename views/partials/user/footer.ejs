@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Footer</title>
+    <title>NOOR Fragrances - Footer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         /* Reset and Base Styles */
         * {
@@ -13,19 +15,32 @@
         }
         
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
+            font-family: 'Akshar', sans-serif;
+            line-height: 1.5;
+            background-color: #f9f9f9;
         }
         
         /* Footer Styles */
         .footer {
-            background-color: #3c4144;
-            color: white;
-            padding: 60px 0 30px;
+            background-color: #1a1a1a;
+            color: #e0e0e0;
+            padding: 40px 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #fd334e, #ff8c6a);
         }
         
         .container {
-            width: 90%;
+            width: 95%;
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -33,18 +48,32 @@
         .row {
             display: flex;
             flex-wrap: wrap;
-            margin: 0 -15px;
+            margin: 0 -10px;
         }
         
         .col-md-3 {
             width: 25%;
-            padding: 0 15px;
+            padding: 0 10px;
         }
         
-        h3 {
-            font-size: 22px;
-            font-weight: bold;
-            margin-bottom: 25px;
+        .footer-title {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #ffffff;
+            position: relative;
+            padding-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer-title::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #fd334e;
         }
         
         ul.footer-links {
@@ -52,92 +81,271 @@
         }
         
         .footer-links li {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .footer-links a {
-            color: white;
+            color: #b0b0b0;
             text-decoration: none;
-            font-size: 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            display: inline-block;
         }
         
         .footer-links a:hover {
-            text-decoration: underline;
+            color: #fd334e;
+            transform: translateX(3px);
         }
         
         .address-info li {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            font-size: 14px;
+            color: #b0b0b0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .address-info i {
+            margin-right: 10px;
+            color: #fd334e;
             font-size: 16px;
+            line-height: 1.5;
+            min-width: 16px;
+        }
+
+        .address-info span {
+            flex: 1;
+        }
+        
+        /* Logo and Brand Section */
+        .brand-section {
+            margin-bottom: 25px;
+        }
+        
+        .footer-logo {
+            font-size: 24px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .brand-description {
+            color: #b0b0b0;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.6;
         }
         
         /* Social Media Icons */
         .social-icons {
             display: flex;
             list-style: none;
-            margin-top: 40px;
-            margin-bottom: 40px;
+            margin-top: 20px;
+            margin-bottom: 25px;
         }
         
         .social-icon {
-            width: 40px;
-            height: 40px;
-            background-color: transparent;
-            border: 2px solid white;
+            width: 34px;
+            height: 34px;
+            background-color: #2a2a2a;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 15px;
+            margin-right: 12px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         .social-icon:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            background-color: #fd334e;
+            transform: translateY(-3px);
         }
         
-        /* Categories Section */
-        .categories-section {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 15px 0;
-            margin: 20px 0 30px;
-            width: 100%;
+        .social-icon i {
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+        
+        /* Newsletter Section */
+        .newsletter-section {
+            margin-top: 20px;
+        }
+        
+        .subscribe-form {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-top: 15px;
         }
         
-        .categories-title {
-            margin-bottom: 0;
-        }
-        
-        .dropdown-icon {
-            background: none;
+        .email-input {
+            flex: 1;
+            padding: 10px 15px;
             border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+            border-radius: 4px 0 0 4px;
+            font-family: 'Akshar', sans-serif;
+            font-size: 14px;
         }
         
-        /* Copyright */
+        .email-input:focus {
+            outline: none;
+        }
+        
+        .subscribe-btn {
+            background-color: #fd334e;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Akshar', sans-serif;
+            font-size: 14px;
+        }
+        
+        .subscribe-btn:hover {
+            background-color: #e62b42;
+        }
+        
+        /* Bottom Section */
+        .footer-bottom {
+            background-color: #151515;
+            padding: 15px 0;
+            margin-top: 30px;
+        }
+        
         .copyright {
             text-align: center;
-            margin-top: 40px;
-            font-size: 14px;
-            width: 100%;
+            font-size: 13px;
+            color: #888;
         }
         
-        /* Responsive Design */
-        @media (max-width: 768px) {
+        .copyright a {
+            color: #fd334e;
+            text-decoration: none;
+        }
+        
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+        }
+        
+        .payment-icon {
+            margin: 0 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s ease;
+            font-size: 22px;
+        }
+        
+        .payment-icon:hover {
+            opacity: 1;
+        }
+        
+        /* Responsive Design - Enhanced */
+        @media (max-width: 1200px) {
+            .container {
+                width: 95%;
+            }
+        }
+        
+        @media (max-width: 992px) {
             .col-md-3 {
                 width: 50%;
                 margin-bottom: 30px;
+            }
+            
+            .container {
+                width: 90%;
+            }
+            
+            .row {
+                margin: 0 -15px;
+            }
+            
+            .col-md-3 {
+                padding: 0 15px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                width: 85%;
+            }
+            
+            .footer {
+                padding: 35px 0 15px;
             }
         }
         
         @media (max-width: 576px) {
             .col-md-3 {
                 width: 100%;
+                margin-bottom: 25px;
+            }
+            
+            .container {
+                width: 90%;
+            }
+            
+            .footer {
+                padding: 30px 0 10px;
+            }
+            
+            .footer-bottom {
+                margin-top: 20px;
+            }
+            
+            .subscribe-form {
+                flex-direction: column;
+            }
+            
+            .email-input {
+                border-radius: 4px;
+                margin-bottom: 10px;
+                padding: 12px 15px;
+            }
+            
+            .subscribe-btn {
+                border-radius: 4px;
+                padding: 12px;
+                width: 100%;
+            }
+            
+            .payment-methods {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .payment-icon {
+                margin: 5px;
+            }
+            
+            .footer-title {
+                margin-bottom: 15px;
+            }
+            
+            .social-icons {
+                margin-bottom: 20px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .container {
+                width: 95%;
+            }
+            
+            .social-icon {
+                width: 30px;
+                height: 30px;
+                margin-right: 8px;
+            }
+            
+            .payment-icon {
+                font-size: 20px;
             }
         }
     </style>
@@ -146,84 +354,84 @@
     <footer class="footer">
         <div class="container">
             <div class="row">
-                <!-- Need Help Section -->
+                <!-- Brand Section -->
                 <div class="col-md-3">
-                    <h3>Need Help</h3>
+                    <div class="brand-section">
+                        <div class="footer-logo">NOOR</div>
+                        <p class="brand-description">
+                            Discover the essence of luxury with NOOR Fragrances. Crafted with passion, our scents capture moments and create memories.
+                        </p>
+                    </div>
+                    
+                    <!-- Social Media Icons -->
+                    <ul class="social-icons">
+                        <li class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </li>
+                        <li class="social-icon">
+                            <i class="fab fa-instagram"></i>
+                        </li>
+                        <li class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </li>
+                        <li class="social-icon">
+                            <i class="fab fa-pinterest-p"></i>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Quick Links Section -->
+                <div class="col-md-3">
+                    <h3 class="footer-title">Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Collections</a></li>
+                        <li><a href="#">Blog & News</a></li>
+                        <li><a href="#">Store Locator</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Customer Care Section -->
+                <div class="col-md-3">
+                    <h3 class="footer-title">Customer Care</h3>
                     <ul class="footer-links">
                         <li><a href="#">Contact Us</a></li>
                         <li><a href="#">Track Order</a></li>
-                        <li><a href="#">Returns & Refunds</a></li>
-                        <li><a href="#">FAQ's</a></li>
-                        <li><a href="#">Career</a></li>
-                    </ul>
-                </div>
-                
-                <!-- Company Section -->
-                <div class="col-md-3">
-                    <h3>Company</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">About Us</a></li>
-                        <li><a href="#">euphoria Blog</a></li>
-                        <li><a href="#">euphoriastan</a></li>
-                        <li><a href="#">Collaboration</a></li>
-                        <li><a href="#">Media</a></li>
-                    </ul>
-                </div>
-                
-                <!-- More Info Section -->
-                <div class="col-md-3">
-                    <h3>More Info</h3>
-                    <ul class="footer-links">
-                        <li><a href="#">Term and Conditions</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Returns & Exchanges</a></li>
                         <li><a href="#">Shipping Policy</a></li>
-                        <li><a href="#">Sitemap</a></li>
+                        <li><a href="#">FAQs</a></li>
                     </ul>
                 </div>
                 
-                <!-- Location Section -->
+                <!-- Contact Section -->
                 <div class="col-md-3">
-                    <h3>Location</h3>
-                    <ul class="address-info footer-links">
-                        <li>support@euphoria.in</li>
-                        <li>Eklingpura Chouraha, Ahmedabad Main Road</li>
-                        <li>(NH 8- Near Mahadev Hotel) Udaipur, India- 313002</li>
+                    <h3 class="footer-title">Contact Us</h3>
+                    <ul class="address-info">
+                        <li>
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Eklingpura Chouraha, Ahmedabad Main Road (NH 8) Udaipur, India - 313002</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-phone-alt"></i>
+                            <span>+91 123 456 7890</span>
+                        </li>
+                        <li>
+                            <i class="fas fa-envelope"></i>
+                            <span>support@noorfragrances.com</span>
+                        </li>
                     </ul>
                 </div>
             </div>
+        </div>
+        
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
             
-            <!-- Social Media Icons -->
-            <div class="row">
-                <ul class="social-icons">
-                    <li class="social-icon">
-                        <span>f</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>i</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>t</span>
-                    </li>
-                    <li class="social-icon">
-                        <span>in</span>
-                    </li>
-                </ul>
-            </div>
-            
-            <!-- Popular Categories Section -->
-            <div class="row">
-                <div class="categories-section">
-                    <h3 class="categories-title">Popular Categories</h3>
-                    <button class="dropdown-icon">▼</button>
+                <div class="copyright"
+                    <p>© 2025 <a href="#">NOOR Fragrances</a>. All Rights Reserved.</p>
                 </div>
-            </div>
-            
-            <!-- Copyright -->
-            <div class="row">
-                <div class="copyright">
-                    <p>Copyright © 2025 Noor Fragrances Pvt Ltd. All rights reserved.</p>
-                </div>
-            </div>
+           
         </div>
     </footer>
 </body>

@@ -14,7 +14,11 @@ async (accessToken,refreshToken,profile,done)=>{
     try { 
         let user = await User.findOne({googleId:profile.id});
         if(user){
-            return done(null,user);
+          if( !user.isBlocked){
+            return  done(null,user);
+          }else{
+            return done (null,false,{message:"User is Blocked by the admin"})
+          }
         }else{
             user = new User({
                 name:profile.displayName,

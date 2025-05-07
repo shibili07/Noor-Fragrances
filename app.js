@@ -20,7 +20,8 @@ app.use(session({
     cookie:{
         secure:false,
         httpOnly:true,
-        maxAge:72*60*10000
+        maxAge: 3 * 24 * 60 * 60 * 1000 // 3 days
+
     }
 }))
 
@@ -42,6 +43,16 @@ app.use("/",userRouter)
 
 app.use("/admin",adminRouter)
 
+//error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack); 
+    res.status(err.status || 500).json({
+        error: {
+            message: err.message || 'Internal Server Error',
+        }
+    })
+});
+
 
 app.listen(process.env.PORT,()=>{
     console.log("server port 7000 running....");
@@ -49,6 +60,7 @@ app.listen(process.env.PORT,()=>{
 })
 
 module.exports = app;
+
 
 
 //   admin informations //

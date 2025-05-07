@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose")
 const {Schema} = mongoose
 
@@ -8,6 +9,11 @@ const addressSchema = new Schema ({
         required:true
     },
     address:[{
+        isDefault:{
+            type:Boolean,
+            default:true
+        
+        },
         addressType:{
             type:String,
             required  :true,      
@@ -45,5 +51,6 @@ const addressSchema = new Schema ({
     }]
 })
 
-const Address = mongoose.model("Address")
-module.exports = Address 
+const Address = mongoose.model("Address", addressSchema);
+
+module.exports = Address;

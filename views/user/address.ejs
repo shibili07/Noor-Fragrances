@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NOOR Fragrance - My Addresses</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+
+  <style>
+      body {
+        font-family: "Akshar", sans-serif;
+        background-color: #f9f9f9;
+        color: #333;
+      }
+
+      .user-dashboard {
+        padding: 30px 15px;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .info-container {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        width: 100%;
+      }
+
+      .section-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #333;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eaeaea;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .add-address-btn {
+        background-color: #fd334e;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .add-address-btn:hover {
+        background-color: #e62b42;
+      }
+
+      .address-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .address-card {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 20px;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.2s, box-shadow 0.2s;
+        border: 1px solid #eaeaea;
+      }
+
+      .address-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .address-name {
+        font-weight: 600;
+        font-size: 18px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .address-phone {
+        color: #555;
+        margin-bottom: 4px;
+        display: block;
+        font-size: 15px;
+      }
+
+      .address-alt-phone {
+        color: #777;
+        font-size: 14px;
+        margin-bottom: 15px;
+        display: block;
+      }
+
+      .address-details {
+        line-height: 1.4;
+        margin-bottom: 15px;
+        color: #444;
+      }
+
+      .address-detail-item {
+        margin-bottom: 5px;
+      }
+
+      .address-type-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 15px;
+      }
+
+      .address-type-btn {
+        border: 1px solid #ddd;
+        background-color: #f9f9f9;
+        color: #555;
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .address-type-btn.active {
+        background-color: #fd334e;
+        color: white;
+        border-color: #fd334e;
+      }
+
+      .address-actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+      }
+
+      .edit-btn {
+        background-color: #fd334e;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .edit-btn:hover {
+        background-color: #8d0413;
+      }
+
+
+
+      .default-btn {
+        background-color: transparent;
+        color: #555;
+        border: 1px solid #ddd;
+        padding: 8px 15px;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .default-btn:hover {
+        border-color: #fd334e;
+        color: #fd334e;
+      }
+
+      .default-badge {
+        background-color: #ffe9a3;
+        color: #725b00;
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 4px;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .no-addresses {
+        text-align: center;
+        padding: 40px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        color: #777;
+        grid-column: 1 / -1;
+      }
+
+      .address-divider {
+        height: 1px;
+        background-color: #eaeaea;
+        margin: 15px 0;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 767px) {
+        .info-container {
+          padding: 20px 15px;
+        }
+
+        .section-title {
+          flex-direction: column;
+          gap: 10px;
+          align-items: flex-start;
+        }
+
+        .address-cards {
+          grid-template-columns: 1fr;
+        }
+      }
+  </style>
+</head>
+<body>
+
+<%- include("../../views/partials/user/header") %>
+
+<div class="container-fluid user-dashboard">
+  <div class="row">
+    <div class="col-lg-2 mb-4">
+      <%- include("../../views/partials/user/profileMenu") %>
+    </div>
+
+    <div class="col-lg-10">
+      <div class="info-container">
+        <h2 class="section-title">
+          My Addresses
+          <a href="/addAddress" id="openAddressModal" class="add-address-btn" style="text-decoration: none;"> 
+            <i class="fas fa-plus"></i> Add New Address
+          </a>
+        </h2>
+
+<!-- Address Cards Container -->
+<% if (addresses && addresses.length > 0) { %>
+  <div class="address-cards" id="addressCardsContainer">
+    <% addresses.forEach((adr, index) => { %>
+      <div class="address-card">
+        <% if (adr.isDefault) { %>
+          <div class="default-badge">
+            <i class="fas fa-check-circle"></i> Default
+          </div>
+        <% } %>
+        <h4 class="address-name"><%= adr.name %></h4>
+        <span class="address-phone"><i class="fas fa-phone-alt"></i> <%= adr.phone %></span>
+        <span class="address-alt-phone"><i class="fas fa-phone"></i> <%= adr.altPhone %></span>
+
+        <div class="address-type-container">
+          <button class="address-type-btn active"><%= adr.addressType %></button>
+        </div>
+
+        <div class="address-divider"></div>
+
+        <div class="address-details">
+          <div class="address-detail-item">
+            <i class="fas fa-map-marker-alt"></i> <%= adr.landMark %>
+          </div>
+          <div class="address-detail-item">
+            <i class="fas fa-city"></i> <%= adr.city %>, <%= adr.state %>
+          </div>
+          <div class="address-detail-item">
+            <i class="fas fa-map-pin"></i> <%= adr.pincode %>
+          </div>
+        </div>
+
+        <div class="address-actions">
+          <button class="btn btn-secondary delete-btn" data-id="<%= adr._id %>">
+            <i class="fas fa-trash"></i> Delete
+          </button>
+          
+          <a href="/editAddress/<%=adr._id%>" class="edit-btn" style="text-decoration: none;" >
+            <i class="fas fa-edit"></i> Edit
+          </a>
+          <% if (!adr.isDefault) { %>
+            
+              <input type="hidden" name="addressId" value="<%= adr._id %>">
+              <button class="default-btn set-default-btn" data-id="<%= adr._id %>">
+              Default
+              </button>
+          <% } %>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+<% } else { %>
+  <div class="no-addresses" id="noAddressesMessage">
+    <i class="fas fa-map-marker-alt fa-3x mb-3"></i>
+    <h4>No addresses found</h4>
+    <p>Add a new address to get started</p>
+  </div>
+<% } %>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include("../../views/partials/user/footer") %>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  // Add this JavaScript to make the address type buttons functional
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all address type button groups
+    const addressTypeGroups = document.querySelectorAll('.address-type-container');
+    
+    // For each group, add click listeners
+    addressTypeGroups.forEach(group => {
+      const buttons = group.querySelectorAll('.address-type-btn');
+      
+      buttons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove active class from all buttons in this group
+          buttons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to clicked button
+          this.classList.add('active');
+        });
+      });
+    });
+    
+    
+  });
+  
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const notyf = new Notyf({
+      duration: 3000,
+      position: {
+        x: 'right',
+        y: 'bottom',
+      },
+      types: [  
+        {
+          type: 'success',
+          background: '#28a745',
+          icon: {
+            className: 'fas fa-check',
+            tagName: 'i',
+            color: 'white'
+          }
+        },
+        {
+          type: 'error',
+          background: '#dc3545',
+          icon: {
+            className: 'fas fa-times',
+            tagName: 'i',
+            color: 'white'
+          }
+        }
+      ]
+    });
+
+    const defaultButtons = document.querySelectorAll('.set-default-btn');
+    
+    defaultButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const addressId = this.getAttribute('data-id');
+        
+        // Simulate backend call (replace with actual fetch/AJAX later)
+        fetch(`/set-default-address?id=${addressId}`, {
+          method: 'GET',
+        })
+        .then(response => {
+          if (response.ok) {
+            notyf.success('Default address updated!');
+            setTimeout(() => {
+              window.location.reload(); // reload to reflect changes
+            },1000);
+          } else {
+            notyf.error('Failed to set default address.');
+          }
+        })
+        .catch(() => {
+          notyf.error('Something went wrong.');
+        });
+      });
+    });
+  });
+
+
+  document.querySelectorAll('.delete-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const id = button.dataset.id;
+
+    const confirm = await Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this address!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+
+    if (confirm.isConfirmed) {
+      try {
+        const response = await fetch(`/deleteAddress/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          Swal.fire('Deleted!', 'The address has been deleted.', 'success')
+            .then(() => {
+              // Reload the page or remove the item from DOM
+              location.reload();
+            });
+        } else {
+          const data = await response.json();
+          Swal.fire('Error', data.message || 'Something went wrong.', 'error');
+        }
+      } catch (err) {
+        Swal.fire('Error', err.message || 'Request failed.', 'error');
+      }
+    }
+  });
+});
+
+
+
+</script>
+</body>
+</html>

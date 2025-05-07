@@ -1,0 +1,455 @@
+<%- include("../../views/partials/admin/header") %>
+<!-- Bootstrap CSS -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+<!-- Font Awesome -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<!-- Datepicker CSS -->
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+/>
+
+<style>
+  .content-wrapper {
+    padding: 20px;
+    margin-top: 70px;
+    margin-left: 280px;
+    transition: all 0.3s ease;
+    background-color: #f5f5f7;
+    min-height: calc(100vh - 70px);
+  }
+
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: #1c1c24;
+    margin-bottom: 8px;
+  }
+
+  .form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid #e1e1e1;
+    background-color: white;
+  }
+
+  .form-control:focus {
+    border-color: #5e5ce6;
+    box-shadow: 0 0 0 0.2rem rgba(94, 92, 230, 0.25);
+  }
+
+  .btn-primary {
+    background-color: #5e5ce6;
+    border-color: #5e5ce6;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .btn-primary:hover {
+    background-color: #4a48d4;
+    border-color: #4a48d4;
+    transform: translateY(-1px);
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+    border-color: #545b62;
+  }
+
+  .error-message {
+    color: red;
+    font-size: 14px;
+    display: none;
+  }
+
+  @media screen and (max-width: 992px) {
+    .content-wrapper {
+      margin-left: 0;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .responsive-header {
+      flex-direction: column;
+      align-items: start !important;
+    }
+  }
+</style>
+
+<body>
+  <div class="content-wrapper">
+    <div class="card">
+      <div
+        class="card-body d-flex justify-content-between align-items-center responsive-header"
+      >
+        <h1 class="mb-0 fs-4 fw-bold">Add New Offer</h1>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <form
+          action="/admin/addOffer"
+          method="POST"
+          onsubmit="handleFormSubmit(event)"
+        >
+          <div class="mb-4">
+            <label for="offerName" class="form-label">Offer Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="offerName"
+              name="offerName"
+              placeholder="Enter offer name"
+            />
+            <div id="offerName-error" class="error-message"></div>
+          </div>
+
+          <div class="mb-4">
+            <label for="description" class="form-label">Description</label>
+            <textarea
+              class="form-control"
+              id="description"
+              name="description"
+              placeholder="Enter offer description"
+              rows="4"
+            ></textarea>
+            <div id="description-error" class="error-message"></div>
+          </div>
+
+          <div class="mb-4">
+            <label for="discountType" class="form-label">Discount Type</label>
+            <select class="form-select" id="discountType" name="discountType">
+              <option value="percentage">Percentage</option>
+            </select>
+            <div id="discountType-error" class="error-message"></div>
+          </div>
+
+          <div class="mb-4">
+            <label for="discountAmount" class="form-label">Discount Amount (%)</label>
+            <input
+              type="number"
+              class="form-control"
+              id="discountAmount"
+              name="discountAmount"
+              placeholder="Enter discount percentage"
+              min="1"
+              max="50"
+            />
+            <div id="discountAmount-error" class="error-message"></div>
+          </div>
+
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <label for="validFrom" class="form-label">Valid From</label>
+              <input
+                type="date"
+                class="form-control"
+                id="validFrom"
+                name="validFrom"
+              />
+              <div id="validFrom-error" class="error-message"></div>
+            </div>
+            <div class="col-md-6">
+              <label for="validUpto" class="form-label">Valid Until</label>
+              <input
+                type="date"
+                class="form-control"
+                id="validUpto"
+                name="validUpto"
+              />
+              <div id="validUpto-error" class="error-message"></div>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="offerType" class="form-label">Offer Type</label>
+            <select class="form-select" id="offerType" name="offerType" onchange="updateApplicableOptions()">
+              <option value="">-- Select Offer Type --</option>
+              <option value="Category">Category</option>
+              <option value="Product">Product</option>
+            </select>
+            <div id="offerType-error" class="error-message"></div>
+          </div>
+
+          <div class="mb-4">
+            <label for="applicableTo" class="form-label">Apply To</label>
+            <select class="form-select" id="applicableTo" name="applicableTo">
+              <option value="">-- Select Item --</option>
+              <!-- Options will be shown/hidden based on offerType -->
+            </select>
+            <div id="applicableTo-error" class="error-message"></div>
+          </div>
+
+          <div class="d-flex gap-3">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-plus me-2"></i>Add Offer
+            </button>
+            <a href="/admin/offers" class="btn btn-secondary">
+              <i class="fas fa-arrow-left me-2"></i>Back
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    // Store categories and products data from server
+    const categories = <%- JSON.stringify(category) %>;
+    const products = <%- JSON.stringify(product) %>;
+    
+    document.addEventListener("DOMContentLoaded", function () {
+      const today = new Date();
+      const todayStr = today.toISOString().split("T")[0];
+      const validFromInput = document.getElementById("validFrom");
+      
+      // Set minimum and default valid from date to today
+      validFromInput.min = todayStr;
+      validFromInput.value = todayStr;
+
+      // Set minimum valid until date to tomorrow
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      document.getElementById("validUpto").min = tomorrow.toISOString().split("T")[0];
+      
+      // Initialize the applicableTo dropdown (will be empty until offerType is selected)
+      updateApplicableOptions();
+    });
+
+    function updateApplicableOptions() {
+      const offerType = document.getElementById("offerType").value;
+      const applicableToSelect = document.getElementById("applicableTo");
+      
+      // Clear existing options
+      applicableToSelect.innerHTML = '<option value="">-- Select Item --</option>';
+      
+      if (offerType === "") {
+        return;
+      }
+      
+      // Populate with either categories or products based on selection
+      if (offerType === "Category") {
+        categories.forEach(category => {
+          const option = document.createElement("option");
+          option.value = category._id;
+          option.textContent = category.categoryName || category.name; // Adapt to your field names
+          applicableToSelect.appendChild(option);
+        });
+      } else if (offerType === "Product") {
+        products.forEach(product => {
+          const option = document.createElement("option");
+          option.value = product._id;
+          option.textContent = product.productName || product.name || product.title; // Adapt to your field names
+          applicableToSelect.appendChild(option);
+        });
+      }
+    }
+
+    function handleFormSubmit(event) {
+      event.preventDefault();
+      if (!validateForm()) {
+        return false;
+      }
+
+      const offerName = document.getElementById("offerName").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const discountType = document.getElementById("discountType").value;
+      const discountAmount = parseFloat(document.getElementById("discountAmount").value);
+      const validFrom = document.getElementById("validFrom").value;
+      const validUpto = document.getElementById("validUpto").value;
+      const offerType = document.getElementById("offerType").value;
+      const applicableTo = document.getElementById("applicableTo").value;
+
+      fetch("/admin/addOffer", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          offerName,
+          description,
+          discountType,
+          discountAmount,
+          validFrom,
+          validUpto,
+          offerType,
+          applicableTo,
+          offerTypeRef: offerType // Setting offerTypeRef to same as offerType as per schema
+        }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return response.json().then((err) => {
+              throw new Error(err.error || "Failed to add offer");
+            });
+          }
+          return response.json();
+        })
+        .then((data) => {
+          Swal.fire({
+            icon: "success",
+            title: "Success!",
+            text: "Offer added successfully",
+            timer: 1500,
+          }).then(() => {
+            window.location.href = "/admin/offers";
+          });
+        })
+        .catch((error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Oops",
+            text: error.message || "An error occurred while adding the offer",
+          });
+        });
+
+      return false;
+    }
+
+    function validateForm() {
+      clearErrorMessages();
+      const offerName = document.getElementById("offerName").value.trim();
+      const description = document.getElementById("description").value.trim();
+      const discountAmount = document.getElementById("discountAmount").value.trim();
+      const validFrom = document.getElementById("validFrom").value;
+      const validUpto = document.getElementById("validUpto").value;
+      const offerType = document.getElementById("offerType").value;
+      const applicableTo = document.getElementById("applicableTo").value;
+      
+      let isValid = true;
+
+      // Validate offer name
+      if (offerName === "") {
+        displayErrorMessage("offerName-error", "Please enter an offer name");
+        isValid = false;
+      } else if (offerName.length < 3) {
+        displayErrorMessage(
+          "offerName-error",
+          "Offer name must be at least 3 characters long"
+        );
+        isValid = false;
+      }
+
+      // Validate description
+      if (description === "") {
+        displayErrorMessage("description-error", "Please enter a description");
+        isValid = false;
+      } else if (description.length < 10) {
+        displayErrorMessage(
+          "description-error",
+          "Description must be at least 10 characters long"
+        );
+        isValid = false;
+      }
+
+      // Validate discount amount
+      if (discountAmount === "") {
+        displayErrorMessage("discountAmount-error", "Please enter discount amount");
+        isValid = false;
+      } else {
+        const amount = parseFloat(discountAmount);
+        if (isNaN(amount) || amount <= 0) {
+          displayErrorMessage(
+            "discountAmount-error",
+            "Discount amount must be greater than zero"
+          );
+          isValid = false;
+        } else if (amount > 50) {
+          displayErrorMessage(
+            "discountAmount-error",
+            "Discount percentage cannot exceed 50%"
+          );
+          isValid = false;
+        }
+      }
+
+      // Validate valid from date
+      if (validFrom === "") {
+        displayErrorMessage("validFrom-error", "Please select valid from date");
+        isValid = false;
+      } else {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const validFromDate = new Date(validFrom);
+        if (validFromDate < today) {
+          displayErrorMessage(
+            "validFrom-error",
+            "Valid from date cannot be in the past"
+          );
+          isValid = false;
+        }
+      }
+
+      // Validate valid until date
+      if (validUpto === "") {
+        displayErrorMessage("validUpto-error", "Please select valid until date");
+        isValid = false;
+      } else if (validFrom !== "") {
+        const validFromDate = new Date(validFrom);
+        const validUptoDate = new Date(validUpto);
+        if (validUptoDate <= validFromDate) {
+          displayErrorMessage(
+            "validUpto-error",
+            "Valid until date must be after valid from date"
+          );
+          isValid = false;
+        }
+      }
+
+      // Validate offer type
+      if (offerType === "") {
+        displayErrorMessage("offerType-error", "Please select an offer type");
+        isValid = false;
+      }
+
+      // Validate applicable to
+      if (applicableTo === "") {
+        displayErrorMessage("applicableTo-error", "Please select an item to apply the offer to");
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function displayErrorMessage(elementId, message) {
+      var errorElement = document.getElementById(elementId);
+      errorElement.innerText = message;
+      errorElement.style.display = "block";
+    }
+
+    function clearErrorMessages() {
+      const errorElements = document.getElementsByClassName("error-message");
+      Array.from(errorElements).forEach((element) => {
+        element.innerText = "";
+        element.style.display = "none";
+      });
+    }
+  </script>
+</body>

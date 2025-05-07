@@ -1,5 +1,5 @@
 <%-include("../../views/partials/user/header")%>
-<link rel="stylesheet" href="/styles/home.css">
+<link rel="stylesheet" href="/styles/user/home.css">
 <style>
   /* Classic Professional Home Page Styling with Animations */
   body {
@@ -37,7 +37,7 @@
     .orb1 {
       width: 150px;
       height: 150px;
-      background: linear-gradient(135deg, #f06, #f95);
+      background: linear-gradient(135deg, #f06, rgb(204, 190, 181));
       top: -20px;
       left: -20px;
       animation: floatOrb 10s infinite ease-in-out, fadeIn 1s forwards 0.2s;
@@ -73,7 +73,7 @@
     }
     
     .logo-content {
-      background-image: url("/img/home/best_peony_perfumes_guide.webp");
+      color: #bbb;
       position: relative;
       width: 100%;
       height: 100%;
@@ -296,7 +296,7 @@
     transform: translateX(-50%);
     width: 120px;
     height: 1px;
-    background-color: #333;
+    background-color: #f8f6f6;
   }
   
   .section-title:after {
@@ -322,13 +322,14 @@
   
   .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-    gap: 30px;
-    margin-bottom: 80px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 40px;
+    margin-bottom: 100px;
     opacity: 0;
     transform: translateY(20px);
     animation: fade-up 0.8s forwards;
     animation-delay: 0.3s;
+    padding: 10px;
   }
   
   @keyframes fade-up {
@@ -339,23 +340,27 @@
   .product-card {
     background-color: #fff;
     border: 1px solid #eee;
-    border-radius: 3px;
+    border-radius: 12px;
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     position: relative;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    max-width: 100%;
   }
   
   .product-card:hover {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     transform: translateY(-8px);
   }
   
   .product-card img {
     width: 100%;
-    height: 300px;
+    height: 360px;
     object-fit: cover;
     display: block;
     transition: transform 0.6s ease;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
   }
   
   .product-card:hover img {
@@ -363,28 +368,33 @@
   }
   
   .product-info {
-    padding: 20px 15px;
+    padding: 30px 25px;
     text-align: center;
     position: relative;
     transition: all 0.3s ease;
+    background: #ffffff;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
   }
   
   .product-info:before {
     content: '';
     position: absolute;
     top: 0;
-    left: 25%;
-    width: 50%;
+    left: 20%;
+    width: 60%;
     height: 1px;
     background: rgba(0,0,0,0.1);
   }
   
   .product-title {
-    font-size: 1.1rem;
+    font-size: 1.35rem;
     font-weight: 500;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
     color: #333;
     transition: color 0.3s ease;
+    letter-spacing: 0.5px;
+    font-family: 'Akshar', serif;
   }
   
   .product-card:hover .product-title {
@@ -392,18 +402,23 @@
   }
   
   .product-brand {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     color: #777;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     font-style: italic;
+    letter-spacing: 0.3px;
   }
   
   .product-price {
     font-weight: 600;
     color: #333;
-    font-size: 1.1rem;
+    font-size: 1.3rem;
     position: relative;
     display: inline-block;
+    padding: 8px 20px;
+    background-color: #f9f9f9;
+    border-radius: 30px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
   
   .product-price:after {
@@ -419,7 +434,7 @@
   }
   
   .product-card:hover .product-price:after {
-    width: 100%;
+    width: 70%;
   }
   
   .favorite-icon {
@@ -681,6 +696,15 @@
     .feedback-card {
       padding: 25px;
     }
+    
+    .products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    
+    .product-card img {
+      height: 320px;
+    }
   }
   
   @media (max-width: 768px) {
@@ -690,12 +714,30 @@
     }
     
     .products-grid {
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 25px;
+      padding: 5px;
     }
     
     .section-title {
       font-size: 1.6rem;
+    }
+    
+    .product-card img {
+      height: 280px;
+    }
+    
+    .product-info {
+      padding: 25px 15px;
+    }
+    
+    .product-title {
+      font-size: 1.2rem;
+    }
+    
+    .product-price {
+      font-size: 1.1rem;
+      padding: 6px 15px;
     }
   }
   
@@ -925,6 +967,36 @@
       padding: 10px 20px 30px;
     }
   }
+
+  /* Additional Footer Styling */
+  footer {
+    width: 100%;
+    clear: both;
+    position: relative;
+  }
+  
+  /* Fix any potential footer overflow issues */
+  @media (max-width: 768px) {
+    .pre-footer-space {
+      height: 40px;
+    }
+    
+    footer {
+      padding: 0;
+      margin: 0;
+    }
+  }
+  
+  /* Fix for mobile devices */
+  @media (max-width: 576px) {
+    .section-container {
+      padding: 0 10px;
+    }
+    
+    .product-card img {
+      height: 250px;
+    }
+  }
 </style>
 
 <body>
@@ -944,57 +1016,41 @@
     </h2>
     
     <div class="products-grid">
-        <%for(let i=0;i<products.length;i++){%>
-      <!-- Product 1 -->
-      <div class="product-card staggered-item">
-        <div class="favorite-icon">
-          <svg viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-          </svg>
-        </div>
-        <a href="/productDetails/<%= products[i]._id %>" style="text-decoration: none;" >
-          <img src="/uploads/product-images/<%=products[i].productImage[0]%>" alt="<%=products[i].productName%>" class="product-image">
-          <div class="product-info">
-            <div class="product-title"><%=products[i].productName%></div>
-            <div class="product-brand"><%=products[i].brand%></div>
-            <div class="product-price">₹<%=products[i].salePrice%></div>
+      <% for (let i = 0; i < products.length; i++) { %>
+        <div class="product-card staggered-item">
+          <div class="favorite-icon">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
           </div>
-        </a>
-      </div>
-<%}%>
-  </div>
-  <div class="main-banner">
-    <div id="logo-container">
-      <div class="color-orb orb1"></div>
-      <div class="color-orb orb2"></div>
-      <div class="color-orb orb3"></div>
-      
-      <div class="logo-content">
-        
-        <div class="main-text">
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.3s;">N</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.4s;">O</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.5s;">O</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.6s;">R</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.7s;">&nbsp;</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.8s;">F</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 0.9s;">R</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.0s;">A</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.1s;">G</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.2s;">R</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.3s;">A</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.4s;">N</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.5s;">C</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.6s;">E</span>
-          <span class="letter" style="animation: fadeInLetter 0.5s forwards 1.7s;">S</span>
+          <a href="/productDetails/<%= products[i]._id %>" style="text-decoration: none;">
+            <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>" class="product-image">
+            <div class="product-info">
+              <div class="product-title"><%= products[i].productName %></div>
+              <div class="product-brand"><%= products[i].brand %></div>
+    
+              <% const firstVariant = products[i].variants[0]; %>
+    
+              <div class="product-price">
+                <% if (firstVariant.offerPrice < firstVariant.salePrice) { %>
+                  <span style="text-decoration: line-through; color: gray;">
+                    ₹<%= firstVariant.salePrice.toLocaleString('en-IN') %>
+                  </span>
+                  <span style="color: green; font-weight: bold;">
+                    ₹<%= firstVariant.offerPrice.toLocaleString('en-IN') %>
+                  </span>
+                <% } else { %>
+                  <span style="font-weight: bold;">
+                    ₹<%= firstVariant.salePrice.toLocaleString('en-IN') %>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          </a>
         </div>
-        <div class="shimmer"></div>
-        <div class="sub-text">ESSENCE OF LUXURY</div>
-      </div>
-      
-  </div>
-</div>
-  
+      <% } %>
+    </div>
+    
   
   <!-- Feedback Section styled like the reference -->
   <div class="feedback-section">
@@ -1057,19 +1113,24 @@
         </div>
         
         <!-- Simple Pagination Dots -->
-        
+        <div class="simple-pagination" style="display: flex; justify-content: center; margin-top: 20px;">
+          <span class="dot active" data-slide="0"></span>
+          <span class="dot" data-slide="1"></span>
+          <span class="dot" data-slide="2"></span>
+        </div>
       </div>
     </div>
   </div>
   
   <!-- Add space before footer -->
-  <footer>
-    <%-include("../../views/partials/user/footer")%>
-  </footer>
-    
+  <div class="pre-footer-space"></div>
+</div><!-- Close section-container -->
+
+<footer>
+  <%-include("../../views/partials/user/footer")%>
+</footer>
 
 </body>
-
 
 <script>
      document.addEventListener("DOMContentLoaded", function() {

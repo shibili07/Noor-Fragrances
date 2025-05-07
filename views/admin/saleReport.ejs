@@ -1,0 +1,457 @@
+<%- include("../../views/partials/admin/header") %>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .content-wrapper {
+            padding: 20px;
+            margin-top: 70px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+            background-color: #f5f5f7;
+            min-height: calc(100vh - 70px);
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .text-white {
+            text-decoration: none;
+        }
+
+        .table thead th {
+            background-color: #1c1c24;
+            color: white;
+            font-weight: normal;
+            border: none;
+            padding: 15px;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-primary {
+            background-color: #5e5ce6;
+            border-color: #5e5ce6;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a48d4;
+            border-color: #4a48d4;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: #ff3b30;
+            border-color: #ff3b30;
+        }
+
+        .btn-danger:hover {
+            background-color: #e52e27;
+            border-color: #e52e27;
+        }
+        
+        .btn-success {
+            background-color: #34c759;
+            border-color: #34c759;
+        }
+        
+        .btn-success:hover {
+            background-color: #2aa548;
+            border-color: #2aa548;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 992px) {
+            .content-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .responsive-header {
+                flex-direction: column;
+                align-items: start !important;
+            }
+
+            .date-inputs {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .date-inputs > div {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+            
+            .actions-container {
+                width: 100%;
+                justify-content: space-between !important;
+                margin-top: 10px;
+            }
+            
+            .button-group {
+                flex-wrap: wrap;
+            }
+            
+            .button-group .btn {
+                margin-bottom: 10px;
+            }
+        }
+
+        .pagination .page-link {
+            color: #5e5ce6;
+            border-color: #5e5ce6;
+        }
+
+        .pagination .active .page-link {
+            background-color: #5e5ce6;
+            border-color: #5e5ce6;
+            color: white;
+        }
+
+        .table td {
+            vertical-align: middle;
+            padding: 15px;
+        }
+
+        /* Sales Summary Styling */
+        .summary-card {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            height: 100%;
+        }
+
+        .summary-card.blue-bg {
+            background-color: #f0f5ff;
+        }
+
+        .summary-title {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1c1c24;
+            margin-bottom: 0;
+        }
+
+        .date-picker {
+            background-color: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px 15px;
+            width: 100%;
+        }
+
+        .actions-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            min-width: 100px;
+        }
+
+        /* Table Status Badge Styles */
+        .badge {
+            padding: 8px 15px;
+            font-weight: 500;
+            border-radius: 20px;
+        }
+        
+        .badge-pending {
+            background-color: #ff9500;
+            color: white;
+        }
+        
+        .badge-completed {
+            background-color: #34c759;
+            color: white;
+        }
+        
+        .badge-cancelled {
+            background-color: #ff3b30;
+            color: white;
+        }
+
+        /* Indian Rupee Symbol Styles */
+        .rupee {
+            font-family: Arial, sans-serif;
+            margin-right: 2px;
+        }
+
+        /* Sales Summary Section */
+        .sales-summary-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+
+    <body>
+        <div class="content-wrapper">
+            <!-- Header Section -->
+            <div class="card">
+                <div class="card-body d-flex justify-content-between align-items-center responsive-header">
+                    <h1 class="mb-0 fs-4 fw-bold">Sales Report</h1>
+                </div>
+            </div>
+
+            <!-- Date Filter Section -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="/admin/salesReport" method="GET">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <select class="form-select" id="dateRange" name="dateRange">
+                                    <option value="" selected>Select Range</option>
+                                    <option value="today">Today</option>
+                                    <option value="yesterday">Yesterday</option>
+                                    <option value="week">This Week</option>
+                                    <option value="month">This Month</option>
+                                    <option value="year">This Year</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="startDate" name="startDate" placeholder="Start Date" value="<%= startDate %>">
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <div class="input-group">
+                                    <input type="date" class="form-control" id="endDate" name="endDate" placeholder="End Date" value="<%= endDate %>">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="d-flex gap-2 button-group">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                    <button type="reset" class="btn btn-secondary">Clear</button>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Sales Summary Section -->
+            <div class="sales-summary-section">
+                <h5 class="mb-4">Sales Summary</h5>
+                <div class="row">
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="summary-card">
+                            <p class="summary-title">Gross Sales</p>
+                            <p class="summary-value"><span class="rupee">₹</span><%= summary.grossSales.toLocaleString('en-IN') %></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="summary-card">
+                            <p class="summary-title">Cancelled Or Returned</p>
+                            <p class="summary-value"><span class="rupee">₹</span><%= summary.cancelledOrReturned.toLocaleString('en-IN') %></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="summary-card">
+                            <p class="summary-title">Coupons Redeemed</p>
+                            <p class="summary-value"><span class="rupee">₹</span><%= summary.couponsRedeemed.toLocaleString('en-IN') %></p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="summary-card">
+                            <p class="summary-title">Discounts</p>
+                            <p class="summary-value"><span class="rupee">₹</span><%= summary.discounts.toLocaleString('en-IN') %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6 col-sm-6 mb-3">
+                        <div class="summary-card blue-bg">
+                            <p class="summary-title">Net Sales</p>
+                            <p class="summary-value"><span class="rupee">₹</span><%= summary.netSales.toLocaleString('en-IN') %></p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-sm-6 mb-3">
+                        <div class="summary-card blue-bg">
+                            <p class="summary-title">Total Orders</p>
+                            <p class="summary-value"><%= summary.totalOrders %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Table Section -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <a href="?page=<%= currentPage %>&dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>&sort=<%= sort === 'asc' ? 'desc' : 'asc' %>" class="text-white text-decoration-none">
+                                            ORDER ID
+                                            <i class="fas fa-sort<%= sort === 'asc' ? '-up' : '-down' %> ms-1"></i>
+                                        </a>
+                                    </th>
+                                    <th>AMOUNT</th>
+                                    <th>DISCOUNT</th>
+                                    <th>COUPON</th>
+                                    <th>FINAL AMOUNT</th>
+                                    <th>PAYMENT METHOD</th>                                    <th>RETURN/CANCELLED</th>
+                                    <th>REVOKED COUPON</th>
+                                    <th>
+                                        <a href="?page=<%= currentPage %>&dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>&sort=<%= sort === 'asc' ? 'desc' : 'asc' %>" class="text-white text-decoration-none">
+                                            DATE
+                                            <i class="fas fa-sort<%= sort === 'asc' ? '-up' : '-down' %> ms-1"></i>
+                                        </a>
+                                    </th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% orders.forEach(order => { %>
+                                    <tr>
+                                        <td><%= order.orderId %></td>
+                                        <td><span class="rupee">₹</span><%= order.totalPrice.toLocaleString('en-IN') %></td>
+                                        <td><span class="rupee">₹</span><%= order.offerDiscount.toLocaleString('en-IN') %></td>
+                                        <td><span class="rupee">₹</span><%= order.couponDiscount.toLocaleString('en-IN') %></td>
+                                        <td><span class="rupee">₹</span><%= order.finalAmount.toLocaleString('en-IN') %></td>
+                                        <td><%=order.orderType%></td>
+                                        <td>
+                                            <span class="rupee">₹</span>
+                                            <%= (order.status === 'Cancelled' || order.status === 'Returned') ? 
+                                                order.finalAmount.toLocaleString('en-IN') : '0' %>
+                                        </td>
+                                        <td>
+                                            <span class="rupee">₹</span>
+                                            <%= (order.status === 'Cancelled' || order.status === 'Returned') ? 
+                                                order.couponDiscount.toLocaleString('en-IN') : '0' %>
+                                        </td>
+                                        <td><%= new Date(order.createdOn).toLocaleDateString('en-IN', { 
+                                            year: 'numeric', 
+                                            month: 'short', 
+                                            day: 'numeric' 
+                                        }) %></td>
+                                        <td>
+                                            <span class="badge badge-<%= 
+                                                order.status === 'Delivered' ? 'completed' : 
+                                                order.status === 'Cancelled' || order.status === 'Returned' ? 'cancelled' : 
+                                                'pending' 
+                                            %>">
+                                                <%= order.status %>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>&dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>&sort=<%= sort %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <% for(let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>&sort=<%= sort %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                    <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>&dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>&sort=<%= sort %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Export Buttons -->
+            <div class="d-flex justify-content-end mt-3">
+                <a href="/admin/salesReport/pdf?dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>" class="btn btn-danger me-2">
+                    <i class="fas fa-file-pdf me-1"></i> Export PDF
+                </a>
+                <a href="/admin/salesReport/excel?dateRange=<%= dateRange || '' %>&startDate=<%= startDate || '' %>&endDate=<%= endDate || '' %>" class="btn btn-success">
+                    <i class="fas fa-file-excel me-1"></i> Export Excel
+                </a>
+            </div>
+
+            <!-- Bootstrap JS Bundle with Popper -->
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+            <script>
+                // Handle date range selection
+                document.getElementById('dateRange').addEventListener('change', function() {
+                    const startDateInput = document.getElementById('startDate');
+                    const endDateInput = document.getElementById('endDate');
+                    const now = new Date();
+                    
+                    switch(this.value) {
+                        case 'today':
+                            startDateInput.value = now.toISOString().split('T')[0];
+                            endDateInput.value = now.toISOString().split('T')[0];
+                            break;
+                        case 'yesterday':
+                            const yesterday = new Date(now);
+                            yesterday.setDate(yesterday.getDate() - 1);
+                            startDateInput.value = yesterday.toISOString().split('T')[0];
+                            endDateInput.value = yesterday.toISOString().split('T')[0];
+                            break;
+                        case 'week':
+                            const weekStart = new Date(now);
+                            weekStart.setDate(now.getDate() - now.getDay());
+                            startDateInput.value = weekStart.toISOString().split('T')[0];
+                            endDateInput.value = now.toISOString().split('T')[0];
+                            break;
+                        case 'month':
+                            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                            startDateInput.value = monthStart.toISOString().split('T')[0];
+                            endDateInput.value = now.toISOString().split('T')[0];
+                            break;
+                        case 'year':
+                            const yearStart = new Date(now.getFullYear(), 0, 1);
+                            startDateInput.value = yearStart.toISOString().split('T')[0];
+                            endDateInput.value = now.toISOString().split('T')[0];
+                            break;
+                        case 'custom':
+                            startDateInput.value = '';
+                            endDateInput.value = '';
+                            break;
+                        default:
+                            startDateInput.value = '';
+                            endDateInput.value = '';
+                    }
+                });
+
+                // Handle form reset
+                document.querySelector('button[type="reset"]').addEventListener('click', function() {
+                    document.getElementById('dateRange').value = '';
+                    document.getElementById('startDate').value = '';
+                    document.getElementById('endDate').value = '';
+                });
+            </script>
+    </body>

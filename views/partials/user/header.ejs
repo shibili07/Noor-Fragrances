@@ -20,39 +20,41 @@
             align-items: center;
             justify-content: center;
         }
+        
         nav {
-  box-shadow: 0 4px 6px rgba(182, 167, 167, 0.1);
-}
+            box-shadow: 0 4px 6px rgba(182, 167, 167, 0.1);
+        }
 
         .dropdown{
             position: relative;
-            display: i;
-
+            display: inline-block; /* Fixed typo from 'i' to 'inline-block' */
         }
+        
         .dropdown-content{
             display: none;
             position: absolute;
             background-color: white;
-            min-width:160px ;
-            box-shadow:black ;
+            min-width: 160px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Fixed undefined 'black' value */
             z-index: 1000;
             right: 0;
-
         }
+        
         .dropdown-content a{
-            color :black;
+            color: black;
             padding: 12px 16px;
-            text-align: none;
+            text-decoration: none; /* Fixed 'text-align: none' to 'text-decoration: none' */
             display: block;
             width: 100%;
         }
+        
         .dropdown-content a:hover{
             background-color: #f1f1f1;
-
         }
+        
         .dropdown.show .dropdown-content {
-        display: block;
-    }
+            display: block;
+        }
         
         .navbar-brand img {
             max-height: 40px;
@@ -223,6 +225,7 @@
             /* Show mobile icons */
             .navbar-icons-mobile {
                 display: flex;
+                flex-wrap: wrap; /* Added to improve how buttons wrap */
             }
             
             .search-container {
@@ -254,6 +257,22 @@
             .nav-item.active .nav-link {
                 font-size: 1.2rem;
             }
+            
+            /* Fix for dropdown in mobile view */
+            .navbar-icons-mobile .dropdown {
+                position: relative;
+                display: inline-block;
+            }
+            
+            /* Position dropdown content properly on mobile */
+            .navbar-icons-mobile .dropdown-content {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                left: auto;
+                z-index: 1050; /* Higher z-index to ensure it appears above other elements */
+                width: 180px; /* Fixed width */
+            }
         }
         
         /* Additional media query for very small screens */
@@ -281,6 +300,18 @@
                 font-size: 0.8rem;
                 margin-left: 8px;
             }
+            
+            /* Better spacing for the mobile icons */
+            .navbar-icons-mobile {
+                gap: 8px;
+                justify-content: space-around;
+                padding: 0 10px;
+            }
+            
+            /* Remove the erroneous 'x' after login buttons */
+            .navbar-icons-mobile:after {
+                content: none !important;
+            }
         }
         
         /* Added an extra breakpoint for extra small devices */
@@ -301,6 +332,21 @@
             .navbar-icons a i {
                 font-size: 0.9rem;
                 padding: 5px;
+            }
+            
+            /* Improve layout for very small screens */
+            .navbar-icons-mobile {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .navbar-icons-mobile a {
+                margin: 2px;
+            }
+            
+            .sign-in-link, .sign-up-link {
+                padding: 5px 10px;
+                font-size: 12px;
             }
         }
         
@@ -437,6 +483,13 @@
             .navbar-icons-mobile .user-name-link {
                 padding: 6px 12px;
                 font-size: 13px;
+            }
+            
+            /* Fix the erroneous 'x' character that appears after login buttons */
+            .navbar-icons-mobile:after,
+            .navbar-icons-mobile::after {
+                content: none !important;
+                display: none !important;
             }
         }
         
@@ -693,14 +746,19 @@
             }
         }
         .user-photo {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%; /* Makes it circular */
-    object-fit: cover;  /* Ensures the image doesn't stretch */
-    margin-right: 8px;
-    vertical-align: middle;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
-}
+            width: 32px;
+            height: 32px;
+            border-radius: 50%; /* Makes it circular */
+            object-fit: cover;  /* Ensures the image doesn't stretch */
+            margin-right: 8px;
+            vertical-align: middle;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
+        }
+        
+        /* Fix for unwanted 'x' character */
+        .navbar-icons-mobile::after {
+            content: none !important;
+        }
     </style>
 </head>
 <body>
@@ -731,18 +789,18 @@
                 <i class="fas fa-shopping-cart"></i>
             </a>
             
-            <% if (locals.user) { %>
+            <% if (user) { %>
                 <div class="dropdown">
                     <a href="" class="user-name-link">
-                        <% if (user.photo) { %>
-                            <img src="/uploads/user-photos/<%= user.photo %>" alt="User Photo" class="user-photo">
+                        <% if (user.userImage[0]) { %>
+                            <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
                           <% } else { %>
-                            <img src="/img/default-avatar.png" alt="Default Avatar" class="user-photo">
+                            <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg" alt="Default Avatar" class="user-photo">
                           <% } %>
                         
                     </a>
                     <div class="dropdown-content">
-                        <a href="/userProfile">Profile</a>
+                        <a href="/profile"><i class="fa-regular fa-circle-user"></i></i>Profile</a>
                         <a href="/logout">Logout</a>
                     </div>
                 </div>
@@ -783,18 +841,26 @@
                     <i class="fas fa-shopping-cart"></i>
                 </a>
                 
-                <%if(locals.user&&locals.name){%>
-                    <div class="dropdown">
-                        <a href="#" class="user-name-link"><%=locals.name%></a>
-                        <div class="dropdown-content">
-                            <a href="/userProfile">Profile</a>
-                            <a href="/logout">Logout</a>
-                        </div>
+                <% if (user) { %>
+                <div class="dropdown">
+                    <a href="" class="user-name-link">
+                        <% if (user.userImage) { %>
+                            <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
+                          <% } else { %>
+                            <img src="/img/default-avatar.png" alt="Default Avatar" class="user-photo">
+                          <% } %>
+                        
+                    </a>
+                    <div class="dropdown-content">
+                        <a href="/profile">Profile</a>
+                        <a href="/logout">Logout</a>
                     </div>
-                <%}else{%> 
-                    <a href="/login" class="sign-in-link">Log in</a> 
-                    <a href="/signUp" class="sign-up-link">Sign up</a>
-                <%}%>
+                </div>
+            <% } else { %> 
+                <a href="/login" class="sign-in-link">Log in</a> 
+                <a href="/signUp" class="sign-up-link">Sign up</a>
+            <% } %>
+            <!-- Removed the erroneous 'x' character that was here -->
             </div>
         </div> 
     </div>

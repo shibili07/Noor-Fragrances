@@ -3,6 +3,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         .content-wrapper {
@@ -344,8 +346,6 @@
                                     <th class="text-center"></th>
                                     <th>Name</th>
                                     <th>Description</th>
-                                    <th>Offer Price</th>
-                                    <th>Offer</th>
                                     <th>Status</th>
                                     <th>List/Unlist</th>
                                     <th class="text-start">Actions</th>
@@ -361,15 +361,8 @@
                                         <td>
                                             <%=category.description%>
                                         </td>
-                                        <td></td>
-                                        <td class="text-start">
-                                            <button class="btn btn-info" style="width: 100px">
-                                                <a href="#" class="text-white">Add Offer</a>
-                                            </button>
-                                            <button class="btn btn-info" style="width: 100px">
-                                                <a href="#" class="text-white">Remove</a>
-                                            </button>
-                                        </td>
+                                        
+                        
                                        
                                         <td class="text-start">
                                             <%if(category.isListed === true){%>  
@@ -385,9 +378,9 @@
                                         
                                         <td class="text-start">
                                             <% if(category.isListed === true){%>
-                                                <a href="/admin/unlistCategory?id=<%= category._id %>" class="text-white btn btn-danger" style="width: 70px" >Unlist</a>
+                                                <button onclick="confirmUnlist('<%= category._id %>')" class="text-white btn btn-danger" style="width: 70px">Unlist</button>
                                             <%}else{%>
-                                                <a href="/admin/listCategory?id=<%= category._id %>" class="text-white btn btn-success" style="width: 70px" >list</a>
+                                                <button onclick="confirmList('<%= category._id %>')" class="text-white btn btn-success" style="width: 70px">List</button>
                                                 <%}%>
                                         </td>
                                         
@@ -395,7 +388,6 @@
                                         <td class="text-start">
                                             <button class="btn btn-warning text-white" onclick="return actionValidate('<%=category._id%>')">Delete</button>
                                             <a href="/admin/editCategory?id=<%= category._id %>" class="btn btn-info text-white">Edit</a>
-
                                         </td>
                                     </tr>
                                     <%})%>
@@ -413,7 +405,7 @@
                     <% if (currentPage> 1) { %>
                         <li class="page-item">
                             <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
+                                <span aria-hidden="true">«</span>
                             </a>
                         </li>
                         <% } %>
@@ -438,7 +430,7 @@
                                                     <li class="page-item">
                                                         <a class="page-link" href="?page=<%= currentPage + 1 %>"
                                                             aria-label="Next">
-                                                            <span aria-hidden="true">&raquo;</span>
+                                                            <span aria-hidden="true">»</span>
                                                         </a>
                                                     </li>
                                                     <% } %>
@@ -457,11 +449,8 @@
                             <p>ARE YOU SURE ABOUT DELETING THIS CATEGORY ?</p>
                             <form action="/admin/deleteCategory" method="post">
                                 <input type="text" id="user_actionID" name="id" hidden>
-
                                 <button class="btn btn-primary">DELETE</button>
-
                             </form>
-
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -477,14 +466,82 @@
             <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
             <script>
                 function actionValidate(userID) {
-
                     document.getElementById('user_actionID').value = userID
                     let modalShow = new bootstrap.Modal(document.getElementById('userAction'))
                     modalShow.show()
                 }
+
                 function clearSearch() {
                     document.getElementById('searchInput').value = '';
                     document.getElementById('searchBtn').click();
+                }
+
+                function confirmList(categoryId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Do you want to list this category?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#34c759',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, list it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/admin/listCategory/${categoryId}`, {
+                                method: 'PATCH'
+                            }).then(response => {
+                                if (response.ok) {
+                                    Swal.fire(
+                                        'Listed!',
+                                        'The category has been listed.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Failed to list the category.',
+                                        'error'
+                                    );
+                                }
+                            });
+                        }
+                    });
+                }
+
+                function confirmUnlist(categoryId) {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'Do you want to unlist this category?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ff3b30',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, unlist it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/admin/unlistCategory/${categoryId}`, {
+                                method: 'PATCH'
+                            }).then(response => {
+                                if (response.ok) {
+                                    Swal.fire(
+                                        'Unlisted!',
+                                        'The category has been unlisted.',
+                                        'success'
+                                    ).then(() => {
+                                        window.location.reload();
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Failed to unlist the category.',
+                                        'error'
+                                    );
+                                }
+                            });
+                        }
+                    });
                 }
             </script>
     </body>

@@ -4,19 +4,293 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Noor Fragrances - Login</title>
-    <link rel="stylesheet" href="/styles/login.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap">
+    <!-- Add SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      :root {
+        /* Original login page colors */
+        --primary-color: rgb(73, 17, 39);
+        --secondary-color: #5a176f;
+        --accent-color:rgb(104, 24, 56);
+        --light-color: #f7f9fc;
+        --error-color: #dc3545;
+        --text-color: #333;
+        --border-radius: 8px;
+        --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        --transition: all 0.3s ease;
+      }
+
+      body {
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: var(--light-color);
+        color: var(--text-color);
+        line-height: 1.5;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        margin: 0;
+      }
+
+      .page-container {
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        background: white;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        box-shadow: var(--box-shadow);
+        max-height: 98vh;
+      }
+
+      .image-container {
+        flex: 0.8;
+        background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        position: relative;
+      }
+      
+      .brand-logo {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        text-align: center;
+        letter-spacing: 2px;
+        line-height: 1.2;
+        z-index: 1;
+        position: relative;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      }
+      
+      .brand-logo span {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: 400;
+        letter-spacing: 5px;
+        margin-top: 5px;
+        opacity: 0.9;
+      }
+
+      .image-container::before {
+        content: '';
+        position: absolute;
+        width: 150%;
+        height: 150%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        top: -25%;
+        left: -25%;
+        animation: pulse 8s infinite ease-in-out;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.5; }
+        50% { transform: scale(1.05); opacity: 0.8; }
+      }
+
+      .signup-container {
+        flex: 1.2;
+        padding: 30px 40px;
+        overflow-y: auto;
+      }
+
+      h1 {
+        color: var(--accent-color);
+        margin-bottom: 25px;
+        font-weight: 600;
+        text-align: center;
+        font-size: 26px;
+        font-family: 'Playfair Display', serif;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+        position: relative;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 500;
+        color: var(--accent-color);
+        font-size: 14px;
+      }
+
+      input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        font-size: 14px;
+        transition: var(--transition);
+      }
+
+      input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px rgba(139, 109, 98, 0.2);
+        outline: none;
+      }
+
+      .password-container {
+        position: relative;
+      }
+
+      .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #777;
+        z-index: 10;
+      }
+
+      .forgot-password {
+        text-align: right;
+        margin-bottom: 20px;
+      }
+
+      .forgot-password a {
+        color: var(--primary-color);
+        font-size: 14px;
+        text-decoration: none;
+        transition: var(--transition);
+        font-weight: 500;
+      }
+
+      .forgot-password a:hover {
+        color: var(--accent-color);
+        text-decoration: underline;
+      }
+
+      button[type="submit"] {
+        width: 100%;
+        padding: 12px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        margin-top: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      button[type="submit"]:hover {
+        background-color: var(--accent-color);
+        transform: translateY(-2px);
+      }
+
+      .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 25px 0;
+      }
+
+      .divider::before,
+      .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #ddd;
+      }
+
+      .divider span {
+        padding: 0 15px;
+        color: #757575;
+        font-size: 14px;
+      }
+
+      .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #fff;
+        color: #757575;
+        border: 1px solid #ddd;
+        border-radius: var(--border-radius);
+        padding: 12px;
+        width: 100%;
+        font-size: 15px;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .google-btn:hover {
+        background-color: #f8f8f8;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+      }
+
+      .google-btn svg {
+        margin-right: 10px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .signin-link {
+        text-align: center;
+        margin-top: 25px;
+        font-size: 14px;
+      }
+
+      .signin-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      .signin-link a:hover {
+        color: var(--accent-color);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .page-container {
+          flex-direction: column;
+          max-width: 90%;
+        }
+
+        .image-container {
+          padding: 15px;
+          max-height: 120px;
+        }
+
+        .signup-container {
+          padding: 20px 15px;
+        }
+
+        h1 {
+          font-size: 22px;
+          margin-bottom: 15px;
+        }
+      }
+    </style>
   </head>
   <body>
     <div class="page-container">
       <div class="image-container">
-        <img src="/img/logo/logo2.png" alt="Noor Fragrance bottle" />
+        <div class="brand-logo">
+          <img class="img-fluid" src="/img/logo/ChatGPT Image Apr 30, 2025, 05_58_55 PM.png" >
+        </div>
       </div>
 
       <div class="signup-container">
         <h1>Welcome Back!</h1>
 
-        <form method="post" action="/login">
+        <form id="loginForm">
           <div class="form-group">
             <label for="email">Email</label>
             <input
@@ -24,22 +298,26 @@
               id="email"
               name="email"
               placeholder="Enter your email"
+              required
             />
           </div>
 
           <div class="form-group">
             <label for="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              placeholder="Enter your password"
-            />
+            <div class="password-container">
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+              <span class="toggle-password" id="togglePassword">
+                <i class="fa-solid fa-eye"></i>
+              </span>
+            </div>
           </div>
-          <br>
-          <% if (locals.message && message.length > 0){%>
-            <div class="alert alert-danger text-center"><%= message %></div>
-          <%}%>
+          
 
           <div class="forgot-password">
             <a href="/verifyEmail">Forgot Password?</a>
@@ -49,9 +327,10 @@
         </form>
 
         <div class="divider">
-          <span>Or</span>
+          <span>OR</span>
         </div>
-        <button class="google-btn" name="google_signin">
+        
+        <a class="google-btn" href="/auth/google" name="google_signin"> 
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -76,28 +355,76 @@
             />
           </svg>
           Continue With Google
-        </button>
-        <br>
-        <button class="google-btn" name="facebook_signin">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="#1877F2"
-          >
-            <path
-              d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-            />
-          </svg>
-          Continue With Facebook
-        </button>
+        </a>
 
         <div class="signin-link">
           Don't have an account? <a href="/signup">Sign Up</a>
         </div>
       </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const togglePassword = document.getElementById("togglePassword");
+        const password = document.getElementById("password");
+        const loginForm = document.getElementById("loginForm");
+        
+        // Password visibility toggle
+        togglePassword.addEventListener("click", function() {
+          const type = password.getAttribute("type") === "password" ? "text" : "password";
+          password.setAttribute("type", type);
+          this.querySelector("i").classList.toggle("fa-eye");
+          this.querySelector("i").classList.toggle("fa-eye-slash");
+        });
+
+        // Form submission with Fetch and SweetAlert2
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault(); // Prevent default form submission
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await fetch("/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Success: Show success alert and redirect
+              Swal.fire({
+                icon: "success",
+                title: "Login Successful!",
+                text: "Welcome back to Noor Fragrances!",
+                timer: 2000,
+                showConfirmButton: false,
+              }).then(() => {
+                window.location.href = "/"; // Redirect to dashboard or home
+              });
+            } else {
+              // Error: Show error message from server
+              Swal.fire({
+                icon: "error",
+                title: "Login Failed",
+                text: data.message || "Invalid email or password",
+              });
+            }
+          } catch (error) {
+            // Network or unexpected error
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text: "Something went wrong. Please try again later.",
+            });
+          }
+        });
+      });
+    </script>
   </body>
 </html>

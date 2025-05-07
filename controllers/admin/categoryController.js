@@ -120,31 +120,52 @@ const editCategory = async (req, res) => {
 
 const listCategory = async(req,res)=>{
     try{
-        const {id} = req.query
-    await Category.updateOne(
-        {_id:id},
-        {$set:{isListed:true}}
-    )
-    res.redirect("/admin/category")
+    const {id}=req.params
+    console.log(id);
+    
+   
+    if(!id){
+        return res.status(400).json({success:false,message:"Category Not Found!"})
+    }
+    const listCat = await Category.findByIdAndUpdate(
+        id,
+        { isListed: true },
+        { new: true }
+      );
+    if(listCat){
+        return res.status(200).json({success:true,message:"Category Listed Successfully"})
+    }else{
+        return res.status(400).json({success:false,message:"Error Occurred While Listing category"})
 
+    }
     }catch(error){
-        res.redirect("/pageError")
+        return res.status(500).json({success:false,message:"Internal Server Error"})
     }
     
 }
+
 const unlistCategory = async(req,res)=>{
     try{
-        const {id} = req.query
-    await Category.updateOne(
-        {_id:id},
-        {$set:{isListed:false}}
-    )
-    res.redirect("/admin/category")
-
-    }catch(error){
-        res.redirect("/pageError")
-    }
+        const {id}=req.params
+        console.log(id);
+        
     
+        if(!id){
+            return res.status(400).json({success:false,message:"Category Not Found!"})
+        }
+        const unlistCat = await Category.findByIdAndUpdate(
+            id,
+            { isListed: false },
+            { new: true }
+          );
+        if(unlistCat){
+            return res.status(200).json({success:true,message:"Category Listed Successfully"})
+        }else{
+            return res.status(400).json({success:false,message:"Error Occurred While Listing category"})
+        }
+        }catch(error){
+            return res.status(500).json({success:false,message:"Internal Server Error"})
+        }
 }
 
 
@@ -158,3 +179,10 @@ module.exports = {
     listCategory,
     unlistCategory
 }
+
+
+
+
+
+
+

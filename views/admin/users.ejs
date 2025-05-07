@@ -3,6 +3,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
 <style>
     .content-wrapper {
@@ -166,7 +168,6 @@
         <div class="card">
             <div class="card-body d-flex justify-content-between align-items-center responsive-header">
                 <h1 class="mb-0 fs-4 fw-bold">Users Management</h1>
-                
             </div>
         </div>
 
@@ -209,6 +210,7 @@
                                 <th>EMAIL</th>
                                 <th>PHONE</th>
                                 <th>DATE OF CREATION</th>
+                                <th>WALLET</th>
                                 <th>ACTIONS</th>
                             </tr>
                         </thead>
@@ -218,21 +220,26 @@
                                 <td><%=i+1%></td>
                                 <td>
                                     <div class="user-image">
-                                        <span class="user-icon">👤</span>
+                                        <% if (data[i].userImage.length === 0) { %>
+                                            <i class="fas fa-user user-icon"></i>
+                                        <% } else { %>
+                                            <img src="<%=data[i].userImage[0]%>" class="user-icon" alt="">
+                                        <% } %>
                                     </div>
                                 </td>
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].email%></td>
                                 <td><%=data[i].phone%></td>
                                 <td><%= new Date(data[i].createdAt).toLocaleDateString() %></td>
+                                <td><a href="/admin/walletDetails/<%= data[i]._id %>" class="btn btn-info">Details</a></td>
                                 <td>
                                     <div class="d-flex align-items-center">
-                                        
                                         <% if (data[i].isBlocked === false) { %>
-                                            <button class="btn block-button" onclick="return actionValidate('<%=data[i]._id%>')">BLOCK</button>
+                                            <button class="btn block-button" onclick="blockUser('<%=data[i]._id%>', '<%=data[i].name%>')">BLOCK</button>
                                         <% } else { %>
-                                            <a href="/admin/unblockCustomer?id=<%= data[i]._id %>" class="btn unblock-button">UNBLOCK</a>
+                                            <button class="btn unblock-button" onclick="unblockUser('<%=data[i]._id%>', '<%=data[i].name%>')">UNBLOCK</button>
                                         <% } %>
+                                    </div>
                                 </td>
                             </tr>
                             <%}%>
@@ -246,7 +253,6 @@
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
                 <%for(let i=1;i<=totalPages;i++){%>
-
                 <li class="page-item <%=(i===currentPage)?'active' : ''%>">
                     <a class="page-link" href="?page=<%=i%>"><%= i %></a>
                 </li> 
@@ -254,50 +260,103 @@
             </ul>
         </nav>
     </div>
-  
 
-    <div class="modal" tabindex="-1" id="userAction">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">BLOCK USER</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <p>ARE YOU SURE ABOUT BLOCKING THIS USER ?</p>
-              <form action="/admin/blockCustomer" method="post">
-                <input type="text" id="user_actionID" name="id" hidden>
-                
-                <button class="btn btn-primary">BLOCK</button>
-
-              </form>
-              
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-
-        function actionValidate(userID){
-
-            document.getElementById('user_actionID').value=userID
-
-            let modalShow =  new bootstrap.Modal(document.getElementById('userAction'))
-            modalShow.show()
-        }
-
         function clearSearch() {
             document.getElementById('searchInput').value = '';
             document.getElementById('searchBtn').click();
         }
 
+        async function blockUser(userId, userName) {
+            const result = await Swal.fire({
+                title: 'Block User',
+                text: `Are you sure you want to block ${userName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff3b30',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, block user'
+            });
+
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/blockCustomer/${userId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'Blocked!',
+                            text: `${userName} has been blocked successfully`,
+                            icon: 'success',
+                            confirmButtonColor: '#5e5ce6'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        throw new Error('Failed to block user');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to block user. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#5e5ce6'
+                    });
+                }
+            }
+        }
+
+        async function unblockUser(userId, userName) {
+            const result = await Swal.fire({
+                title: 'Unblock User',
+                text: `Are you sure you want to unblock ${userName}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#34c759',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, unblock user'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/unblockCustomer/${userId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: 'Unblocked!',
+                            text: `${userName} has been unblocked successfully`,
+                            icon: 'success',
+                            confirmButtonColor: '#5e5ce6'
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        throw new Error('Failed to unblock user');
+                    }
+                } catch (error) {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to unblock user. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#5e5ce6'
+                    });
+                }
+            }
+        }
     </script>
-    
 </body>

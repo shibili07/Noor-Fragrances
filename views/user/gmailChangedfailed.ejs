@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invalid or Expired Token</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Header styles */
+        .header {
+            background-color: white;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            width: 100%;
+        }
+        
+        .header-logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .header-logo img {
+            height: 40px;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            text-align: center;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 400px;
+            max-width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .error-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #ea4335;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            position: relative;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .error-x {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .error-x:before,
+        .error-x:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 40px;
+            background-color: white;
+            border-radius: 3px;
+        }
+        
+        .error-x:before {
+            transform: translate(-50%, -50%) rotate(45deg);
+            animation: xLeft 0.5s ease-out 0.3s backwards;
+        }
+        
+        .error-x:after {
+            transform: translate(-50%, -50%) rotate(-45deg);
+            animation: xRight 0.5s ease-out 0.3s backwards;
+        }
+        
+        .message {
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #ea4335;
+            font-size: 24px;
+            margin-bottom: 10px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.7s forwards;
+        }
+        
+        p {
+            color: #5f6368;
+            font-size: 16px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.9s forwards;
+        }
+        
+        .btn {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 1.1s forwards;
+        }
+        
+        .btn:hover {
+            background-color: #0d62d0;
+        }
+        
+        .gmail-colors {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            top: 0;
+            left: 0;
+            display: flex;
+        }
+        
+        .gmail-colors div {
+            flex: 1;
+            height: 100%;
+        }
+        
+        .gmail-color-1 { background-color: #4285f4; }
+        .gmail-color-2 { background-color: #ea4335; }
+        .gmail-color-3 { background-color: #fbbc05; }
+        .gmail-color-4 { background-color: #34a853; }
+        
+        /* Footer styles */
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            color: #5f6368;
+            font-size: 13px;
+            text-align: center;
+            border-top: 1px solid #dadce0;
+            width: 100%;
+        }
+        
+        .footer-links {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #5f6368;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .copyright {
+            color: #9e9e9e;
+        }
+        
+        /* Animations */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes xLeft {
+            0% { 
+                height: 0;
+                transform: translate(-50%, -50%) rotate(45deg);
+            }
+            100% { 
+                height: 40px;
+                transform: translate(-50%, -50%) rotate(45deg);
+            }
+        }
+        
+        @keyframes xRight {
+            0% { 
+                height: 0;
+                transform: translate(-50%, -50%) rotate(-45deg);
+            }
+            100% { 
+                height: 40px;
+                transform: translate(-50%, -50%) rotate(-45deg);
+            }
+        }
+        
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-logo">
+            <img src="/api/placeholder/132/40" alt="Gmail Logo">
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div class="container">
+            <div class="gmail-colors">
+                <div class="gmail-color-1"></div>
+                <div class="gmail-color-2"></div>
+                <div class="gmail-color-3"></div>
+                <div class="gmail-color-4"></div>
+            </div>
+            
+            <div class="error-icon">
+                <div class="error-x"></div>
+            </div>
+            
+            <div class="message">
+                <h1>Email Change Failed</h1>
+                <p>
+                    <% if (typeof message !== 'undefined' && message) { %>
+                        <%= message %>
+                    <% } else { %>
+                        The link to change your email is invalid or has expired. Please try the email change process again.
+                    <% } %>
+                </p>
+                <a href="/change-email" class="btn">Try Again</a>
+            </div>
+            
+            <a href="/profile" class="btn">Go to Profile</a>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <div class="footer-links">
+            <a href="#">Terms</a>
+            <a href="#">Privacy</a>
+            <a href="#">Security</a>
+            <a href="#">Help Center</a>
+        </div>
+        <div class="copyright">
+            © 2025 Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+        </div>
+    </footer>
+</body>
+</html>

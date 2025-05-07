@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wishlist</title>
+ 
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #f9f9f9;
+    }
+
+    main {
+      flex: 1 0 auto;
+      padding-bottom: 40px;
+    }
+
+    footer {
+      flex-shrink: 0;
+      width: 100%;
+      background-color: #f0f0f0;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: center;
+      color: #888;
+    }
+
+    .header-placeholder {
+      width: 100%;
+      height: 80px;
+      background-color: #f0f0f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #888;
+    }
+
+    .breadcrumb {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .breadcrumb a {
+      color: #666;
+      text-decoration: none;
+    }
+
+    .breadcrumb span {
+      margin: 0 10px;
+      color: #999;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 40px;
+    }
+
+    .wishlist-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .wishlist-title {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .move-all-btn {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .move-all-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    .wishlist-table {
+      width: 100%;
+      background-color: #fff;
+      border-collapse: separate;
+      border-spacing: 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+    }
+
+    .wishlist-table th,
+    .wishlist-table td {
+      padding: 20px;
+      text-align: left;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .wishlist-table th {
+      font-weight: bold;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .item-remove {
+      cursor: pointer;
+      font-size: 18px;
+      color: #999;
+      text-align: center;
+    }
+
+    .item-image {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+    }
+
+    .item-details {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .item-name {
+      font-weight: bold;
+      margin-bottom: 5px;
+      font-size: 16px;
+      color: #333;
+    }
+
+    .item-size,
+    .item-quantity {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 3px;
+    }
+
+    .item-price {
+      font-weight: bold;
+      color: #333;
+      font-size: 18px;
+      text-align: right;
+    }
+
+    .add-to-cart-btn {
+      background-color: #ff4b5c;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .add-to-cart-btn:hover {
+      background-color: #ff3046;
+    }
+
+    .loading {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 30px;
+      gap: 5px;
+    }
+
+    .pagination button {
+      width: 35px;
+      height: 35px;
+      margin: 0 2px;
+      border-radius: 4px;
+      border: 1px solid #fd334e;
+      background-color: white;
+      color: #fd334e;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .pagination button.active {
+      background-color: #fd334e;
+      color: white;
+      border-color: #fd334e;
+    }
+
+    .pagination button:hover:not(.active):not(.disabled) {
+      background-color: #fd334e;
+      color: white;
+    }
+
+    .pagination .next,
+    .pagination .prev {
+      width: 35px;
+      background-color: white;
+      color: #fd334e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pagination button.disabled {
+      background-color: #f0f0f0;
+      color: #999;
+      border-color: #f0f0f0;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      text-align: center;
+      margin-top: 10px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .wishlist-table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .wishlist-table thead {
+        display: none;
+      }
+
+      .wishlist-table tr {
+        display: block;
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .wishlist-table td {
+        display: block;
+        text-align: left;
+        padding: 10px 0;
+        border: none;
+      }
+
+      .wishlist-table td:before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: #333;
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .item-image {
+        margin-bottom: 10px;
+      }
+
+      .item-price {
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .wishlist-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .wishlist-title {
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <%- include("../../views/partials/user/header") %>
+  </header>
+
+  <main>
+    <div class="breadcrumb">
+      <a href="/">Home</a>
+      <span>›</span>
+      <a href="#" style="font-weight: bold;">Wishlist</a>
+    </div>
+
+    <div class="container">
+      <div class="wishlist-header">
+        <h1 class="wishlist-title">Wishlist</h1>
+        
+      </div>
+
+      <div class="wishlist-items">
+        <% if (wishlist?.data?.items?.length > 0) { %>
+        <table class="wishlist-table">
+          <thead>
+            <tr>
+              <th>Remove</th>
+              <th>Product</th>
+              <th>Details</th>
+              <th>Price</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% wishlist.data.items.forEach(item => { %>
+            <tr data-item-id="<%= item.productId %>">
+
+              <td data-label="Remove">
+                <div class="item-remove" data-item-id="<%= item.productId %>" onclick="removeItem('<%= item.productId %>', this)">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+              </td>
+
+              <td data-label="Product">
+                <img src="<%= item.productImage %>" alt="<%= item.productName %>" class="item-image">
+              </td>
+              <td data-label="Details">
+                <div class="item-details">
+                  <div class="item-name"><%= item.productName %></div>
+                  <div class="item-size">Brand: <%= item.brand || 'N/A' %></div>
+
+                </div>
+              </td>
+              <td data-label="Price" class="item-price">₹<%= item.salePrice || item.regularPrice %></td>
+              <td data-label="Action">
+                <button class="add-to-cart-btn" data-item-id="<%= item.productId %>" data-size="<%= item.size %>" ata-item-quantity="<%=item.quantity%>">Add to cart</button>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        <% } else { %>
+        <div class="empty-wishlist">
+          <h2>Your wishlist is empty</h2>
+          <a href="/" class="continue-shopping-btn">Continue Shopping</a>
+        </div>
+        <% } %>
+
+        <!-- Pagination -->
+        <% if (wishlist?.data?.items?.length > 0 && totalPages > 1) { %>
+        <div class="pagination">
+          <button class="prev <%= currentPage === 1 ? 'disabled' : '' %>" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <div id="page-links">
+            <% for (let i = 1; i <= totalPages; i++) { %>
+            <button class="<%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
+            <% } %>
+          </div>
+          <button class="next <%= currentPage === totalPages ? 'disabled' : '' %>" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <div class="pagination-info">
+          Page <%= currentPage %> of <%= totalPages %>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <%- include("../../views/partials/user/footer") %>
+  </footer>
+ 
+ 
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    
+    // Navigate to a specific page
+    function navigatePage(page) {
+      const totalPages = <%= totalPages || 1 %>;
+      const limit = <%= limit || 4 %>; // Set default limit to 4
+      if (page < 1 || page > totalPages) return;
+      const url = new URL(window.location);
+      url.searchParams.set('page', page);
+      url.searchParams.set('limit', limit);
+      window.location.href = url.toString();
+    }
+
+    // Initialize Notyf
+
+   
+    async function removeItem(itemId, element) {
+    try {
+        element.closest('tr').classList.add('loading');
+        const response = await fetch('/removeToWishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId: itemId
+            }),
+        });
+        if (response.ok) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Removed!',
+                text: 'Item removed from wishlist!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            element.closest('tr').remove();
+        } else {
+            await Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: 'Failed to remove item.',
+            });
+        }
+        window.location.reload();
+    } catch (err) {
+        console.error('Error removing item:', err);
+        await Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            text: 'An error occurred. Please try again.',
+        });
+    } finally {
+        element.closest('tr').classList.remove('loading');
+    }
+}
+
+  
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const itemId = button.dataset.itemId;
+    const size = button.dataset.size;
+    const quantity = button.dataset.itemQuantity || 1; // Default to 1 if missing
+    const flag =1
+    // Build the query string
+    const query = new URLSearchParams({
+      productId: itemId,
+      size: size,
+      quantity: quantity,
+      flag:flag
+
+    }).toString();
+
+    try {
+      button.classList.add('loading');
+
+      const response = await fetch(`/addToCart?${query}`, { // <-- Query in URL
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+        // No body in GET request
+      });
+
+      if (response.ok) {
+        await Swal.fire({
+          icon: 'success',
+          title: 'Added to Cart!',
+          text: 'Item successfully moved to your cart.',
+          timer: 1500,
+          showConfirmButton: false
+        });
+        button.closest('tr').remove();
+        if (!document.querySelector('.wishlist-table tbody tr')) {
+          window.location.reload(); // Reload to show empty wishlist
+        }
+      } else {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Failed',
+          text: 'Failed to add item to cart.',
+        });
+      }
+      
+    } catch (err) {
+      console.error('Error adding item to cart:', err);
+      await Swal.fire({
+        icon: 'error',
+        title: 'Oops!',
+        text: 'An error occurred. Please try again.',
+      });
+    } finally {
+      button.classList.remove('loading');
+    }
+  });
+});
+
+  </script>
+</body>
+
+</html>

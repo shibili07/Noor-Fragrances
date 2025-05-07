@@ -14,7 +14,7 @@ const cartSchema = new Schema({
             required: true
         },
         size: {
-            type: [String],
+            type: String,
             required: true,
         },
         quantity: {
@@ -38,10 +38,7 @@ const cartSchema = new Schema({
             type: String,
             default: "none"
         },
-        // isCart:{
-        //     type:Boolean,
-        //     default:false,
-        // }
+        
     }]
 }, { timestamps: true });
 

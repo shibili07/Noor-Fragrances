@@ -1,0 +1,425 @@
+<%- include("../../views/partials/admin/header") %>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .content-wrapper {
+            padding: 20px;
+            margin-top: 70px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+            background-color: #f5f5f7;
+            min-height: calc(100vh - 70px);
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .table thead th {
+            background-color: #1c1c24;
+            color: white;
+            font-weight: normal;
+            border: none;
+            padding: 15px;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .order-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #cddbe7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid #6a9eca;
+        }
+
+        .order-icon {
+            color: #6a9eca;
+            font-size: 20px;
+        }
+
+        .view-button {
+            background-color: #5e5ce6;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 5px 15px;
+            font-weight: bold;
+        }
+
+        .view-button:hover {
+            background-color: #4b4ab3;
+            color: white
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status-delivered {
+            background-color: #34c759;
+            color: white;
+        }
+        .status-pending {
+            background-color: #ce4f14;
+            color: white;
+        }
+
+        .status-processing {
+            background-color: #ff9500;
+            color: white;
+        }
+
+        .status-cancelled {
+            background-color: #ff3b30;
+            color: white;
+        }
+
+        .status-shipped {
+            background-color: #007aff;
+            color: white;
+        }
+
+        .add-button {
+            width: 45px;
+            height: 45px;
+            background-color: #5e5ce6;
+            color: white;
+            font-size: 24px;
+            border: none;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-icon {
+            cursor: pointer;
+            margin: 0 5px;
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 992px) {
+            .content-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .responsive-header {
+                flex-direction: column;
+                align-items: start !important;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .actions-container {
+                width: 100%;
+                justify-content: space-between !important;
+                margin-top: 10px;
+            }
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 0;
+            z-index: 3;
+            border: none;
+            background: transparent;
+            padding: 8px 12px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .clear-search:hover {
+            color: #333;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .clear-search-btn {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .clear-search-btn:hover {
+            background-color: #5a6268;
+            transform: translateY(-1px);
+        }
+
+        @media screen and (max-width: 768px) {
+            .d-flex.gap-2 {
+                gap: 0.5rem !important;
+            }
+
+            .clear-search-btn {
+                padding: 6px 12px;
+            }
+        }
+
+        .status-filter {
+            min-width: 150px;
+        }
+
+        .status-filter .form-select {
+            background-color: white;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #1c1c24;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .status-filter .form-select:focus {
+            border-color: #5e5ce6;
+            box-shadow: 0 0 0 0.2rem rgba(94, 92, 230, 0.25);
+        }
+
+        .status-filter .form-select:hover {
+            border-color: #5e5ce6;
+        }
+
+        @media screen and (max-width: 768px) {
+            .responsive-header {
+                flex-direction: column;
+                align-items: start !important;
+                gap: 10px;
+            }
+
+            .status-filter {
+                width: 100%;
+            }
+        }
+
+        .input-group .form-control[type="date"] {
+            max-width: 150px;
+        }
+
+        .input-group .form-control[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+        }
+
+        @media screen and (max-width: 768px) {
+            .input-group .form-control[type="date"] {
+                max-width: 100%;
+            }
+        }
+    </style>
+
+    <body>
+        <div class="content-wrapper">
+            <!-- Header Section -->
+            <div class="card">
+                <div class="card-body d-flex justify-content-between align-items-center responsive-header">
+                    <div class="d-flex align-items-center gap-3">
+                        <h1 class="mb-0 fs-4 fw-bold">Orders Management</h1>
+                        <div class="status-filter">
+                            <select class="form-select" id="statusFilter" onchange="filterByStatus(this.value)">
+                                <option value="">All Status</option>
+                                <% statusOptions.forEach(option => { %>
+                                    <option value="<%= option %>" <%= status === option ? 'selected' : '' %>>
+                                        <%= option %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Section -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="/admin/orders" method="GET">
+                        <div class="row">
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control" id="searchInput" name="search"
+                                        placeholder="Search orders by ID, customer name or status...">
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-2 mb-md-0">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white">
+                                        <i class="fas fa-calendar text-muted"></i>
+                                    </span>
+                                    <input type="date" class="form-control" id="startDate" name="startDate"
+                                        value="<%= startDate %>" placeholder="Start Date">
+                                    <input type="date" class="form-control" id="endDate" name="endDate"
+                                        value="<%= endDate %>" placeholder="End Date">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex gap-2">
+                                    <input type="submit" id="searchBtn" class="btn btn-primary flex-grow-1"
+                                        style="background-color: #5e5ce6; border-color: #5e5ce6;" value="Search">
+                                    <button type="button" class="btn btn-secondary clear-search-btn"
+                                        onclick="clearSearch()">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Table Section -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>IMAGE</th>
+                                    <th>ORDER ID</th>
+                                    <th>CUSTOMER NAME</th>
+                                    <th>ORDER DATE</th>
+                                    <th>TOTAL AMOUNT</th>
+                                    <th>STATUS</th>
+                                    <th>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <%for(let i=0;i<orders.length;i++){%>
+                                    <tr>
+                                        <td>
+                                            <div class="order-image">
+                                                <span class="order-icon"><i class="fas fa-box"></i></span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <%=orders[i].orderId%>
+                                        </td>
+
+                                        <td><%= orders[i].userId?.name || 'N/A' %></td>
+                                    
+
+
+
+                                                <td>
+                                                    <%= new Date(orders[i].createdOn).toLocaleDateString('en-GB') %>
+                                                </td>
+                                                <td>₹<%=orders[i].totalPrice%>
+                                                </td>
+                                                <td>
+                                                    <% if (orders[i].status==='Delivered' ) { %>
+                                                        <span class="status-badge status-delivered">Delivered</span>
+                                                        <% } else if (orders[i].status==='Processing' ) { %>
+                                                            <span
+                                                                class="status-badge status-processing">Processing</span>
+                                                            <% } else if (orders[i].status==='Cancelled' ) { %>
+                                                                <span
+                                                                    class="status-badge status-cancelled">Cancelled</span>
+                                                                <% } else if (orders[i].status==='Shipped' ) { %>
+                                                                    <span
+                                                                        class="status-badge status-shipped">Shipped</span>
+                                                                    <% } else if (orders[i].status==='Pending' ) { %>
+                                                                        <span class="status-badge status-pending">
+                                                                            <%=orders[i].status%>
+                                                                        </span>
+                                                                        <% }else{%>
+                                                                            <span class="status-badge">
+                                                                                <%=orders[i].status%>
+                                                                            </span>
+
+                                                                        <%} %>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="/admin/viewOrder?id=<%=orders[i]._id%>"
+                                                            class="btn view-button">VIEW</a>
+                                                    </div>
+                                                </td>
+                                    </tr>
+                                    <%}%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <%for(let i=1;i<=totalPages;i++){%>
+                        <li class="page-item <%=(i===currentPage)?'active' : ''%>">
+                            <a class="page-link" href="?page=<%=i%>">
+                                <%= i %>
+                            </a>
+                        </li>
+                        <%}%>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Bootstrap JS Bundle with Popper -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script>
+            function filterByStatus(status) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('status', status);
+                url.searchParams.set('page', '1'); // Reset to first page when changing status
+                window.location.href = url.toString();
+            }
+
+            function clearSearch() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('startDate').value = '';
+                document.getElementById('endDate').value = '';
+                const url = new URL(window.location.href);
+                url.searchParams.delete('search');
+                url.searchParams.delete('status');
+                url.searchParams.delete('startDate');
+                url.searchParams.delete('endDate');
+                window.location.href = url.toString();
+            }
+
+            document.getElementById('endDate').addEventListener('change', function() {
+                const startDate = document.getElementById('startDate').value;
+                const endDate = this.value;
+                
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    alert('End date cannot be before start date');
+                    this.value = '';
+                }
+            });
+
+            document.getElementById('startDate').addEventListener('change', function() {
+                const startDate = this.value;
+                const endDate = document.getElementById('endDate').value;
+                
+                if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+                    alert('End date cannot be before start date');
+                    document.getElementById('endDate').value = '';
+                }
+            });
+        </script>
+
+    </body>

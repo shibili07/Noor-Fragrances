@@ -1,0 +1,201 @@
+<html>
+    <head>
+<style>
+    /* Sidebar Styles */
+.user-sidebar {
+    background-color: #fff;
+    border-right: 1px solid #eaeaea;
+    width: 100%;
+    padding: 25px 15px;
+    height: 100%;
+}
+
+.user-greeting {
+    padding-left: 15px;
+    margin-bottom: 30px;
+    border-left: 3px solid #FD334E;
+}
+
+.user-greeting h2 {
+    font-family: 'Akshar', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.user-greeting p {
+    color: #807D7E;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.user-name {
+    color: #FD334E;
+}
+
+.sidebar-navigation ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-item {
+    margin-bottom: 5px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    color: #807D7E;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.sidebar-link i {
+    width: 24px;
+    margin-right: 10px;
+    text-align: center;
+}
+
+.sidebar-link:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.sidebar-item.active .sidebar-link {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: 600;
+    border-left: 3px solid #FD334E;
+}
+
+/* Responsive styles */
+@media (max-width: 991px) {
+    .user-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #eaeaea;
+        margin-bottom: 20px;
+    }
+
+    .sidebar-navigation ul {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .sidebar-item {
+        flex: 1 1 calc(50% - 5px);
+        min-width: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .sidebar-item {
+        flex: 1 1 100%;
+    }
+
+    .user-greeting h2 {
+        font-size: 22px;
+    }
+}
+
+</style>
+</head>
+<body>
+<div class="user-sidebar">
+    <% if (user) { %>
+    <div class="user-greeting">
+       
+        <h2>Hello <span class="user-name"><%=user.name%></span></h2>
+        <p>Welcome to your Account</p>
+  
+    </div>
+
+    <% } %>
+    
+    <nav class="sidebar-navigation">
+        <ul>
+            <li class="sidebar-item">
+                <a href="/profile" class="sidebar-link">
+                    <i class="far fa-user"></i>
+                    <span>My info</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/address" class="sidebar-link">
+                    <i class="fas fa-address-card"></i>
+                    <span>Addresses</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/myOrders" class="sidebar-link">
+                    <i class="fas fa-box-open"></i>
+                    <span>My orders</span>
+                </a>
+            </li>
+        
+            <li class="sidebar-item">
+                <a href="/wallet" class="sidebar-link">
+                    <i class="fas fa-wallet"></i>
+                    <span>Wallet</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/referAndEarn" class="sidebar-link">
+                    <i class="fa-solid fa-people-pulling"></i>
+                    <span>Refer and Earn</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/logout" class="sidebar-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign out</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script>
+    // Set active class based on current URL path
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get current path
+        const currentPath = window.location.pathname;
+        
+        // Find all sidebar links
+        const sidebarLinks = document.querySelectorAll('.sidebar-link');
+        
+        // Loop through each link
+        sidebarLinks.forEach(link => {
+            // Check if the link's href matches the current path
+            if (link.getAttribute('href') === currentPath) {
+                // Add active class to the parent li element
+                link.parentElement.classList.add('active');
+            }
+        });
+        
+        // Add click event listeners to all sidebar links
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Only handle links that don't navigate away from the page
+                if (this.getAttribute('href').startsWith('#')) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all items
+                    document.querySelectorAll('.sidebar-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked item
+                    this.parentElement.classList.add('active');
+                }
+            });
+        });
+    });
+</script>
+    
+</body>
+</html>

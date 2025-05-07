@@ -1,207 +1,200 @@
 <%- include("../../views/partials/admin/header") %>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <style>
+<style>
+    .content-wrapper {
+        padding: 20px;
+        margin-top: 70px;
+        margin-left: 280px;
+        transition: all 0.3s ease;
+        background-color: #f5f5f7;
+        min-height: calc(100vh - 70px);
+    }
+
+    .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .table thead th {
+        background-color: #1c1c24;
+        color: white;
+        font-weight: normal;
+        border: none;
+        padding: 15px;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .product-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #dee2e6;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .add-button {
+        width: 45px;
+        height: 45px;
+        background-color: #5e5ce6;
+        color: white;
+        font-size: 24px;
+        border: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+    }
+
+    .add-button:hover {
+        background-color: #4a48d4;
+        color: white;
+    }
+
+    /* Button Styles */
+    td .btn {
+        width: 110px !important;
+        margin: 3px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .list-button {
+        background-color: #34c759;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-weight: bold;
+    }
+
+    .unlist-button {
+        background-color: #ff3b30;
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 5px 15px;
+        font-weight: bold;
+    }
+
+    /* Responsive adjustments */
+    @media screen and (max-width: 992px) {
         .content-wrapper {
-            padding: 20px;
-            margin-top: 70px;
-            margin-left: 280px;
-            transition: all 0.3s ease;
-            background-color: #f5f5f7;
-            min-height: calc(100vh - 70px);
+            margin-left: 0;
+        }
+    }
+
+    @media screen and (max-width: 768px) {
+        .responsive-header {
+            flex-direction: column;
+            align-items: start !important;
         }
 
-        .card {
-            border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-        }
-
-        .table thead th {
-            background-color: #1c1c24;
-            color: white;
-            font-weight: normal;
-            border: none;
-            padding: 15px;
-        }
-
-        .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(0, 0, 0, 0.05);
-        }
-
-        .product-image {
-            width: 60px;
-            height: 60px;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #dee2e6;
-        }
-
-        .product-image img {
+        .search-container {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
         }
 
-        .add-button {
-            width: 45px;
-            height: 45px;
-            background-color: #5e5ce6;
-            color: white;
-            font-size: 24px;
-            border: none;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
+        .actions-container {
+            width: 100%;
+            justify-content: space-between !important;
+            margin-top: 10px;
         }
+    }
 
-        .add-button:hover {
-            background-color: #4a48d4;
-            color: white;
-        }
+    .clear-search-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
 
-        /* Button Styles */
-        td .btn {
-            width: 110px !important;
-            margin: 3px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .clear-search-btn:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+    }
+</style>
 
-        .list-button {
-            background-color: #34c759;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-weight: bold;
-        }
-
-        .unlist-button {
-            background-color: #ff3b30;
-            color: white;
-            border: none;
-            border-radius: 20px;
-            padding: 5px 15px;
-            font-weight: bold;
-        }
-
-        /* Responsive adjustments */
-        @media screen and (max-width: 992px) {
-            .content-wrapper {
-                margin-left: 0;
-            }
-        }
-
-        @media screen and (max-width: 768px) {
-            .responsive-header {
-                flex-direction: column;
-                align-items: start !important;
-            }
-
-            .search-container {
-                width: 100%;
-            }
-
-            .actions-container {
-                width: 100%;
-                justify-content: space-between !important;
-                margin-top: 10px;
-            }
-        }
-
-        .clear-search-btn {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .clear-search-btn:hover {
-            background-color: #5a6268;
-            transform: translateY(-1px);
-        }
-    </style>
-
-    <body>
-        <div class="content-wrapper">
-            <!-- Header Section -->
-            <div class="card">
-                <div class="card-body d-flex justify-content-between align-items-center responsive-header">
-                    <h1 class="mb-0 fs-4 fw-bold">Product Management</h1>
-                    <a href="/admin/addProduct" class="add-button">+</a>
-                </div>
+<body>
+    <div class="content-wrapper">
+        <!-- Header Section -->
+        <div class="card">
+            <div class="card-body d-flex justify-content-between align-items-center responsive-header">
+                <h1 class="mb-0 fs-4 fw-bold">Product Management</h1>
+                <a href="/admin/addProduct" class="add-button">+</a>
             </div>
+        </div>
 
-            <!-- Search Section -->
-            <div class="card">
-                <div class="card-body">
-                    <form action="/admin/product" method="GET">
-                        <div class="row">
-                            <div class="col-md-8 mb-2 mb-md-0">
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white">
-                                        <i class="fas fa-search text-muted"></i>
-                                    </span>
-                                    <input type="text" class="form-control" id="searchInput" name="search"
-                                        placeholder="Search products by name, category...">
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex gap-2">
-                                    <input type="submit" id="searchBtn" class="btn btn-primary flex-grow-1"
-                                        style="background-color: #5e5ce6; border-color: #5e5ce6;" value="Search">
-                                    <button type="button" class="btn btn-secondary clear-search-btn"
-                                        onclick="clearSearch()">
-                                        <i class="fas fa-times"></i> Clear
-                                    </button>
-                                </div>
+        <!-- Search Section -->
+        <div class="card">
+            <div class="card-body">
+                <form action="/admin/product" method="GET">
+                    <div class="row">
+                        <div class="col-md-8 mb-2 mb-md-0">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control" id="searchInput" name="search" placeholder="Search products by name, category...">
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div class="col-md-4">
+                            <div class="d-flex gap-2">
+                                <input type="submit" id="searchBtn" class="btn btn-primary flex-grow-1" style="background-color: #5e5ce6; border-color: #5e5ce6;" value="Search">
+                                <button type="button" class="btn btn-secondary clear-search-btn" onclick="clearSearch()">
+                                    <i class="fas fa-times"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
+        </div>
 
-            <!-- Table Section -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Product Name</th>
-                                    <th>Image</th>
-                                    <th>Category</th>
-                                    <th>Gender</th>
-                                    <th>Sale price</th>
-                                    <th>Quantity</th>
-                                    <th>Block/Unblock</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <%for(let i=data.length-1;i>=0;i--){%>
-                                    <% if (data[i].isDeleted===false) { %>
+        <!-- Table Section -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Product Name</th>
+                                <th>Image</th>
+                                <th>Category</th>
+                                <th>Gender</th>
+                                <th>Sale Price</th>
+                                <th>Quantity</th>
+                                <th>Block/Unblock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for(let i = data.length - 1; i >= 0; i--) { %>
+                                <% if (data[i].isDeleted === false) { %>
                                     <tr>
                                         <td>
-                                            <%=data[i].productName%>
+                                            <%= data[i].productName %>
                                         </td>
                                         <td>
                                             <div class="product-image">
                                                 <% if (data[i].productImage && data[i].productImage.length > 0) { %>
-                                                    <img src="/uploads/product-images/<%= data[i].productImage[0] %>" 
-                                                         alt="Product Image"
-                                                         style="width: 100px; height: 100px; object-fit: cover;">
+                                                    <img src="<%= data[i].productImage[0] %>" alt="Product Image">style="width: 100px; height: 100px; object-fit: cover;">
                                                 <% } else { %>
-                                                    <img src="/img/default-product.jpg" 
-                                                         alt="No Image Available"
-                                                         style="width: 100px; height: 100px; object-fit: cover;">
+                                                    <img src="/img/default-product.jpg" alt="No Image Available" style="width: 100px; height: 100px; object-fit: cover;">
                                                 <% } %>
                                             </div>
                                         </td>
@@ -210,151 +203,235 @@
                                             <%= data[i].category ? data[i].category.name : "No Category" %>
                                         </td>
                                         <td>
-                                            <%=data[i].gender%>
+                                            <%= data[i].gender %>
                                         </td>
+
+                                        <!-- Sale Price Column: Loop through variants -->
                                         <td>
-                                            <%=data[i].salePrice%>
+                                            <% if (data[i].variants && data[i].variants.length > 0) { %>
+                                                <ul class="list-unstyled mb-0">
+                                                    <% data[i].variants.forEach(variant => { %>
+                                                        <li><strong><%= variant.size %> ml:</strong> ₹<%= variant.salePrice %></li>
+                                                    <% }) %>
+                                                </ul>
+                                            <% } else { %>
+                                                N/A
+                                            <% } %>
+                                        </td>
+
+                                        <!-- Quantity Column: Loop through variants -->
+                                        <td>
+                                            <% if (data[i].variants && data[i].variants.length > 0) { %>
+                                                <ul class="list-unstyled mb-0">
+                                                    <% data[i].variants.forEach(variant => { %>
+                                                        <li><strong><%= variant.size %> ml:</strong> <%= variant.quantity %> pcs</li>
+                                                    <% }) %>
+                                                </ul>
+                                            <% } else { %>
+                                                N/A
+                                            <% } %>
                                         </td>
 
                                         <td>
-                                            <%=data[i].quantity%>
-                                        </td>
-                                        <td>
-
-                                            <!-- this is for block  unblock -->
                                             <div class="d-flex align-items-center">
-
-                                                <% if (data[i].isBlocked===false) { %>
-                                                    <button class="btn btn-danger"
-                                                        onclick="return actionValidate('<%=data[i]._id%>')">BLOCK</button>
-                                                    <% } else { %>
-                                                        <a href="/admin/unblockProduct?id=<%= data[i]._id %>"
-                                                            class="btn btn-success">UNBLOCK</a>
+                                                <% if (data[i].isBlocked === false) { %>
+                                                    <button class="btn btn-danger" onclick="return confirmBlock('<%= data[i]._id %>')">BLOCK</button>
+                                                <% } else { %>
+                                                    <button onclick="return unblockProduct('<%= data[i]._id %>')" class="btn btn-success">UNBLOCK</button>
                                                 <% } %>
                                             </div>
                                         </td>
+
                                         <td>
                                             <a href="/admin/editProduct?id=<%= data[i]._id %>" class="btn btn-info text-white">Edit</a>
-                                            <button class="btn btn-secondary" onclick="return confirmDelete('<%=data[i]._id%>')">Delete</button>
+                                            <button class="btn btn-secondary" onclick="return confirmDelete('<%= data[i]._id %>')">Delete</button>
                                         </td>
                                     </tr>
-                                    <%}%>
-                                    <%}%>
-                            </tbody>
-                        </table>
-                    </div>
+                                <% } %>
+                            <% } %>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <!-- Pagination -->
-            <nav aria-label="Page navigation">
-
-                <ul class="pagination justify-content-center">
-                    <% if (currentPage> 1) { %>
-                        <li class="page-item">
-                            <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                            </a>
-                        </li>
-                        <% } %>
-
-                            <% for(let i=1; i <=totalPages; i++) { %>
-                                <% if(i===currentPage) { %>
-                                    <li class="page-item active">
-                                        <a class="page-link" href="?page=<%= i %>">
-                                            <%= i %>
-                                        </a>
-                                    </li>
-                                    <% } else { %>
-                                        <li class="page-item">
-                                            <a class="page-link" href="?page=<%= i %>">
-                                                <%= i %>
-                                            </a>
-                                        </li>
-                                        <% } %>
-                                            <% } %>
-
-                                                <% if(currentPage < totalPages) { %>
-                                                    <li class="page-item">
-                                                        <a class="page-link" href="?page=<%= currentPage + 1 %>"
-                                                            aria-label="Next">
-                                                            <span aria-hidden="true">&raquo;</span>
-                                                        </a>
-                                                    </li>
-                                                    <% } %>
-                </ul>
-            </nav>
-
-            <!-- Delete product Confirmation Modal -->
-            <div class="modal" tabindex="-1" id="deleteModal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">Delete Product</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Are you sure you want to delete this product?</p>
-                            <form action="/admin/deleteProduct" method="post">
-                                <input type="hidden" id="deleteProductId" name="id">
-                                <button type="submit" class="btn btn-danger">Delete</button>
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- block and unblock product -->
-            <div class="modal" tabindex="-1" id="productAction">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title">BLOCK PRODUCT</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>ARE YOU SURE ABOUT BLOCKING THIS PRODUCT ?</p>
-                            <form action="/admin/blockProduct" method="post">
-                                <input type="text" id="product_actionID" name="id" hidden>
-
-                                <button class="btn btn-primary">BLOCK</button>
-
-                            </form>
-
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <!-- Bootstrap JS Bundle with Popper -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script>
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <% if (currentPage > 1) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                <% } %>
 
-            //for  block and unblock 
-            function actionValidate(productID) {
+                <% for(let i = 1; i <= totalPages; i++) { %>
+                    <% if(i === currentPage) { %>
+                        <li class="page-item active">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } else { %>
+                        <li class="page-item">
+                            <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                <% } %>
 
-                document.getElementById('product_actionID').value = productID
-                let modalShow = new bootstrap.Modal(document.getElementById('productAction'))
-                modalShow.show()
-            }
+                <% if (currentPage < totalPages) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                <% } %>
+            </ul>
+        </nav>
+    </div>
 
-            //for delete
-            function confirmDelete(productId) {
-                document.getElementById('deleteProductId').value = productId;
-                let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                modal.show();
-                return false;
-            }
+    
 
-            function clearSearch() {
-                document.getElementById('searchInput').value = '';
-                document.getElementById('searchBtn').click();
-            }
-        </script>
-    </body>
+    <script>
+        function clearSearch() {
+            document.getElementById("searchInput").value = '';
+            document.getElementById("searchBtn").click();
+        }
+        function confirmBlock(productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to block this product?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, block it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/blockProduct?id=${productId}`, {
+                method: 'GET', // Adjust method as needed
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Blocked!',
+                        'The product has been blocked.',
+                        'success'
+                        
+                    );
+                    setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to block the product.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while blocking the product.',
+                    'error'
+                );
+            });
+        }
+    });
+}
+
+function unblockProduct(productId) {
+    return fetch(`/admin/unblockProduct?id=${productId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            Swal.fire(
+                'Unblocked!',
+                'The product has been unblocked.',
+                'success'
+            );
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            Swal.fire(
+                'Error!',
+                'Failed to unblock the product.',
+                'error'
+            );
+        }
+    })
+    .catch(error => {
+        Swal.fire(
+            'Error!',
+            'An unexpected error occurred during unblock.',
+            'error'
+        );
+        console.error('Unblock error:', error);
+    });
+}
+
+
+function confirmDelete(productId) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: 'Do you want to Delete this product?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, Delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/admin/deleteProduct?id=${productId}`, {
+                method: 'GET', // Adjust method as needed
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire(
+                        'Deleted!',
+                        'The product has been Deleted.',
+                        'success'
+                        
+                    );
+                    setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to Delete the product.',
+                        'error'
+                    );
+                }
+            })
+            .catch(error => {
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while deleting the product.',
+                    'error'
+                );
+            });
+        }
+    });
+}
+
+       
+    </script>
+</body>
+</html>

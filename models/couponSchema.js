@@ -1,42 +1,66 @@
-const mongoose = require("mongoose");
-const { create } = require("./orderSchema");
-const {Schema} = mongoose
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
-const couponSchema = new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-        unique:true
+const couponSchema = new Schema({
+    couponName: {
+        type: String,
+        required: true,
+        unique: true
     },
-    createOn:{
-        type:Date,
-        default:Date.now,
-        required:true
+    couponCode: {
+        type: String,
+        required: true
     },
-    expireOn:{
-        type :Date,
-        required:true,
+    startDate: {
+        type: Date,
+        default: Date.now,
+        required: true
+    },
+    description: {
+        type: String,
+        required: true,
+    },
+    endDate: {
+        type: Date,
+        required: true
+    },
+    offerPrice: {
+        type: Number,
+        required: true
+    },
+    minimumPrice: {
+        type: Number,
+        required: true
+    },
+    isListed: {
+        type: Boolean,
+        default: true
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+    },
+    status: {
+        type: String,
+        enum: ["Valid", "Expired","Active"],
+        default: "Valid"
+    }
+});
 
-    },
-    offerPrice:{
-        type:Number,
-        required:true
-    },
-    minimumPrice:{
-        type:Number,
-        required:true
-    },
-    isList:{
-        type:Boolean,
-        default:true
-    },
-    userId:[{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
-        
-    }],
+// Automatically set status based on endDate before saving
+couponSchema.pre('save', function (next) {
+    const now = new Date();
+    if (this.endDate && now > this.endDate) {
+        this.status = 'Expired';
+    } else {
+        this.status = 'Valid';
+    }
+    next();
+});
 
-})
-
-const Coupon = mongoose.model("Coupon",couponSchema)
-module.exports = Coupon
+const Coupon = mongoose.model('Coupon', couponSchema);
+module.exports = Coupon;

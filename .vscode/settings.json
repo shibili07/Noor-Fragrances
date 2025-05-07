@@ -1,0 +1,4 @@
+{
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "github.copilot.chat.languageContext.inline.typescript.enabled": true
+}

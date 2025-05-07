@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Failed</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header, footer {
+            width: 100%;
+            padding: 15px 0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .payment-failed-container {
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 550px;
+            padding: 40px;
+            text-align: center;
+            transform: translateY(20px);
+            opacity: 0;
+            animation: fadeIn 0.7s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .payment-failed-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(to right, #ff3b3b, #ff6b6b);
+        }
+
+        .error-icon {
+            font-size: 80px;
+            color: #ff3b3b;
+            margin: 0 auto 25px;
+            width: 130px;
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff5f5;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s forwards;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 30px;
+            font-weight: 700;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 0.9s forwards;
+        }
+
+        .error-message {
+            color: #e63946;
+            font-weight: 500;
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #fff5f5;
+            border-radius: 10px;
+            border-left: 5px solid #ff3b3b;
+            text-align: left;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 1.1s forwards;
+        }
+
+        .details {
+            background-color: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 1.3s forwards;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .detail-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        .order-details {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: 12px;
+            text-align: left;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 1.5s forwards;
+        }
+
+        .order-details h3 {
+            color: #343a40;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .order-details p {
+            color: #495057;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .order-details p:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeIn 0.5s ease-out 1.7s forwards;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #ff3b3b, #ff6b6b);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 59, 59, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 59, 59, 0.3);
+        }
+
+        .btn-secondary {
+            background-color: #4a4a4a;
+            color: white;
+            box-shadow: 0 5px 15px rgba(74, 74, 74, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background-color: #333;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 74, 74, 0.3);
+        }
+
+        .btn:disabled {
+            background-color: #d1d1d1;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .verification-failed {
+            border: 2px solid #ff3b3b;
+        }
+
+        .verification-failed .details {
+            background-color: #fff5f5;
+        }
+
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 59, 59, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 59, 59, 0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .payment-failed-container {
+                padding: 30px 20px;
+                margin: 20px 10px;
+            }
+            
+            h1 {
+                font-size: 26px;
+            }
+            
+            .error-icon {
+                font-size: 60px;
+                width: 100px;
+                height: 100px;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 12px 20px;
+            }
+
+            .details, .order-details {
+                padding: 15px;
+            }
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <%- include("../../views/partials/user/header") %>
+    </header>
+    
+    <div class="main-content">
+        <div class="payment-failed-container <%= errorCode === 'PAYMENT_VERIFICATION_FAILED' || errorCode === 'INVALID_SIGNATURE' ? 'verification-failed' : '' %>">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <h1>Payment Failed</h1>
+            
+            <div class="error-message">
+                <%= message || 'Payment failed. Please try again.' %>
+            </div>
+            
+            <div class="details">
+                <div class="detail-row">
+                    <span class="detail-label">Error Code:</span>
+                    <span class="detail-value"><%= errorCode || 'UNKNOWN_ERROR' %></span>
+                </div>
+                <% if (orderId) { %>
+                <div class="detail-row">
+                    <span class="detail-label">Order ID:</span>
+                    <span class="detail-value"><%= orderId %></span>
+                </div>
+                <% } %>
+                <% if (errorCode === 'PAYMENT_VERIFICATION_FAILED' || errorCode === 'INVALID_SIGNATURE') { %>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">Order Cancelled</span>
+                </div>
+                <% } %>
+            </div>
+
+            <% if (order) { %>
+            <div class="order-details">
+                <h3>Order Details</h3>
+                <p>Order ID: <%= order.orderId %></p>
+                <p>Amount: ₹<%= order.finalAmount %></p>
+                <p>Status: <%= order.status %></p>
+                <% if (order.cancellationReason) { %>
+                <p>Reason: <%= order.cancellationReason %></p>
+                <% } %>
+            </div>
+            <% } %>
+            
+            <div class="btn-group">
+                <button class="btn btn-primary" id="retryBtn"><i class="fas fa-shopping-cart"></i>Retry Payment</button>
+                <button class="btn btn-secondary" id="contactSupportBtn"><i class="fas fa-headset"></i> Contact Support</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <%- include("../../views/partials/user/footer") %>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (this.disabled) return;
+
+                    const ripple = document.createElement('span');
+                    ripple.style.position = 'absolute';
+                    ripple.style.background = 'rgba(255, 255, 255, 0.3)';
+                    ripple.style.borderRadius = '50%';
+                    ripple.style.transform = 'scale(0)';
+                    ripple.style.animation = 'ripple 0.6s linear';
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    ripple.style.width = ripple.style.height = `${size}px`;
+                    ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+                    ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+                    this.appendChild(ripple);
+                    setTimeout(() => ripple.remove(), 600);
+
+                    if (this.id === 'retryBtn') {
+                        animateOut().then(() => {
+                            window.location.href = '/order-details/<%= orderId %>';
+                        });
+                    }else if (this.id === 'contactSupportBtn') {
+                        const subject = encodeURIComponent('Payment Failed - Order <%= orderId || "No Order ID" %>');
+                        const body = encodeURIComponent(
+                            `Error Code: <%= errorCode %>\n` +
+                            `Order ID: <%= orderId || "N/A" %>\n` +
+                            `Message: <%= message %>\n\n` +
+                            `Please help resolve this issue.`
+                        );
+                        window.location.href = `mailto:support@noorfragrance.com?subject=${subject}&body=${body}`;
+                    }
+                });
+            });
+
+            function animateOut() {
+                const container = document.querySelector('.payment-failed-container');
+                container.style.animation = 'none';
+                container.offsetHeight;
+                container.style.animation = 'fadeIn 0.5s ease-out reverse forwards';
+                
+                return new Promise(resolve => {
+                    setTimeout(() => resolve(), 500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

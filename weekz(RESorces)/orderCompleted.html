@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Completed Successfully</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2E7D32;
+            --accent-color: #81C784;
+            --text-color: #333;
+            --light-bg: #f9f9f9;
+            --white: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .success-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 50vh;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .success-animation {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .checkmark {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 3;
+            stroke: var(--white);
+            stroke-miterlimit: 10;
+            box-shadow: var(--shadow);
+            animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+        }
+
+        .checkmark-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 3;
+            stroke-miterlimit: 10;
+            stroke: var(--primary-color);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark-check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fill {
+            100% {
+                box-shadow: inset 0 0 0 100px var(--primary-color);
+            }
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        p {
+            margin-bottom: 20px;
+            max-width: 600px;
+            animation: fadeIn 1.2s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+            animation: slideUp 0.8s ease-in-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-header-left, .invoice-header-right {
+            margin-bottom: 15px;
+        }
+
+        .invoice-title {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .invoice-details {
+            margin-bottom: 30px;
+        }
+
+        .invoice-details h3 {
+            color: var(--secondary-color);
+            margin-bottom: 10px;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .invoice-table th {
+            background-color: var(--accent-color);
+            color: var(--white);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .invoice-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .invoice-total {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .invoice-total-table {
+            width: 300px;
+        }
+
+        .invoice-total-table td {
+            padding: 5px 0;
+        }
+
+        .invoice-total-table td:last-child {
+            text-align: right;
+            font-weight: bold;
+        }
+        
+        /* Order tracking styles */
+        .order-tracking {
+            padding: 15px 0;
+        }
+        
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .tracking-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 25%;
+        }
+        
+        .step-icon {
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            color: #fff;
+            font-weight: bold;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+        
+        .step-label {
+            font-size: 12px;
+            color: #757575;
+        }
+        
+        .tracking-step.active .step-icon {
+            background: var(--primary-color);
+        }
+        
+        .tracking-step.active .step-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .tracking-step.current .step-icon {
+            background: var(--accent-color);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(129, 199, 132, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(129, 199, 132, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(129, 199, 132, 0);
+            }
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: var(--white);
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin: 10px 5px;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .order-summary {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px 0;
+            color: #777;
+            font-size: 14px;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .invoice-header {
+                flex-direction: column;
+            }
+
+            .invoice-header-right {
+                align-self: flex-start;
+                margin-top: 20px;
+            }
+
+            .invoice-table thead {
+                display: none;
+            }
+
+            .invoice-table, .invoice-table tbody, .invoice-table tr, .invoice-table td {
+                display: block;
+                width: 100%;
+            }
+
+            .invoice-table tr {
+                margin-bottom: 15px;
+                border-bottom: 2px solid #eee;
+            }
+
+            .invoice-table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+
+            .invoice-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-left: 15px;
+                font-weight: bold;
+                text-align: left;
+            }
+
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 20px 15px;
+            }
+
+            .invoice-title {
+                font-size: 20px;
+            }
+
+            .success-animation {
+                width: 80px;
+                height: 80px;
+            }
+
+            .checkmark {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-container">
+            <div class="success-animation">
+                <svg class="checkmark animate__animated animate__bounceIn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+            </div>
+            <h1 class="animate__animated animate__fadeInUp">Order Completed Successfully!</h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s">Thank you for your purchase. Your order has been received and is being processed.</p>
+            
+            <!-- Order tracking info -->
+            <div class="card animate__animated animate__fadeIn animate__delay-1s" style="max-width: 500px; margin-top: 30px;">
+                <div class="order-tracking">
+                    <h3 class="section-title">Order Tracking</h3>
+                    <div class="tracking-steps">
+                        <div class="tracking-step active">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Order Placed</div>
+                        </div>
+                        <div class="tracking-step active">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">Processing</div>
+                        </div>
+                        <div class="tracking-step current">
+                            <div class="step-icon">↻</div>
+                            <div class="step-label">Shipping</div>
+                        </div>
+                        <div class="tracking-step">
+                            <div class="step-icon">□</div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="invoiceCard">
+            <div class="invoice-header">
+                <div class="invoice-header-left">
+                    <h2 class="invoice-title">INVOICE</h2>
+                    <p>Company Name Inc.</p>
+                    <p>123 Business Street</p>
+                    <p>Business City, 12345</p>
+                    <p>Email: support@company.com</p>
+                    <p>Phone: (123) 456-7890</p>
+                </div>
+                <div class="invoice-header-right">
+                    <h3>Invoice #: <span id="invoiceNumber">INV-2023-0001</span></h3>
+                    <p>Date: <span id="invoiceDate">April 14, 2025</span></p>
+                    <p>Order #: <span id="orderNumber">ORD-123456</span></p>
+                    <p>Payment Method: Credit Card</p>
+                </div>
+            </div>
+
+            <div class="invoice-details">
+                <h3>Billed To:</h3>
+                <p id="customerName">John Doe</p>
+                <p id="customerAddress">456 Customer Street</p>
+                <p id="customerCity">Customer City, 67890</p>
+                <p id="customerEmail">john.doe@example.com</p>
+            </div>
+
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Description</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="invoiceItems">
+                    <tr>
+                        <td data-label="Item">Product 1</td>
+                        <td data-label="Description">Premium Widget</td>
+                        <td data-label="Quantity">2</td>
+                        <td data-label="Unit Price">$49.99</td>
+                        <td data-label="Total">$99.98</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Item">Product 2</td>
+                        <td data-label="Description">Deluxe Gadget</td>
+                        <td data-label="Quantity">1</td>
+                        <td data-label="Unit Price">$129.95</td>
+                        <td data-label="Total">$129.95</td>
+                    </tr>
+                    <tr>
+                        <td data-label="Item">Service</td>
+                        <td data-label="Description">Express Shipping</td>
+                        <td data-label="Quantity">1</td>
+                        <td data-label="Unit Price">$15.00</td>
+                        <td data-label="Total">$15.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="invoice-total">
+                <table class="invoice-total-table">
+                    <tr>
+                        <td>Subtotal:</td>
+                        <td>$244.93</td>
+                    </tr>
+                    <tr>
+                        <td>Tax (10%):</td>
+                        <td>$24.49</td>
+                    </tr>
+                    <tr>
+                        <td>Shipping:</td>
+                        <td>$15.00</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Total:</strong></td>
+                        <td><strong>$284.42</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn" id="downloadPdfBtn">Download Invoice PDF</button>
+            <a href="#" class="btn btn-outline">Continue Shopping</a>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Company Name Inc. All rights reserved.</p>
+            <p>If you have any questions, please contact our customer support.</p>
+        </div>
+    </div>
+
+    <script>
+        // Fetch order data from the server based on your MongoDB schema
+    // This would typically be passed from your Node.js backend
+    let orderData = {
+        // Default placeholder data - in production this would be replaced with real data from MongoDB
+        invoiceNumber: "", // Generated from orderId
+        orderNumber: "", // From orderId in your schema
+        date: "", // From invoiceDate or createdOn in your schema
+        customer: {
+            name: "Loading...",
+            address: "Loading...",
+            city: "Loading...",
+            email: "Loading..."
+        },
+        items: [],
+        subtotal: 0,
+        discount: 0, // From discount in your schema
+        shipping: 0, 
+        total: 0, // From finalAmount in your schema
+        status: "" // From status in your schema
+    };
+    
+    // Function to fetch order data from the server
+    async function fetchOrderData() {
+        try {
+            // In production, replace with actual endpoint to fetch order data
+            // This would be an API call to your Node.js backend
+            const urlParams = new URLSearchParams(window.location.search);
+            const orderId = urlParams.get('orderId');
+            
+            if (!orderId) {
+                console.error("No order ID provided");
+                return;
+            }
+            
+            // Example API call - replace with your actual endpoint
+            // const response = await fetch(`/api/orders/${orderId}`);
+            // const data = await response.json();
+            
+            // For demo purposes, we're using sample data that matches your MongoDB schema
+            const data = {
+                orderId: "6451f7a2-b90c-42a5-b4d8-e56b5fb847c2",
+                orderedItems: [
+                    {
+                        product: {
+                            _id: "60d21b4667d0d8992e610c85",
+                            name: "Premium Smartphone",
+                            description: "High-end smartphone with advanced features"
+                        },
+                        quantity: 2,
+                        price: 699.99
+                    },
+                    {
+                        product: {
+                            _id: "60d21b4667d0d8992e610c86",
+                            name: "Wireless Headphones",
+                            description: "Noise-cancelling wireless headphones"
+                        },
+                        quantity: 1,
+                        price: 149.95
+                    }
+                ],
+                totalPrice: 1549.93,
+                discount: 100,
+                finalAmount: 1449.93,
+                address: {
+                    _id: "60d21b4667d0d8992e610c87",
+                    name: "John Doe",
+                    street: "123 Main Street",
+                    city: "New York",
+                    state: "NY",
+                    zipCode: "10001",
+                    country: "USA",
+                    email: "john.doe@example.com"
+                },
+                invoiceDate: new Date().toISOString(),
+                status: "Shipped",
+                createdOn: new Date().toISOString(),
+                couponApplied: true
+            };
+            
+            // Format the data to match our frontend structure
+            orderData = {
+                invoiceNumber: `INV-${data.orderId.substring(0, 8)}`,
+                orderNumber: data.orderId,
+                date: new Date(data.invoiceDate || data.createdOn).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                }),
+                customer: {
+                    name: data.address.name,
+                    address: data.address.street,
+                    city: `${data.address.city}, ${data.address.state} ${data.address.zipCode}`,
+                    email: data.address.email
+                },
+                items: data.orderedItems.map(item => ({
+                    name: item.product.name,
+                    description: item.product.description,
+                    quantity: item.quantity,
+                    unitPrice: item.price
+                })),
+                subtotal: data.totalPrice,
+                discount: data.discount,
+                shipping: 0, // Add shipping if your schema includes it
+                total: data.finalAmount,
+                status: data.status
+            };
+            
+            // Update the UI with the new data
+            updateUI();
+            
+            // Play success sound
+            playNotificationSound();
+            
+        } catch (error) {
+            console.error("Error fetching order data:", error);
+        }
+    }
+
+        // Function to update UI with order data
+        function updateUI() {
+            // Set invoice details
+            document.getElementById('invoiceNumber').textContent = orderData.invoiceNumber;
+            document.getElementById('invoiceDate').textContent = orderData.date;
+            document.getElementById('orderNumber').textContent = orderData.orderNumber;
+            
+            // Set customer details
+            document.getElementById('customerName').textContent = orderData.customer.name;
+            document.getElementById('customerAddress').textContent = orderData.customer.address;
+            document.getElementById('customerCity').textContent = orderData.customer.city;
+            document.getElementById('customerEmail').textContent = orderData.customer.email;
+            
+            // Update status if needed
+            if (orderData.status) {
+                const statusBadge = document.createElement('span');
+                statusBadge.style.backgroundColor = getStatusColor(orderData.status);
+                statusBadge.style.color = '#fff';
+                statusBadge.style.padding = '4px 8px';
+                statusBadge.style.borderRadius = '4px';
+                statusBadge.style.fontSize = '12px';
+                statusBadge.style.marginLeft = '10px';
+                statusBadge.textContent = orderData.status;
+                document.querySelector('.invoice-title').appendChild(statusBadge);
+            }
+            
+            // Update invoice items
+            const invoiceItemsTable = document.getElementById('invoiceItems');
+            invoiceItemsTable.innerHTML = ''; // Clear existing items
+            
+            // Add each item to the table
+            orderData.items.forEach(item => {
+                const itemTotal = (item.quantity * item.unitPrice).toFixed(2);
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td data-label="Item">${item.name}</td>
+                    <td data-label="Description">${item.description}</td>
+                    <td data-label="Quantity">${item.quantity}</td>
+                    <td data-label="Unit Price">${item.unitPrice.toFixed(2)}</td>
+                    <td data-label="Total">${itemTotal}</td>
+                `;
+                
+                invoiceItemsTable.appendChild(row);
+            });
+            
+            // Update invoice totals
+            const invoiceTotalTable = document.querySelector('.invoice-total-table');
+            invoiceTotalTable.innerHTML = `
+                <tr>
+                    <td>Subtotal:</td>
+                    <td>${orderData.subtotal.toFixed(2)}</td>
+                </tr>
+                ${orderData.discount > 0 ? `
+                <tr>
+                    <td>Discount:</td>
+                    <td>-${orderData.discount.toFixed(2)}</td>
+                </tr>` : ''}
+                <tr>
+                    <td>Shipping:</td>
+                    <td>${orderData.shipping.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total:</strong></td>
+                    <td><strong>${orderData.total.toFixed(2)}</strong></td>
+                </tr>
+            `;
+        }
+        
+        // Function to get color for status badge
+        function getStatusColor(status) {
+            const statusColors = {
+                'Pending': '#f9a825',
+                'Processing': '#1e88e5',
+                'Shipped': '#8e24aa',
+                'Delivered': '#43a047',
+                'Cancelled': '#e53935',
+                'Return Request': '#fb8c00',
+                'Returned': '#757575'
+            };
+            
+            return statusColors[status] || '#757575';
+        }
+        
+        // Function to play notification sound
+        function playNotificationSound() {
+            const audio = new Audio();
+            audio.src = "https://cdnjs.cloudflare.com/ajax/libs/sound-effects/1.0.0/notification.mp3";
+            audio.volume = 0.5;
+            audio.play().catch(error => {
+                console.log("Audio play failed, likely due to user interaction required:", error);
+            });
+        }
+        
+        // Populate the invoice with data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch order data
+            fetchOrderData();
+            
+            // Generate PDF on button click
+            document.getElementById('downloadPdfBtn').addEventListener('click', generatePDF);
+        });
+
+        // Function to generate and download PDF
+        function generatePDF() {
+            // Using jsPDF library
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Add company info
+            doc.setFontSize(20);
+            doc.setTextColor(76, 175, 80); // Primary color
+            doc.text("INVOICE", 20, 20);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text("Company Name Inc.", 20, 30);
+            doc.text("123 Business Street", 20, 35);
+            doc.text("Business City, 12345", 20, 40);
+            doc.text("Email: support@company.com", 20, 45);
+            doc.text("Phone: (123) 456-7890", 20, 50);
+            
+            // Add invoice details
+            doc.setFontSize(10);
+            doc.text(`Invoice #: ${orderData.invoiceNumber}`, 150, 30);
+            doc.text(`Date: ${orderData.date}`, 150, 35);
+            doc.text(`Order #: ${orderData.orderNumber}`, 150, 40);
+            doc.text(`Status: ${orderData.status}`, 150, 45);
+            doc.text("Payment Method: Credit Card", 150, 50);
+            
+            // Add a line
+            doc.line(20, 60, 190, 60);
+            
+            // Add customer info
+            doc.setFontSize(12);
+            doc.setTextColor(46, 125, 50); // Secondary color
+            doc.text("Billed To:", 20, 70);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(0, 0, 0);
+            doc.text(orderData.customer.name, 20, 80);
+            doc.text(orderData.customer.address, 20, 85);
+            doc.text(orderData.customer.city, 20, 90);
+            doc.text(orderData.customer.email, 20, 95);
+            
+            // Add table headers
+            doc.setFillColor(129, 199, 132); // Accent color
+            doc.rect(20, 110, 170, 8, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.text("Item", 22, 116);
+            doc.text("Description", 52, 116);
+            doc.text("Qty", 102, 116);
+            doc.text("Unit Price", 122, 116);
+            doc.text("Total", 162, 116);
+            
+            // Add table rows
+            let y = 124;
+            doc.setTextColor(0, 0, 0);
+            
+            orderData.items.forEach((item, index) => {
+                const itemTotal = (item.quantity * item.unitPrice).toFixed(2);
+                
+                // Truncate long text
+                const truncatedName = item.name.length > 15 ? item.name.substring(0, 15) + '...' : item.name;
+                const truncatedDesc = item.description.length > 25 ? item.description.substring(0, 25) + '...' : item.description;
+                
+                doc.text(truncatedName, 22, y);
+                doc.text(truncatedDesc, 52, y);
+                doc.text(item.quantity.toString(), 102, y);
+                doc.text(`${item.unitPrice.toFixed(2)}`, 122, y);
+                doc.text(`${itemTotal}`, 162, y);
+                
+                y += 10;
+                
+                // Add a light line between rows
+                if (index < orderData.items.length - 1) {
+                    doc.setDrawColor(238, 238, 238);
+                    doc.line(20, y - 5, 190, y - 5);
+                }
+            });
+            
+            // Add a line
+            doc.setDrawColor(0, 0, 0);
+            doc.line(20, y, 190, y);
+            
+            // Add totals
+            y += 10;
+            doc.text("Subtotal:", 140, y);
+            doc.text(`${orderData.subtotal.toFixed(2)}`, 170, y);
+            
+            // Add discount if available
+            if (orderData.discount > 0) {
+                y += 8;
+                doc.text("Discount:", 140, y);
+                doc.text(`-${orderData.discount.toFixed(2)}`, 170, y);
+            }
+            
+            y += 8;
+            doc.text("Shipping:", 140, y);
+            doc.text(`${orderData.shipping.toFixed(2)}`, 170, y);
+            
+            y += 10;
+            doc.setFontSize(12);
+            doc.text("Total:", 140, y);
+            doc.text(`${orderData.total.toFixed(2)}`, 170, y);
+            
+            // Add footer
+            doc.setFontSize(8);
+            doc.setTextColor(119, 119, 119);
+            doc.text("Thank you for your business!", 20, 270);
+            doc.text("© 2025 Company Name Inc. All rights reserved.", 20, 275);
+            doc.text("If you have any questions, please contact our customer support.", 20, 280);
+            
+            // Play a download sound
+            const downloadSound = new Audio("https://cdnjs.cloudflare.com/ajax/libs/sound-effects/1.0.0/click.mp3");
+            downloadSound.volume = 0.3;
+            downloadSound.play().catch(e => console.log("Could not play download sound"));
+            
+            // Save the PDF
+            doc.save(`Invoice-${orderData.invoiceNumber}.pdf`);
+        }
+
+        // Animation for success message and update tracking based on order status
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation classes with slight delay for better effect
+            setTimeout(() => {
+                document.querySelector('.success-container').style.opacity = 1;
+            }, 200);
+            
+            // Setup tracking status update
+            const setupTracking = () => {
+                if (!orderData.status) return;
+                
+                const steps = document.querySelectorAll('.tracking-step');
+                const statusMapping = {
+                    'Pending': 0,
+                    'Processing': 1,
+                    'Shipped': 2,
+                    'Delivered': 3,
+                    'Cancelled': -1,
+                    'Return Request': 3, 
+                    'Returned': 3
+                };
+                
+                const statusIndex = statusMapping[orderData.status];
+                
+                if (statusIndex === -1) {
+                    // Handle cancelled orders
+                    document.querySelector('.tracking-steps').innerHTML = `
+                        <div class="tracking-step active" style="width: 100%">
+                            <div class="step-icon" style="background-color: #e53935;">✕</div>
+                            <div class="step-label" style="color: #e53935;">Order Cancelled</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                steps.forEach((step, index) => {
+                    if (index < statusIndex) {
+                        step.classList.add('active');
+                        step.classList.remove('current');
+                    } else if (index === statusIndex) {
+                        step.classList.add('current');
+                    } else {
+                        step.classList.remove('active', 'current');
+                    }
+                });
+            };
+    </script>
+</body>
+</html>
