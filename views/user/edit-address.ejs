@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOOR Fragrance - Add Address</title>
+  <title>NOOR Fragrance - Edit Address</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -33,9 +33,7 @@
     }
 
     .user-dashboard {
-      padding: 40px 15px;
-      width: 100%;
-      max-width: 100%;
+      padding: 40px 0;
     }
 
     .info-container {
@@ -45,7 +43,6 @@
       padding: 35px;
       position: relative;
       overflow: hidden;
-      width: 100%;
     }
 
     .info-container::before {
@@ -210,7 +207,6 @@
       display: block;
     }
 
-    /* Custom Radio Button Styling */
     .address-type-options {
       display: flex;
       gap: 15px;
@@ -242,7 +238,6 @@
       color: var(--primary);
     }
 
-    /* Progress Bar */
     .progress-container {
       width: 100%;
       margin-bottom: 30px;
@@ -264,7 +259,6 @@
       border-radius: 5px;
     }
 
-    /* Responsive Adjustments */
     @media (max-width: 991px) {
       .info-container {
         padding: 25px;
@@ -299,7 +293,6 @@
       }
     }
 
-    /* Form Control Styling */
     .floating-label {
       position: relative;
     }
@@ -325,19 +318,16 @@
       color: var(--primary);
     }
 
-    /* Focused Label */
     .floating-label .form-control:focus+label {
       color: var(--primary);
     }
 
-    /* Help Text */
     .help-text {
       color: var(--dark-gray);
       font-size: 12px;
       margin-top: 5px;
     }
 
-    /* Custom Checkbox */
     .custom-checkbox {
       display: flex;
       align-items: center;
@@ -389,317 +379,386 @@
 </head>
 
 <body>
-
-  <!-- Header would be included here in your actual implementation -->
   <%- include("../../views/partials/user/header") %>
 
-    <div class="container-fluid user-dashboard">
-      <div class="row">
-        <div class="col-lg-2 mb-4">
-          <!-- Profile menu would be included here in your actual implementation -->
-          <%- include("../../views/partials/user/profileMenu") %>
-        </div>
+  <div class="container-fluid user-dashboard">
+    <div class="row gx-4">
+      <div class="col-lg-2 mb-4">
+        <%- include("../../views/partials/user/profileMenu") %>
+      </div>
 
-        <div class="col-lg-10">
-          <div class="info-container">
-            <h2 class="section-title">
-              Edit your Address
-              <a href="/address" class="back-btn">
-                <i class="fas fa-arrow-left"></i> Back to Addresses
-              </a>
-            </h2>
+      <div class="col-lg-10">
+        <div class="info-container">
+          <h2 class="section-title">
+            Edit Address
+            <a href="/address" class="back-btn">
+              <i class="fas fa-arrow-left"></i> Back to Addresses
+            </a>
+          </h2>
 
-            <!-- Form Progress -->
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress"></div>
+            </div>
+          </div>
 
-            <div class="progress-container">
-              <div class="progress-bar">
-                <div class="progress"></div>
+          <div class="form-container">
+            <form id="editAddressForm">
+              <input type="hidden" name="_method" value="PATCH">
+              <input type="hidden" name="addressId" value="<%= address._id %>">
+
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <i class="fas fa-map-marker-alt"></i> Address Type
+                </h3>
+                <div class="address-type-options">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="addressType-home" name="addressType" value="Home" <%= address.addressType === 'Home' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="addressType-home">
+                      <i class="fas fa-home me-1"></i> Home
+                    </label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="addressType-work" name="addressType" value="Work" <%= address.addressType === 'Work' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="addressType-work">
+                      <i class="fas fa-briefcase me-1"></i> Work
+                    </label>
+                  </div>
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" id="addressType-other" name="addressType" value="Other" <%= address.addressType === 'Other' ? 'checked' : '' %>>
+                    <label class="form-check-label" for="addressType-other">
+                      <i class="fas fa-map-marker-alt me-1"></i> Other
+                    </label>
+                  </div>
+                </div>
+                <div class="invalid-feedback" id="addressType-error">Please select an address type</div>
               </div>
-            </div>
 
-            <!-- Address Form -->
-            <div class="form-container">
-              <form id="addAddressForm">
-                <input type="hidden" name="_method" value="PATCH"> <!-- Simulate PATCH method -->
-                <input type="hidden" name="addressId" value="<%= address._id %>">
-                <!-- Add an addressId for identification -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <i class="fas fa-user"></i> Personal Information
+                </h3>
 
-                <!-- Address Type Section -->
-                <div class="form-section">
-                  <h3 class="form-section-title">
-                    <i class="fas fa-map-marker-alt"></i>Address Type
-                  </h3>
-                  <div class="address-type-options">
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="addressType-home" name="addressType" value="Home"
-                        <%=address.addressType==='Home' ? 'checked' : '' %>>
-                      <label class="form-check-label" for="addressType-home">
-                        <i class="fas fa-home me-1"></i> Home
-                      </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="addressType-work" name="addressType" value="Work"
-                        <%=address.addressType==='Work' ? 'checked' : '' %>>
-                      <label class="form-check-label" for="addressType-work">
-                        <i class="fas fa-briefcase me-1"></i> Work
-                      </label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                      <input class="form-check-input" type="radio" id="addressType-other" name="addressType"
-                        value="Other" <%=address.addressType==='Other' ? 'checked' : '' %>>
-                      <label class="form-check-label" for="addressType-other">
-                        <i class="fas fa-map-marker-alt me-1"></i> Other
-                      </label>
-                    </div>
-                  </div>
+                <div class="form-group">
+                  <label for="name">Full Name <span class="required">*</span></label>
+                  <input type="text" id="name" name="name" class="form-control" value="<%= address.name %>">
+                  <div class="invalid-feedback">Name must be 2-50 characters, letters and single spaces only</div>
                 </div>
 
-                <!-- Personal Information Section -->
-                <div class="form-section">
-                  <h3 class="form-section-title">
-                    <i class="fas fa-user"></i> Personal Information
-                  </h3>
-
-                  <!-- Full Name -->
+                <div class="form-row">
                   <div class="form-group">
-                    <label for="name">Full Name <span class="required">*</span></label>
-                    <input type="text" id="name" name="name" class="form-control" value="<%= address.name %>" required>
-                    <div class="invalid-feedback">Please enter your full name</div>
+                    <label for="phone">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone" name="phone" class="form-control" value="<%= address.phone %>">
+                    <div class="invalid-feedback">Enter a valid 10-digit phone number starting with 6-9, with at least 3 unique digits</div>
+                    <div class="help-text">We'll use this as the primary contact number</div>
                   </div>
+                  <div class="form-group">
+                    <label for="altPhone">Alternative Phone <span class="required">*</span></label>
+                    <input type="tel" id="altPhone" name="altPhone" class="form-control" value="<%= address.altPhone %>">
+                    <div class="invalid-feedback">Enter a valid 10-digit alternative phone number, different from primary</div>
+                  </div>
+                </div>
+              </div>
 
-                  <!-- Contact Information -->
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="phone">Phone Number <span class="required">*</span></label>
-                      <input type="tel" id="phone" name="phone" class="form-control" value="<%= address.phone %>"
-                        required>
-                      <div class="invalid-feedback">Please enter a valid 10-digit phone number</div>
-                      <div class="help-text">We'll use this as the primary contact number</div>
-                    </div>
-                    <div class="form-group">
-                      <label for="altPhone">Alternative Phone <span class="required">*</span></label>
-                      <input type="tel" id="altPhone" name="altPhone" class="form-control"
-                        value="<%= address.altPhone %>" required>
-                      <div class="invalid-feedback">Please enter a valid 10-digit alternative phone number</div>
-                    </div>
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <i class="fas fa-map"></i> Address Details
+                </h3>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="city">City <span class="required">*</span></label>
+                    <input type="text" id="city" name="city" class="form-control" value="<%= address.city %>">
+                    <div class="invalid-feedback">City must be 2-50 characters, letters only</div>
+                  </div>
+                  <div class="form-group">
+                    <label for="state">State <span class="required">*</span></label>
+                    <input type="text" id="state" name="state" class="form-control" value="<%= address.state %>">
+                    <div class="invalid-feedback">State must be 2-50 characters, letters only</div>
                   </div>
                 </div>
 
-                <!-- Address Details Section -->
-                <div class="form-section">
-                  <h3 class="form-section-title">
-                    <i class="fas fa-map"></i> Address Details
-                  </h3>
-
-                  <!-- City and State -->
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="city">City <span class="required">*</span></label>
-                      <input type="text" id="city" name="city" class="form-control" value="<%= address.city %>"
-                        required>
-                      <div class="invalid-feedback">Please enter your city</div>
-                    </div>
-                    <div class="form-group">
-                      <label for="state">State <span class="required">*</span></label>
-                      <input type="text" id="state" name="state" class="form-control" value="<%= address.state %>"
-                        required>
-                      <div class="invalid-feedback">Please enter your state</div>
-                    </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="landMark">Landmark <span class="required">*</span></label>
+                    <input type="text" id="landMark" name="landMark" class="form-control" value="<%= address.landMark %>">
+                    <div class="invalid-feedback">Landmark must be 6-100 characters (letters, numbers, spaces, commas, hyphens)</div>
+                    <div class="help-text">Nearby recognizable location (e.g., mall, school, etc.)</div>
                   </div>
-
-                  <!-- Landmark and Pincode -->
-                  <div class="form-row">
-                    <div class="form-group">
-                      <label for="landMark">Landmark <span class="required">*</span></label>
-                      <input type="text" id="landMark" name="landMark" class="form-control"
-                        value="<%= address.landMark %>" required>
-                      <div class="invalid-feedback">Please enter a landmark for easier delivery</div>
-                      <div class="help-text">Nearby recognizable location (e.g., mall, school, etc.)</div>
-                    </div>
-                    <div class="form-group">
-                      <label for="pincode">Pincode <span class="required">*</span></label>
-                      <input type="number" id="pincode" name="pincode" class="form-control"
-                        value="<%= address.pincode %>" required>
-                      <div class="invalid-feedback">Please enter a valid 6-digit pincode</div>
-                    </div>
+                  <div class="form-group">
+                    <label for="pincode">Pincode <span class="required">*</span></label>
+                    <input type="text" id="pincode" name="pincode" class="form-control" value="<%= address.pincode %>">
+                    <div class="invalid-feedback">Enter a valid 6-digit pincode with at least 2 unique digits</div>
                   </div>
                 </div>
 
-                <!-- Submit Button -->
-                <button type="submit" class="submit-btn">
-                  <i class="fas fa-check-circle"></i> Save Address
-                </button>
-              </form>
-            </div>
+                <label class="custom-checkbox">
+                  <input type="checkbox" name="isDefault" id="makeDefault" <%= address.isDefault ? 'checked' : '' %>>
+                  <span class="checkmark"></span>
+                  Set as default address for delivery
+                </label>
+              </div>
 
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-check-circle"></i> Save Address
+              </button>
+            </form>
           </div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Footer would be included here in your actual implementation -->
-    <%- include("../../views/partials/user/footer") %>
+  <%- include("../../views/partials/user/footer") %>
 
-      <!-- Scripts -->
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <script>
-       document.addEventListener('DOMContentLoaded', function() {
-  const form = document.getElementById('addAddressForm');
-  
-  // Update progress bar on form interaction
-  const inputs = form.querySelectorAll('input, select');
-  const progress = document.querySelector('.progress');
-  
-  function updateProgress() {
-    const totalFields = inputs.length;
-    let filledFields = 0;
-    
-    inputs.forEach(input => {
-      if (input.value.trim() !== '' || (input.type === 'radio' && input.checked) || (input.type === 'checkbox' && input.checked)) {
-        filledFields++;
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const form = document.getElementById('editAddressForm');
+      const inputs = form.querySelectorAll('input, select');
+      const progress = document.querySelector('.progress');
+
+      function updateProgress() {
+        const totalFields = inputs.length;
+        let filledFields = 0;
+
+        inputs.forEach(input => {
+          if (input.value.trim() !== '' || (input.type === 'radio' && input.checked) || (input.type === 'checkbox' && input.checked)) {
+            filledFields++;
+          }
+        });
+
+        const progressPercentage = (filledFields / totalFields) * 100;
+        progress.style.width = `${progressPercentage}%`;
       }
-    });
-    
-    const progressPercentage = (filledFields / totalFields) * 100;
-    progress.style.width = `${progressPercentage}%`;
-  }
-  
-  inputs.forEach(input => {
-    input.addEventListener('input', updateProgress);
-    input.addEventListener('change', updateProgress);
-  });
-  
-  // Initial progress update
-  updateProgress();
-  
-  // Form validation and submission
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // Form validation
-    let isValid = true;
-    const requiredFields = form.querySelectorAll('[required]');
-    
-    requiredFields.forEach(field => {
-      if (!field.value.trim()) {
-        field.classList.add('is-invalid');
-        isValid = false;
-      } else {
-        field.classList.remove('is-invalid');
+
+      inputs.forEach(input => {
+        input.addEventListener('input', updateProgress);
+        input.addEventListener('change', updateProgress);
+      });
+
+      updateProgress();
+
+      // Helper function to check for unique digits
+      function countUniqueDigits(value) {
+        return new Set(value.split('')).size;
       }
-    });
-    
-    // Phone validation
-    const phone = document.getElementById('phone');
-    const altPhone = document.getElementById('altPhone');
-    const phoneRegex = /^\d{10}$/;
-    
-    if (!phoneRegex.test(phone.value.trim())) {
-      phone.classList.add('is-invalid');
-      isValid = false;
-    }
-    
-    if (!phoneRegex.test(altPhone.value.trim())) {
-      altPhone.classList.add('is-invalid');
-      isValid = false;
-    }
-    
-    // Pincode validation
-    const pincode = document.getElementById('pincode');
-    if (pincode.value.trim().length !== 6 || isNaN(pincode.value.trim())) {
-      pincode.classList.add('is-invalid');
-      isValid = false;
-    }
-    
-    if (isValid) {
-      // Show loading state
-      const submitBtn = form.querySelector('.submit-btn');
-      const originalBtnText = submitBtn.innerHTML;
-      submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
-      submitBtn.disabled = true;
-      
-      // Get form data
-      const formData = new FormData(form);
-      const addressData = {
-        addressId: formData.get('addressId'), // Add addressId for identification
-        addressType: formData.get('addressType'),
-        name: formData.get('name'),
-        phone: formData.get('phone'),
-        altPhone: formData.get('altPhone'),
-        city: formData.get('city'),
-        state: formData.get('state'),
-        landMark: formData.get('landMark'),
-        pincode: formData.get('pincode'),
-        isDefault: formData.has('isDefault')
-      };
-      
-      // Send data using fetch API with PATCH method
-      fetch('/EditAddress', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
+
+      // Validation rules
+      const validationRules = {
+        name: {
+          pattern: /^[A-Za-z\s]{2,50}$/,
+          additionalCheck: (value) => !/(\s{2,})/.test(value),
+          message: 'Name must be 2-50 characters, contain only letters and single spaces between words (no hyphens or special characters)'
         },
-        body: JSON.stringify(addressData)
-      })
-      .then(response => response.json())
-      .then(data => {
-        // Reset button state
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-        
-        if (data.success) {
+        phone: {
+          pattern: /^[6-9]\d{9}$/,
+          additionalCheck: (value) => countUniqueDigits(value) >= 3,
+          message: 'Phone must be 10 digits starting with 6-9 and contain at least 3 unique digits'
+        },
+        altPhone: {
+          pattern: /^[6-9]\d{9}$/,
+          additionalCheck: (value, form) => countUniqueDigits(value) >= 3 && value !== form.querySelector('#phone').value.trim(),
+          message: 'Alternative phone must be 10 digits starting with 6-9, at least 3 unique digits, and different from primary phone'
+        },
+        city: {
+          pattern: /^[A-Za-z]{2,50}$/,
+          additionalCheck: () => true,
+          message: 'City must be 2-50 characters and contain letters only (no spaces or symbols)'
+        },
+        state: {
+          pattern: /^[A-Za-z]{2,50}$/,
+          additionalCheck: () => true,
+          message: 'State must be 2-50 characters and contain letters only (no spaces or symbols)'
+        },
+        landMark: {
+          pattern: /^[A-Za-z0-9,\-\s]{6,100}$/,
+          additionalCheck: (value) => {
+            const uniqueChars = new Set(value.replace(/[\s,\-]/g, '')).size;
+            return (
+              !/(\s{2,}|,{2,}|-{2,})/.test(value) &&
+              /[A-Za-z0-9]/.test(value) &&
+              uniqueChars >= 2
+            );
+          },
+          message: 'Landmark must be 6-100 characters long, containing letters, numbers, commas, hyphens, or spaces, with at least 2 unique alphanumeric characters. Avoid consecutive spaces, commas, or hyphens.'
+        },
+        pincode: {
+          pattern: /^\d{6}$/,
+          additionalCheck: (value) => countUniqueDigits(value) >= 2,
+          message: 'Pincode must be 6 digits with at least 2 unique digits'
+        },
+      };
+
+      // Form validation and submission
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let isValid = true;
+        const errors = [];
+
+        // Validate address type
+        const addressType = form.querySelector('input[name="addressType"]:checked');
+        const addressTypeError = document.getElementById('addressType-error');
+        if (!addressType) {
+          addressTypeError.style.display = 'block';
+          isValid = false;
+          errors.push('Address Type');
+        } else {
+          addressTypeError.style.display = 'none';
+        }
+
+        // Validate all other fields
+        Object.keys(validationRules).forEach(fieldId => {
+          const input = document.getElementById(fieldId);
+          const value = input.value.trim();
+          const rule = validationRules[fieldId];
+
+          if (!value) {
+            input.classList.add('is-invalid');
+            input.nextElementSibling.textContent = 'This field is required';
+            isValid = false;
+            errors.push(fieldId);
+          } else if (!rule.pattern.test(value) || (rule.additionalCheck && !rule.additionalCheck(value, form))) {
+            input.classList.add('is-invalid');
+            input.nextElementSibling.textContent = rule.message;
+            isValid = false;
+            errors.push(fieldId);
+          } else {
+            input.classList.remove('is-invalid');
+          }
+        });
+
+        if (isValid) {
+          const submitBtn = form.querySelector('.submit-btn');
+          const originalBtnText = submitBtn.innerHTML;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+          submitBtn.disabled = true;
+
+          const formData = new FormData(form);
+          const addressData = {
+            addressId: formData.get('addressId'),
+            addressType: formData.get('addressType'),
+            name: formData.get('name'),
+            phone: formData.get('phone'),
+            altPhone: formData.get('altPhone'),
+            city: formData.get('city'),
+            state: formData.get('state'),
+            landMark: formData.get('landMark'),
+            pincode: formData.get('pincode'),
+            isDefault: formData.has('isDefault')
+          };
+
           Swal.fire({
-            icon: 'success',
-            title: 'Address Updated Successfully',
-            text: 'Your shipping address has been updated.',
-            confirmButtonColor: '#fd334e',
-            timer: 3000,
-            timerProgressBar: true
-          }).then(() => {
-            window.location.href = '/address';
+            title: 'Saving Address...',
+            html: 'Please wait while we save your address.',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            didOpen: () => {
+              Swal.showLoading();
+            }
           });
+
+          fetch('/EditAddress', {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(addressData)
+          })
+            .then(response => response.json())
+            .then(data => {
+              submitBtn.innerHTML = originalBtnText;
+              submitBtn.disabled = false;
+
+              if (data.success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Address Updated Successfully',
+                  text: 'Your shipping address has been updated.',
+                  confirmButtonColor: '#fd334e',
+                  timer: 3000,
+                  timerProgressBar: true
+                }).then(() => {
+                  window.location.href = '/address';
+                });
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: data.message || 'Something went wrong while updating your address!',
+                  confirmButtonColor: '#fd334e'
+                });
+              }
+            })
+            .catch(error => {
+              submitBtn.innerHTML = originalBtnText;
+              submitBtn.disabled = false;
+
+              console.error('Error:', error);
+              Swal.fire({
+                icon: 'error',
+                title: 'Connection Error',
+                text: 'There was a problem connecting to the server. Please try again.',
+                confirmButtonColor: '#fd334e'
+              });
+            });
         } else {
           Swal.fire({
             icon: 'error',
-            title: 'Oops...',
-            text: data.message || 'Something went wrong while updating your address!',
+            title: 'Invalid Input',
+            html: `Please correct the following fields:<br>${errors.map(e => `<b>${e.charAt(0).toUpperCase() + e.slice(1)}</b>`).join('<br>')}`,
             confirmButtonColor: '#fd334e'
           });
+
+          const firstError = form.querySelector('.is-invalid');
+          if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            firstError.focus();
+          }
         }
-      })
-      .catch(error => {
-        // Reset button state
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
-        
-        console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Connection Error',
-          text: 'There was a problem connecting to the server. Please try again.',
-          confirmButtonColor: '#fd334e'
+      });
+
+      // Real-time validation
+      inputs.forEach(input => {
+        input.addEventListener('input', function () {
+          const rule = validationRules[this.id];
+          if (rule) {
+            const value = this.value.trim();
+            if (!value) {
+              this.classList.add('is-invalid');
+              this.nextElementSibling.textContent = 'This field is required';
+            } else if (!rule.pattern.test(value) || (rule.additionalCheck && !rule.additionalCheck(value, form))) {
+              this.classList.add('is-invalid');
+              this.nextElementSibling.textContent = rule.message;
+            } else {
+              this.classList.remove('is-invalid');
+            }
+          }
+
+          // Real-time phone number comparison
+          if (this.id === 'phone' || this.id === 'altPhone') {
+            const phone = document.getElementById('phone');
+            const altPhone = document.getElementById('altPhone');
+            if (phone.value.trim() === altPhone.value.trim() && phone.value.trim() !== '') {
+              altPhone.classList.add('is-invalid');
+              altPhone.nextElementSibling.textContent = 'Alternative phone must be different from primary';
+            } else if (validationRules.altPhone.pattern.test(altPhone.value.trim()) && validationRules.altPhone.additionalCheck(altPhone.value.trim(), form)) {
+              altPhone.classList.remove('is-invalid');
+            }
+          }
         });
       });
-    } else {
-      // Smooth scroll to first error
-      const firstError = form.querySelector('.is-invalid');
-      if (firstError) {
-        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        firstError.focus();
-      }
-    }
-  });
-  
-  // Remove validation styling on input
-  inputs.forEach(input => {
-    input.addEventListener('input', function() {
-      this.classList.remove('is-invalid');
-    });
-  });
-});
 
-      </script>
+      // Address type validation on change
+      form.querySelectorAll('input[name="addressType"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          document.getElementById('addressType-error').style.display = 'none';
+        });
+      });
+    });
+  </script>
 </body>
 
 </html>

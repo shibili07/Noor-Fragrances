@@ -16,17 +16,17 @@
 
 - OTP expiration doesn’t work [✔]
 
-- cart quantity resets when trying to increase quantity beyond stock [ⴵ...]
+- cart quantity resets when trying to increase quantity beyond stock [✔]
 - coupon criteria not met message not shown properly 
-- wishlisting doesn’t work
-- products from unlisted categories show up in product list 
-- able to add unlisted items to cart
+- wishlisting doesn’t work [✔]
+- products from unlisted categories show up in product list [ⴵ...] 
+- able to add unlisted items to cart 
 - able to order unlisted item if they’re in cart
 - disallow COD if order value is above 1000
 - refund credited for pending payments 
 - use the same password rules in signup, password change, password reset etc
-- profile input validation
-- address input validation
+- profile input validation [✔]
+- address input validation [✔]
 
  Admin
 -------

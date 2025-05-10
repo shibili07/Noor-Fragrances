@@ -5,11 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Noor Fragrances - Sign Up</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Montserrat:wght@300;400;500;600&display=swap">
   <style>
     :root {
       --primary-color: #8A6D3B;
@@ -359,8 +357,7 @@
         <div class="form-group">
           <label for="referral">Referral Code <span class="optional-label">(Optional)</span></label>
 
-          <input type="text" id="referral" name="referral" placeholder="Enter referral code if you have one"
-            value="<%= referral || '' %>" />
+          <input type="text" id="referral" name="referral" placeholder="Enter referral code if you have one" value="<%= referral || '' %>" />
           <div id="error6" class="error-message"></div>
         </div>
 
@@ -373,14 +370,10 @@
 
         <a href="/auth/google" class="google-signup-btn" id="googleSignupBtn">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48">
-            <path fill="#FFC107"
-              d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
-            <path fill="#FF3D00"
-              d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
-            <path fill="#4CAF50"
-              d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
-            <path fill="#1976D2"
-              d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.801 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
+            <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z" />
+            <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z" />
+            <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z" />
+            <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.801 44 34 44 24c0-1.341-.138-2.65-.389-3.917z" />
           </svg>
           Sign up with Google
         </a>
@@ -393,269 +386,267 @@
   </div>
 
   <% if (message) { %>
-    <input type="hidden" id="message" value="<%= message %>">
-    <% } %>
+  <input type="hidden" id="message" value="<%= message %>">
+  <% } %>
 
 
-      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-        crossorigin="anonymous"></script>
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-      <script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const messageInput = document.getElementById("message");
+
+    if (messageInput) {
+      const message = messageInput.value;
+
+      if (message) {
+        Swal.fire({
+          title: 'Error',
+          text: message,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          // Remove the hidden field from DOM
+          messageInput.remove();
+
+          // Redirect to /signup
+          window.location.href = "/signup";
+        });
+      }
+    }
 
 
-        const messageInput = document.getElementById("message");
+    document.addEventListener("DOMContentLoaded", () => {
+      // Get form elements
+      const nameid = document.getElementById("name");
+      const emailid = document.getElementById("email");
+      const phoneid = document.getElementById("phone");
+      const password = document.getElementById("password");
+      const confirmPassword = document.getElementById("confirmPassword");
+      const referral = document.getElementById("referral");
+      const error1 = document.getElementById("error1");
+      const error2 = document.getElementById("error2");
+      const error3 = document.getElementById("error3");
+      const error4 = document.getElementById("error4");
+      const error5 = document.getElementById("error5");
+      const error6 = document.getElementById("error6");
+      const signForm = document.getElementById("signForm");
 
-        if (messageInput) {
-          const message = messageInput.value;
+      const togglePassword = document.getElementById("togglePassword");
+      const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
 
-          if (message) {
-            Swal.fire({
-              title: 'Error',
-              text: message,
-              icon: 'error',
-              confirmButtonText: 'OK'
-            }).then(() => {
-              // Remove the hidden field from DOM
-              messageInput.remove();
+      // Password visibility toggle
+      togglePassword.addEventListener("click", function() {
+        const type = password.getAttribute("type") === "password" ? "text" : "password";
+        password.setAttribute("type", type);
+        this.querySelector("i").classList.toggle("fa-eye");
+        this.querySelector("i").classList.toggle("fa-eye-slash");
+      });
 
-              // Redirect to /signup
-              window.location.href = "/signup";
-            });
-          }
+      toggleConfirmPassword.addEventListener("click", function() {
+        const type = confirmPassword.getAttribute("type") === "password" ? "text" : "password";
+        confirmPassword.setAttribute("type", type);
+        this.querySelector("i").classList.toggle("fa-eye");
+        this.querySelector("i").classList.toggle("fa-eye-slash");
+      });
+
+      // Show server-side error if it exists
+      <% if (locals.message && message.length > 0) { %>
+      serverError.style.display = "block";
+      serverError.innerHTML = "<%= message %>";
+      <% } %>
+
+      // Validation functions
+      function nameValidateChecking() {
+        const nameval = nameid.value.trim();
+        const namepattern = /^[A-Za-z\s]+$/;
+        if (!nameval) {
+          error1.style.display = "block";
+          error1.innerHTML = "Please enter your name";
+          return false;
+        } else if (!namepattern.test(nameval)) {
+          error1.style.display = "block";
+          error1.innerHTML = "Name can only contain alphabets and spaces";
+          return false;
+        } else {
+          error1.style.display = "none";
+          return true;
+        }
+      }
+
+      function emailValidateChecking() {
+        const emailval = emailid.value.trim();
+        const emailpattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailval) {
+          error2.style.display = "block";
+          error2.innerHTML = "Please enter a valid email";
+          return false;
+        } else if (!emailpattern.test(emailval)) {
+          error2.style.display = "block";
+          error2.innerHTML = "Invalid email format (e.g., example@mail.com)";
+          return false;
+        } else {
+          error2.style.display = "none";
+          return true;
+        }
+      }
+
+      function phoneValidateChecking() {
+
+        const error3 = document.getElementById("error3");
+        const phoneval = phoneid.value.trim();
+
+        // Indian mobile number pattern: starts with 6-9, followed by 9 digits (total 10)
+        const phonepattern = /^[6-9]\d{9}$/;
+
+        if (!phoneval) {
+          error3.style.display = "block";
+          error3.innerHTML = "Please enter your phone number";
+          return false;
+        } else if (!phonepattern.test(phoneval)) {
+          error3.style.display = "block";
+          error3.innerHTML = "Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9";
+          return false;
+        } else {
+          error3.style.display = "none";
+          return true;
+        }
+      }
+
+      function passwordValidateChecking() {
+        const passval = password.value.trim();
+        const cpassval = confirmPassword.value.trim();
+
+        const lowercase = /[a-z]/;
+        const uppercase = /[A-Z]/;
+        const digit = /\d/;
+        const space = /\s/;
+        let isValid = true;
+
+        // Check for minimum length
+        if (passval.length < 8) {
+          error4.style.display = "block";
+          error4.innerHTML = "Password must be at least 8 characters long";
+          isValid = false;
+        }
+        // Check for lowercase, uppercase, digit, and no spaces
+        else if (
+          !lowercase.test(passval) ||
+          !uppercase.test(passval) ||
+          !digit.test(passval) ||
+          space.test(passval)
+        ) {
+          error4.style.display = "block";
+          error4.innerHTML = "Password must include uppercase, lowercase, a number, and no spaces";
+          isValid = false;
+        } else {
+          error4.style.display = "none";
         }
 
+        // Confirm password check
+        if (passval !== cpassval) {
+          error5.style.display = "block";
+          error5.innerHTML = "Passwords do not match";
+          isValid = false;
+        } else {
+          error5.style.display = "none";
+        }
 
-        document.addEventListener("DOMContentLoaded", () => {
-          // Get form elements
-          const nameid = document.getElementById("name");
-          const emailid = document.getElementById("email");
-          const phoneid = document.getElementById("phone");
-          const password = document.getElementById("password");
-          const confirmPassword = document.getElementById("confirmPassword");
-          const referral = document.getElementById("referral");
-          const error1 = document.getElementById("error1");
-          const error2 = document.getElementById("error2");
-          const error3 = document.getElementById("error3");
-          const error4 = document.getElementById("error4");
-          const error5 = document.getElementById("error5");
-          const error6 = document.getElementById("error6");
-          const signForm = document.getElementById("signForm");
+        return isValid;
+      }
 
-          const togglePassword = document.getElementById("togglePassword");
-          const toggleConfirmPassword = document.getElementById("toggleConfirmPassword");
+      function referralValidateChecking() {
+        const refval = referral.value.trim();
+        // Optional field validation - only validate if something is entered
+        if (refval && !/^[A-Za-z0-9]+$/.test(refval)) {
+          error6.style.display = "block";
+          error6.innerHTML = "Referral code should contain only letters and numbers";
+          return false;
+        } else {
+          error6.style.display = "none";
+          return true;
+        }
+      }
 
-          // Password visibility toggle
-          togglePassword.addEventListener("click", function () {
-            const type = password.getAttribute("type") === "password" ? "text" : "password";
-            password.setAttribute("type", type);
-            this.querySelector("i").classList.toggle("fa-eye");
-            this.querySelector("i").classList.toggle("fa-eye-slash");
-          });
+      // Real-time validation
+      nameid.addEventListener("blur", nameValidateChecking);
+      emailid.addEventListener("blur", emailValidateChecking);
+      phoneid.addEventListener("blur", phoneValidateChecking);
+      password.addEventListener("blur", passwordValidateChecking);
+      confirmPassword.addEventListener("blur", passwordValidateChecking);
+      referral.addEventListener("blur", referralValidateChecking);
 
-          toggleConfirmPassword.addEventListener("click", function () {
-            const type = confirmPassword.getAttribute("type") === "password" ? "text" : "password";
-            confirmPassword.setAttribute("type", type);
-            this.querySelector("i").classList.toggle("fa-eye");
-            this.querySelector("i").classList.toggle("fa-eye-slash");
-          });
+      // Form submission
+      signForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-        // Show server-side error if it exists
-        <% if (locals.message && message.length > 0) { %>
-            serverError.style.display = "block";
-            serverError.innerHTML = "<%= message %>";
-        <% } %>
+        const isNameValid = nameValidateChecking();
+        const isEmailValid = emailValidateChecking();
+        const isPhoneValid = phoneValidateChecking();
+        const isPasswordValid = passwordValidateChecking();
+        const isReferralValid = referralValidateChecking();
 
-            // Validation functions
-            function nameValidateChecking() {
-              const nameval = nameid.value.trim();
-              const namepattern = /^[A-Za-z\s]+$/;
-              if (!nameval) {
-                error1.style.display = "block";
-                error1.innerHTML = "Please enter your name";
-                return false;
-              } else if (!namepattern.test(nameval)) {
-                error1.style.display = "block";
-                error1.innerHTML = "Name can only contain alphabets and spaces";
-                return false;
-              } else {
-                error1.style.display = "none";
-                return true;
-              }
-            }
+        if (!(isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isReferralValid)) {
+          return;
+        }
 
-          function emailValidateChecking() {
-            const emailval = emailid.value.trim();
-            const emailpattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailval) {
-              error2.style.display = "block";
-              error2.innerHTML = "Please enter a valid email";
-              return false;
-            } else if (!emailpattern.test(emailval)) {
-              error2.style.display = "block";
-              error2.innerHTML = "Invalid email format (e.g., example@mail.com)";
-              return false;
-            } else {
-              error2.style.display = "none";
-              return true;
-            }
+        // Show loading state
+        Swal.fire({
+          title: 'Creating your account...',
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
           }
-
-          function phoneValidateChecking() {
-
-            const error3 = document.getElementById("error3");
-            const phoneval = phoneid.value.trim();
-
-            // Indian mobile number pattern: starts with 6-9, followed by 9 digits (total 10)
-            const phonepattern = /^[6-9]\d{9}$/;
-
-            if (!phoneval) {
-              error3.style.display = "block";
-              error3.innerHTML = "Please enter your phone number";
-              return false;
-            } else if (!phonepattern.test(phoneval)) {
-              error3.style.display = "block";
-              error3.innerHTML = "Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9";
-              return false;
-            } else {
-              error3.style.display = "none";
-              return true;
-            }
-          }
-
-          function passwordValidateChecking() {
-            const passval = password.value.trim();
-            const cpassval = confirmPassword.value.trim();
-
-            const alpha = /[a-zA-Z]/;
-            const digit = /\d/;
-            const space = /\s/;
-            let isValid = true;
-
-            // Check for minimum length
-            if (passval.length < 8) {
-              error4.style.display = "block";
-              error4.innerHTML = "Password must be at least 8 characters long";
-              isValid = false;
-            }
-            // Check for letters, numbers, and disallow spaces
-            else if (!alpha.test(passval) || !digit.test(passval) || space.test(passval)) {
-              error4.style.display = "block";
-              error4.innerHTML = "Password must contain letters and numbers and should not contain spaces";
-              isValid = false;
-            } else {
-              error4.style.display = "none";
-            }
-
-            // Confirm password check
-            if (passval !== cpassval) {
-              error5.style.display = "block";
-              error5.innerHTML = "Passwords do not match";
-              isValid = false;
-            } else {
-              error5.style.display = "none";
-            }
-
-            return isValid;
-          }
-
-
-          function referralValidateChecking() {
-            const refval = referral.value.trim();
-            // Optional field validation - only validate if something is entered
-            if (refval && !/^[A-Za-z0-9]+$/.test(refval)) {
-              error6.style.display = "block";
-              error6.innerHTML = "Referral code should contain only letters and numbers";
-              return false;
-            } else {
-              error6.style.display = "none";
-              return true;
-            }
-          }
-
-          // Real-time validation
-          nameid.addEventListener("blur", nameValidateChecking);
-          emailid.addEventListener("blur", emailValidateChecking);
-          phoneid.addEventListener("blur", phoneValidateChecking);
-          password.addEventListener("blur", passwordValidateChecking);
-          confirmPassword.addEventListener("blur", passwordValidateChecking);
-          referral.addEventListener("blur", referralValidateChecking);
-
-          // Form submission
-          signForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-
-            const isNameValid = nameValidateChecking();
-            const isEmailValid = emailValidateChecking();
-            const isPhoneValid = phoneValidateChecking();
-            const isPasswordValid = passwordValidateChecking();
-            const isReferralValid = referralValidateChecking();
-
-            if (!(isNameValid && isEmailValid && isPhoneValid && isPasswordValid && isReferralValid)) {
-              return;
-            }
-
-            // Show loading state
-            Swal.fire({
-              title: 'Creating your account...',
-              allowOutsideClick: false,
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-
-            try {
-              // Create form data object
-              const formData = {
-                name: nameid.value.trim(),
-                email: emailid.value.trim(),
-                phone: phoneid.value.trim(),
-                password: password.value.trim(),
-                confirmPassword: confirmPassword.value.trim(),
-                referral: referral.value.trim()
-              };
-
-              const response = await fetch('/signup', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-              });
-
-              const data = await response.json();
-
-              if (data.success) {
-                Swal.fire({
-                  icon: 'success',
-                  title: 'Otp Verification!',
-                  text: 'Please check your email for OTP verification',
-                  showConfirmButton: false,
-                  timer: 1500
-                }).then(() => {
-                  window.location.href = '/otp-verify';
-                });
-              } else {
-                Swal.fire({
-                  icon: 'error',
-                  title: 'Error',
-                  text: data.message || 'Something went wrong'
-                });
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Network error occurred. Please try again.'
-              });
-            }
-          });
         });
 
+        try {
+          // Create form data object
+          const formData = {
+            name: nameid.value.trim(),
+            email: emailid.value.trim(),
+            phone: phoneid.value.trim(),
+            password: password.value.trim(),
+            confirmPassword: confirmPassword.value.trim(),
+            referral: referral.value.trim()
+          };
 
+          const response = await fetch('/signup', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+          });
 
-      </script>
+          const data = await response.json();
+
+          if (data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Otp Verification!',
+              text: 'Please check your email for OTP verification',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              window.location.href = '/otp-verify';
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: data.message || 'Something went wrong'
+            });
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Network error occurred. Please try again.'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>

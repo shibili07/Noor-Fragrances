@@ -1,546 +1,655 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NOOR Fragrance - My Info</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;600&display=swap" rel="stylesheet"/>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
   <style>
-         body {
-        font-family: "Akshar", sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
+    body {
+      font-family: "Akshar", sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    .user-dashboard {
+      padding: 30px 15px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+    }
+
+
+    .modal-content {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      position: relative;
+      animation: fadeIn 0.3s ease-in-out;
+      font-family: "akshar";
+    }
+
+
+    .close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 24px;
+      color: #888;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .close:hover {
+      color: #fd334e;
+    }
+
+
+    form h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
+      color: #333;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 500;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      transition: 0.2s;
+    }
+
+    .form-group input:focus {
+      border-color: #fd334e;
+      outline: none;
+    }
+
+
+    .submit-btn {
+      background-color: #fd334e;
+      color: white;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .submit-btn:hover {
+      background-color: #e62b42;
+    }
+
+
+    @keyframes fadeIn {
+      from {
+        transform: scale(0.9);
+        opacity: 0;
       }
 
-      .user-dashboard {
-        padding: 30px 15px;
-        width: 100%;
-        max-width: 100%;  
+      to {
+        transform: scale(1);
+        opacity: 1;
       }
+    }
 
-      
-      .modal {
-        display: none;
-        position: fixed;
-        z-index: 9999;
-        left: 0;
-        top: 0;
-        width: 100vw;
-        height: 100vh;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.6);
-        justify-content: center;
-        align-items: center;
-      }
+    .info-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+      width: 100%;
+    }
 
-      
-      .modal-content {
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        width: 100%;
-        max-width: 400px;
-        position: relative;
-        animation: fadeIn 0.3s ease-in-out;
-        font-family: "akshar";
-      }
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: #333;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eaeaea;
+    }
 
-    
-      .close {
-        position: absolute;
-        top: 12px;
-        right: 16px;
-        font-size: 24px;
-        color: #888;
-        cursor: pointer;
-        transition: color 0.2s;
-      }
+    .info-detail {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f5f5f5;
+    }
 
-      .close:hover {
-        color: #fd334e;
-      }
+    .info-detail:last-child {
+      border-bottom: none;
+    }
 
-     
-      form h2 {
-        margin-bottom: 20px;
-        font-size: 22px;
-        color: #333;
-        text-align: center;
-      }
+    .info-label {
+      font-size: 14px;
+      color: #807d7e;
+      margin-bottom: 5px;
+    }
 
-      .form-group {
-        margin-bottom: 18px;
-      }
+    .info-value {
+      font-size: 16px;
+      font-weight: 500;
+      color: #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-      .form-group label {
-        display: block;
-        font-weight: 500;
-        color: #333;
-        margin-bottom: 6px;
-      }
+    .info-value .password-dots {
+      letter-spacing: 2px;
+    }
 
-      .form-group input {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 8px;
-        border: 1px solid #ccc;
-        transition: 0.2s;
-      }
+    .change-btn {
+      font-size: 18px;
+      color: #fd334e;
+      background: none;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-weight: 500;
+      font-family: "akshar";
+    }
 
-      .form-group input:focus {
-        border-color: #fd334e;
-        outline: none;
-      }
+    .change-btn:hover {
+      text-decoration: underline;
+    }
 
-      
-      .submit-btn {
-        background-color: #fd334e;
-        color: white;
-        border: none;
-        padding: 12px;
-        border-radius: 8px;
-        width: 100%;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.3s ease;
-      }
+    .add-new-btn {
+      font-size: 14px;
+      color: #fd334e;
+      background: none;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
-      .submit-btn:hover {
-        background-color: #e62b42;
-      }
+    .add-new-btn:hover {
+      text-decoration: underline;
+    }
 
-     
-      @keyframes fadeIn {
-        from {
-          transform: scale(0.9);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
+    .address-card {
+      background-color: #f9f9f9;
+      border-radius: 6px;
+      padding: 20px;
+      margin-bottom: 20px;
+      position: relative;
+    }
 
+    .address-name {
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .address-phone {
+      color: #807d7e;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .address-details {
+      line-height: 1.4;
+      margin-bottom: 15px;
+    }
+
+    .address-type {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      background-color: #f1f1f1;
+      border-radius: 20px;
+      font-size: 13px;
+      margin-right: 8px;
+      margin-bottom: 10px;
+    }
+
+    .address-actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .address-action-btn {
+      font-size: 14px;
+      color: #fd334e;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 5px;
+    }
+
+    .address-action-btn:hover {
+      text-decoration: underline;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .pagination a {
+      color: #807d7e;
+      padding: 8px 12px;
+      text-decoration: none;
+      border-radius: 4px;
+      margin: 0 2px;
+    }
+
+    .pagination a.active {
+      background-color: #fd334e;
+      color: white;
+    }
+
+    .pagination a:hover:not(.active) {
+      background-color: #f1f1f1;
+    }
+
+    .default-badge {
+      background-color: #ece391;
+      color: #333;
+      font-size: 12px;
+      padding: 3px 8px;
+      border-radius: 3px;
+      margin-left: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 767px) {
       .info-container {
-        background-color: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        padding: 30px;
-        width: 100%;
-      }
-
-      .section-title {
-        font-size: 24px;
-        font-weight: 600;
-        margin-bottom: 25px;
-        color: #333;
-        padding-bottom: 10px;
-        border-bottom: 1px solid #eaeaea;
-      }
-
-      .info-detail {
-        margin-bottom: 20px;
-        padding-bottom: 20px;
-        border-bottom: 1px solid #f5f5f5;
-      }
-
-      .info-detail:last-child {
-        border-bottom: none;
-      }
-
-      .info-label {
-        font-size: 14px;
-        color: #807d7e;
-        margin-bottom: 5px;
+        padding: 20px 15px;
       }
 
       .info-value {
-        font-size: 16px;
-        font-weight: 500;
-        color: #333;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
       }
 
-      .info-value .password-dots {
-        letter-spacing: 2px;
-      }
-
-      .change-btn {
-        font-size: 18px;
-        color: #fd334e;
-        background: none;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        transition: all 0.3s;
-        font-weight: 500;
-        font-family: "akshar";
-      }
-
-      .change-btn:hover {
-        text-decoration: underline;
-      }
-
+      .change-btn,
       .add-new-btn {
-        font-size: 14px;
-        color: #fd334e;
-        background: none;
-        border: none;
-        padding: 5px 10px;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .add-new-btn:hover {
-        text-decoration: underline;
-      }
-
-      .address-card {
-        background-color: #f9f9f9;
-        border-radius: 6px;
-        padding: 20px;
-        margin-bottom: 20px;
-        position: relative;
-      }
-
-      .address-name {
-        font-weight: 600;
-        margin-bottom: 10px;
-        display: block;
-      }
-
-      .address-phone {
-        color: #807d7e;
-        margin-bottom: 10px;
-        display: block;
-      }
-
-      .address-details {
-        line-height: 1.4;
-        margin-bottom: 15px;
-      }
-
-      .address-type {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 12px;
-        background-color: #f1f1f1;
-        border-radius: 20px;
+        padding: 3px 8px;
         font-size: 13px;
-        margin-right: 8px;
-        margin-bottom: 10px;
       }
 
       .address-actions {
-        margin-top: 15px;
-        display: flex;
-        gap: 10px;
+        flex-direction: column;
+        gap: 5px;
       }
+    }
 
-      .address-action-btn {
-        font-size: 14px;
-        color: #fd334e;
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 5px;
-      }
+    .profile-picture-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
 
-      .address-action-btn:hover {
-        text-decoration: underline;
-      }
+    .profile-picture {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #fd334e;
+      background-color: #f1f1f1;
+    }
 
-      .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 30px;
-      }
+    .profile-picture-placeholder {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background-color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #807d7e;
+      border: 2px dashed #ccc;
+    }
 
-      .pagination a {
-        color: #807d7e;
-        padding: 8px 12px;
-        text-decoration: none;
-        border-radius: 4px;
-        margin: 0 2px;
-      }
+    .upload-profile-btn {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #fd334e;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
-      .pagination a.active {
-        background-color: #fd334e;
-        color: white;
-      }
+    .upload-profile-btn:hover {
+      text-decoration: underline;
+    }
 
-      .pagination a:hover:not(.active) {
-        background-color: #f1f1f1;
-      }
+    .edit-profile-btn {
+      background-color: #fd334e;
+      color: white;
+      border: none;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.3s ease;
+      display: block;
+      text-decoration: none;
+      margin: 20px auto 0;
+      /* Center the button */
+    }
 
-      .default-badge {
-        background-color: #ece391;
-        color: #333;
-        font-size: 12px;
-        padding: 3px 8px;
-        border-radius: 3px;
-        margin-left: 8px;
-      }
+    .edit-profile-btn:hover {
+      background-color: #e62b42;
+    }
 
-      /* Responsive Adjustments */
-      @media (max-width: 767px) {
-        .info-container {
-          padding: 20px 15px;
-        }
+    .input-wrapper {
+      position: relative;
+    }
 
-        .info-value {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 8px;
-        }
+    .input-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+      /* Space for the eye icon */
+    }
 
-        .change-btn,
-        .add-new-btn {
-          padding: 3px 8px;
-          font-size: 13px;
-        }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #807d7e;
+      font-size: 16px;
+      transition: color 0.2s;
+    }
 
-        .address-actions {
-          flex-direction: column;
-          gap: 5px;
-        }
-      }
+    .toggle-password:hover {
+      color: #fd334e;
+    }
 
-      .profile-picture-container {
-        text-align: center;
-        margin-bottom: 30px;
-      }
-
-      .profile-picture {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #fd334e;
-        background-color: #f1f1f1;
-      }
-
-      .profile-picture-placeholder {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        background-color: #f1f1f1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        color: #807d7e;
-        border: 2px dashed #ccc;
-      }
-
-      .upload-profile-btn {
-        margin-top: 10px;
-        font-size: 14px;
-        color: #fd334e;
-        background: none;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .upload-profile-btn:hover {
-        text-decoration: underline;
-      }
-
-      .edit-profile-btn {
-        background-color: #fd334e;
-        color: white;
-        border: none;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        text-align: center;
-        transition: background 0.3s ease;
-        display: block;
-        text-decoration: none;
-        margin: 20px auto 0; /* Center the button */
-      }
-
-      .edit-profile-btn:hover {
-        background-color: #e62b42;
-      }
+    .toggle-password.fa-eye-slash {
+      color: #fd334e;
+      /* Different color when showing password */
+    }
   </style>
 </head>
+
 <body>
 
-<%- include("../../views/partials/user/header") %>
+  <%- include("../../views/partials/user/header") %>
 
-<div class="container-fluid user-dashboard">
-  <div class="row">
-    <div class="col-lg-2 mb-4">
-      <%- include("../../views/partials/user/profileMenu") %>
-    </div>
-
-    <div class="col-lg-10">
-      <div class="info-container">
-        <h2 class="section-title">My Profile</h2>
-
-        <div class="contact-details mb-5">
-          <!-- Profile Picture -->
-          <div class="profile-picture-container">
-            <% if (user.userImage[0]) { %>
-              <img src="<%= user.userImage[0] %>" alt="Profile Picture" class="profile-picture">
-            <% } else { %>
-              <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg" alt="Profile Picture" class="profile-picture">
-            <% } %>
-          </div>
-
-          <!-- Info Fields -->
-          <div class="info-detail">
-            <div class="info-label">Your Name</div>
-            <div class="info-value"><%= user.name %></div>
-          </div>
-
-          <div class="info-detail">
-            <div class="info-label">Your Phone</div>
-            <div class="info-value"><%= user.phone %></div>
-          </div>
-
-          <a href="/editProfile" class="edit-profile-btn">Edit Profile</a>
-
-          <br>
-          
-
-          <div class="info-detail">
-            <div class="info-label">Your Email</div>
-            <div class="info-value">
-              <span><%= user.email %></span>
-            
-                <a href="/change-email" class="change-btn" style="text-decoration: none;" >Change</a>
-
-              
-            </div>
-          </div>
-
-          <div class="info-detail">
-            <div class="info-label">Password</div>
-            <div class="info-value">
-              <span class="password-dots">••••••••</span>
-              <%if(!user.googleId){%>
-              <button id="openPasswordModal" data-user-id="<%= user._id %>" class="change-btn" >Change</button>
-              <%}%>
-            </div>
-          </div>
+    <div class="container-fluid user-dashboard">
+      <div class="row">
+        <div class="col-lg-2 mb-4">
+          <%- include("../../views/partials/user/profileMenu") %>
         </div>
 
-       
+        <div class="col-lg-10">
+          <div class="info-container">
+            <h2 class="section-title">My Profile</h2>
+
+            <div class="contact-details mb-5">
+              <!-- Profile Picture -->
+              <div class="profile-picture-container">
+                <% if (user.userImage[0]) { %>
+                  <img src="<%= user.userImage[0] %>" alt="Profile Picture" class="profile-picture">
+                  <% } else { %>
+                    <img
+                      src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg"
+                      alt="Profile Picture" class="profile-picture">
+                    <% } %>
+              </div>
+
+              <!-- Info Fields -->
+              <div class="info-detail">
+                <div class="info-label">Your Name</div>
+                <div class="info-value">
+                  <%= user.name %>
+                </div>
+              </div>
+
+              <div class="info-detail">
+                <div class="info-label">Your Phone</div>
+                <div class="info-value">
+                  <%= user.phone %>
+                </div>
+              </div>
+
+              <a href="/editProfile" class="edit-profile-btn">Edit Profile</a>
+
+              <br>
+
+
+              <div class="info-detail">
+                <div class="info-label">Your Email</div>
+                <div class="info-value">
+                  <span>
+                    <%= user.email %>
+                  </span>
+
+                  <a href="/change-email" class="change-btn" style="text-decoration: none;">Change</a>
+
+
+                </div>
+              </div>
+
+              <div class="info-detail">
+                <div class="info-label">Password</div>
+                <div class="info-value">
+                  <span class="password-dots">••••••••</span>
+                  <%if(!user.googleId){%>
+                    <button id="openPasswordModal" data-user-id="<%= user._id %>" class="change-btn">Change</button>
+                    <%}%>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Password Modal -->
-<div id="passwordModal" class="modal">
-  <div class="modal-content">
-    <span class="close" id="closePasswordModal">&times;</span>
-    <h2>Change Your Password</h2>
-    <form id="passwordForm">
-      <div class="form-group">
-        <label for="currentPassword">Current Password</label>
-        <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter Current Password"/>
-        <div id="currentPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
+    <!-- Password Modal -->
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closePasswordModal">×</span>
+        <h2>Change Your Password</h2>
+        <form id="passwordForm">
+          <div class="form-group">
+            <label for="currentPassword">Current Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter Current Password" />
+              <span class="toggle-password fas fa-eye" data-target="currentPassword"></span>
+            </div>
+            <div id="currentPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="newPassword">New Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="newPassword" name="newPassword" placeholder="Enter New Password" />
+              <span class="toggle-password fas fa-eye" data-target="newPassword"></span>
+            </div>
+            <div id="newPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-wrapper">
+              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm New Password" />
+              <span class="toggle-password fas fa-eye" data-target="confirmPassword"></span>
+            </div>
+            <div id="confirmPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
+          </div>
+
+          <button type="submit" class="submit-btn">Save Changes</button>
+        </form>
       </div>
+    </div>
 
-      <div class="form-group">
-        <label for="newPassword">New Password</label>
-        <input type="password" id="newPassword" name="newPassword" placeholder="Enter New Password" />
-        <div id="newPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
-      </div>
+    <%- include("../../views/partials/user/footer") %>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <script>
+        // Modal handling
+        const modal = document.getElementById("passwordModal");
+        const openBtn = document.getElementById("openPasswordModal");
+        const closeBtn = document.getElementById("closePasswordModal");
+        const passwordForm = document.getElementById("passwordForm");
+        const userId = openBtn.dataset.userId;
 
-      <div class="form-group">
-        <label for="confirmPassword">Confirm Password</label>
-        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm New Password" />
-        <div id="confirmPasswordError" class="text-danger mt-1" style="font-size: 14px;"></div>
-      </div>
+        // Function to clear form and errors
+        const clearForm = () => {
+          passwordForm.reset(); // Clear all input fields
+          ["currentPassword", "newPassword", "confirmPassword"].forEach(field => {
+            document.getElementById(`${field}Error`).innerText = ""; // Clear error messages
+            const input = document.getElementById(field);
+            input.type = "password"; // Reset to password type
+            const toggle = document.querySelector(`.toggle-password[data-target="${field}"]`);
+            toggle.classList.remove("fa-eye-slash");
+            toggle.classList.add("fa-eye"); // Reset eye icon
+          });
+        };
 
-      <button type="submit" class="submit-btn">Save Changes</button>
-    </form>
-  </div>
-</div>
+        // Open modal
+        openBtn.addEventListener("click", () => {
+          modal.style.display = "flex";
+        });
 
-<%- include("../../views/partials/user/footer") %>
+        // Close modal and clear form
+        closeBtn.addEventListener("click", () => {
+          modal.style.display = "none";
+          clearForm();
+        });
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-  const modal = document.getElementById("passwordModal");
-  const openBtn = document.getElementById("openPasswordModal");
-  const closeBtn = document.getElementById("closePasswordModal");
-  const userId = openBtn.dataset.userId;
+        // Close modal on background click and clear form
+        window.addEventListener("click", (e) => {
+          if (e.target === modal) {
+            modal.style.display = "none";
+            clearForm();
+          }
+        });
 
-  openBtn.addEventListener("click", () => modal.style.display = "flex");
-  closeBtn.addEventListener("click", () => modal.style.display = "none");
-  window.addEventListener("click", (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  });
+        // Toggle password visibility
+        document.querySelectorAll(".toggle-password").forEach((toggle) => {
+          toggle.addEventListener("click", () => {
+            const targetId = toggle.dataset.target;
+            const input = document.getElementById(targetId);
+            const isPasswordVisible = input.type === "text";
 
-  document.getElementById("passwordForm").addEventListener("submit", async function (e) {
-    e.preventDefault();
+            input.type = isPasswordVisible ? "password" : "text";
+            toggle.classList.toggle("fa-eye", isPasswordVisible);
+            toggle.classList.toggle("fa-eye-slash", !isPasswordVisible);
+          });
+        });
 
-    // Clear previous errors
-    ["currentPassword", "newPassword", "confirmPassword"].forEach(field =>
-      document.getElementById(`${field}Error`).innerText = ""
-    );
+        // Password form submission and validation
+        document.getElementById("passwordForm").addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-    const currentPassword = document.getElementById("currentPassword").value.trim();
-    const newPassword = document.getElementById("newPassword").value.trim();
-    const confirmPassword = document.getElementById("confirmPassword").value.trim();
+          // Clear previous errors
+          ["currentPassword", "newPassword", "confirmPassword"].forEach(field =>
+            document.getElementById(`${field}Error`).innerText = ""
+          );
 
-    let hasError = false;
+          const currentPassword = document.getElementById("currentPassword").value.trim();
+          const newPassword = document.getElementById("newPassword").value.trim();
+          const confirmPassword = document.getElementById("confirmPassword").value.trim();
 
-    if (!currentPassword) {
-      document.getElementById("currentPasswordError").innerText = "Current password is required.";
-      hasError = true;
-    }
+          let hasError = false;
 
-    if (!newPassword || newPassword.length < 6) {
-      document.getElementById("newPasswordError").innerText = "New password must be at least 6 characters.";
-      hasError = true;
-    }
+          // Validate current password
+          if (!currentPassword) {
+            document.getElementById("currentPasswordError").innerText = "Current password is required.";
+            hasError = true;
+          }
 
-    if (confirmPassword !== newPassword) {
-      document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
-      hasError = true;
-    }
+          // Validate new password
+          const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
-    if (hasError) return;
+          if (!newPassword) {
+            document.getElementById("newPasswordError").innerText = "New password is required.";
+            hasError = true;
+          } else if (newPassword.length < 8) {
+            document.getElementById("newPasswordError").innerText = "New password must be at least 8 characters.";
+            hasError = true;
+          } else if (!passwordRegex.test(newPassword)) {
+            document.getElementById("newPasswordError").innerText = "Password must include uppercase, lowercase, and a number. No special characters allowed.";
+            hasError = true;
+          } else if (newPassword === currentPassword) {
+            document.getElementById("newPasswordError").innerText = "New password must be different from current password.";
+            hasError = true;
+          }
 
-    try {
-      const res = await fetch(`/changePassword/${userId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
-      });
+          // Validate confirm password
+          if (!confirmPassword) {
+            document.getElementById("confirmPasswordError").innerText = "Please confirm your new password.";
+            hasError = true;
+          } else if (confirmPassword !== newPassword) {
+            document.getElementById("confirmPasswordError").innerText = "Passwords do not match.";
+            hasError = true;
+          }
 
-      const result = await res.json();
+          if (hasError) return;
+          try {
+            const res = await fetch(`/changePassword/${userId}`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+            });
 
-      if (!res.ok || !result.success) {
-        Swal.fire({ icon: "error", title: "Error", text: result.message || "Failed to change password." });
-        return;
-      }
+            const result = await res.json();
 
-      Swal.fire({ icon: "success", title: "Success", text: "Password updated successfully!" });
-      modal.style.display = "none";
-      setTimeout(() => window.location.reload(), 1000);
-    } catch (error) {
-      Swal.fire({ icon: "error", title: "Error", text: "Something went wrong. Try again later." });
-    }
-  });
-</script>
-</body>
+            if (!res.ok || !result.success) {
+              Swal.fire({ icon: "error", title: "Error", text: result.message || "Failed to change password." });
+              return;
+            }
+
+            Swal.fire({ icon: "success", title: "Success", text: "Password updated successfully!" });
+            modal.style.display = "none";
+            clearForm(); // Clear form on successful submission
+            setTimeout(() => window.location.reload(), 1000);
+          } catch (error) {
+            Swal.fire({ icon: "error", title: "Error", text: "Something went wrong. Try again later." });
+          }
+        });
+      </script>
+
 </html>

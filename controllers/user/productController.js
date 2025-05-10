@@ -248,9 +248,21 @@ const productDetails = async (req, res) => {
     const { id } = req.params;
 
     // Fetch product with category populated
-    const product = await Product.findById(id).populate('category').lean();
-    if (!product || product.isDeleted || product.isBlocked || !product.isListed) {
-      return res.redirect('/pageError');
+    const product = await Product.findOne({
+      _id: id,
+      isListed: true,
+      isBlocked: false,
+      isDeleted: false
+    })
+    .populate({
+      path: 'category',
+      match: { isListed: true, isDeleted: false } 
+    })
+    .lean();
+
+
+    if (!product || product.isDeleted || product.isBlocked || !product.isListed ||!product.category || product.category.isDeleted || !product.category.isListed) {
+      return res.redirect('/shop');
     }
 
     // Fetch user data if logged in

@@ -167,50 +167,61 @@ async function sendVerificationEmail(email,otp) {
     
 }
 
-const signup = async (req,res)=>{
-    try{
-        console.log(req.body);
-        
-        const {name,phone,email,password,confirmPassword,referral} = req.body;
 
-    
+const signup = async (req, res) => {
+    try {
+      console.log(req.body);
+  
+      const { name, phone, email, password, confirmPassword, referral } = req.body;
+  
+      
+      if (password !== confirmPassword) {
+        return res.status(400).json({ success: false, message: "Passwords do not match" });
+      }
+  
+      
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({
+          success: false,
+          message: "Password must be at least 8 characters, include uppercase, lowercase, and a number. No special characters allowed."
+        });
+      }
+  
+      
+      const findUser = await User.findOne({ email });
+      if (findUser) {
+        return res.status(400).json({ success: false, message: "User with this email already exists" });
+      }
+  
+     
+      const otp = generateOtp(); 
+      const emailSent = await sendVerificationEmail(email, otp);
+  
+      if (!emailSent) {
+        return res.json({ success: false, message: "Failed to send OTP email" });
+      }
+  
+     
+      req.session.userOtp = {
+        code: otp,
+        expiresAt: Date.now() + 60 * 1000 
+      };
+  
+      req.session.userData = { name, phone, email, password, referral };
 
-        if(password !== confirmPassword){
-            return res.status(400).json({success:false,message:"Password do not match"})
-        }
-        
-        const findUser= await User.findOne({email})
-        if(findUser){ 
-            return res.status(400).json({success:false,message:"User with this email already exists"})
-        }
-        // genarate otp
-        const otp = generateOtp(); 
-        //sent otp through email
-        const emailSent = await sendVerificationEmail(email,otp);
+      console.log("OTP Sent:", otp);
+  
+      return res.status(200).json({ success: true, message: "OTP Sent Successfully" });
+  
+    } catch (error) {
+      console.error("Signup error:", error);
+      return res.status(500).redirect("/pageNotFound");
+    }
+  };
 
-        if(!emailSent){
-            return res.json('email-error')        
-        }
+  
 
-        req.session.userOtp = {
-            code: otp,
-            expiresAt: Date.now() + 60 * 1000 // 60 seconds from now
-        };
-        
-        req.session.userData = {name,phone,email,password,referral}
-        console.log("OTP Sent",otp);
-        
-        if(otp){
-            return res.status(200).json({success:true,message:"OTP Sent Successfully"})
-        }
-       
-
-    }catch (error){
-        console.error("signup error",error);
-        res.redirect("/pageNotFound")
-
-    } 
-}
 
 const securePassword = async (password) => {
     try {
@@ -237,9 +248,9 @@ const verifyOtp = async (req, res) => {
       const { otp } = req.body;
       const { name, phone, email, password, referral } = req.session.userData;
   
-      const userOtp = req.session.userOtp; // ✅ Fix: Get OTP object from session
+      const userOtp = req.session.userOtp; 
   
-      // Check if OTP exists and is valid
+     
       if (!userOtp || Date.now() > userOtp.expiresAt) {
         return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
       }

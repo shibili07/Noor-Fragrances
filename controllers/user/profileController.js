@@ -52,15 +52,16 @@ const loadEditProfile = async (req,res)=>{
 
 }
 
+
 const editProfile = async (req, res) => {
   try {
-    const userId = req.session.user
+    const userId = req.session.user;
     console.log(userId);
-    
+
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "Invalid user",
+        message: 'Invalid user',
       });
     }
 
@@ -68,29 +69,70 @@ const editProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: 'User not found',
       });
     }
 
     const { name, phone } = req.body;
 
+    // Validation functions
+    const validateName = (name) => {
+      const nameRegex = /^[A-Za-z\s]{2,50}$/;
+      return nameRegex.test(name);
+    };
+
+    const validatePhone = (phone) => {
+      const phoneRegex = /^[6-9]\d{9}$/;
+      return phoneRegex.test(phone);
+    };
+
+    const validateImage = (file) => {
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      return allowedTypes.includes(file.mimetype) && file.size <= maxSize;
+    };
+
+    // Validate inputs
+    if (name && !validateName(name.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name must be 2-50 characters long and contain only letters and spaces',
+      });
+    }
+
+    if (phone && !validatePhone(phone.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone number must be a valid 10-digit Indian number starting with 6-9',
+      });
+    }
+
+    // Validate image if provided
+    if (req.file) {
+      if (!validateImage(req.file)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Image must be PNG, JPEG, or WebP and not exceed 5MB',
+        });
+      }
+    }
 
     const updatedFields = {};
 
-    if (name) updatedFields.name = name;
-    if (phone) updatedFields.phone = phone;
+    if (name) updatedFields.name = name.trim();
+    if (phone) updatedFields.phone = phone.trim();
 
-    // Handle profile picture upload if file is provided
+   
     if (req.file) {
-      // Delete existing Cloudinary image if it exists
-      if (user.userImage) {
+     
+      if (user.userImage && user.userImage[0]) {
         try {
           // Extract public ID from Cloudinary URL
-          const publicId = user.userImage.split("/").pop().split(".")[0];
+          const publicId = user.userImage[0].split('/').pop().split('.')[0];
           await cloudinary.uploader.destroy(`profile-pictures/${publicId}`);
-          console.log("Deleted old profile picture from Cloudinary:", user.userImage);
+          console.log('Deleted old profile picture from Cloudinary:', user.userImage[0]);
         } catch (err) {
-          console.error("deleting old profile picture from Cloudinary");
+          console.error('Error deleting old profile picture from Cloudinary:', err);
         }
       }
 
@@ -98,10 +140,10 @@ const editProfile = async (req, res) => {
       const uploaded = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            folder: "profile-pictures",
+            folder: 'profile-pictures',
             transformation: [
-              { width: 150, height: 150, crop: "fill" },
-              { quality: "auto", fetch_format: "auto" },
+              { width: 150, height: 150, crop: 'fill' },
+              { quality: 'auto', fetch_format: 'auto' },
             ],
           },
           (error, result) => {
@@ -112,8 +154,16 @@ const editProfile = async (req, res) => {
         stream.end(req.file.buffer);
       });
 
-      updatedFields.userImage = uploaded.secure_url;
-      console.log("Uploaded new profile picture to Cloudinary:", uploaded.secure_url);
+      updatedFields.userImage = [uploaded.secure_url]; // Store as array to match schema
+      console.log('Uploaded new profile picture to Cloudinary:', uploaded.secure_url);
+    }
+
+    // Update user only if there are fields to update
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No valid fields provided for update',
+      });
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -125,17 +175,17 @@ const editProfile = async (req, res) => {
     if (updatedUser) {
       res.json({
         success: true,
-        message: "Profile updated successfully",
+        message: 'Profile updated successfully',
         user: updatedUser,
       });
     } else {
       res.status(400).json({
         success: false,
-        message: "Failed to update profile",
+        message: 'Failed to update profile',
       });
     }
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.error('Error updating profile:', error);
     res.status(500).json({
       success: false,
       message: `Failed to update profile: ${error.message}`,
@@ -144,37 +194,57 @@ const editProfile = async (req, res) => {
 };
 
 
+const editPassword = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+    const { currentPassword, newPassword, confirmPassword } = req.body;
 
-const editPassword = async(req,res)=>{
-  try{
-    const userId = req.session.user
-    const user = await User.findById(userId)
-    const {currentPassword,newPassword,confirmPassword}=req.body
-    const isMatch = await bcrypt.compare(currentPassword,user.password)
-
-    if(!isMatch){
-      return res.status(401).json({success:false,message:"current password is incorrect."})
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found." });
     }
 
-    if(newPassword !== confirmPassword){
-      return res.status(401).json({success:false,message:"confirm password do not match."})
-    }
-    
-    const hashedPassword = await bcrypt.hash(newPassword,10)
-
-    const updatePassword = await User.findByIdAndUpdate(userId,{$set:{password:hashedPassword}}) 
-    
-    if(updatePassword){
-      return res.status(200).json({success:true,message:"Password Updated Successfully"})
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Current password is incorrect." });
     }
 
-  }catch(error){
-    console.log("edit password error",error);
-    
+    // Regex: at least 1 lowercase, 1 uppercase, 1 digit, min 8 chars, no special chars
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+
+    if (!passwordRegex.test(newPassword)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Password must be at least 8 characters long and include uppercase, lowercase, and a number. No special characters allowed." 
+      });
+    }
+
+    if (newPassword === currentPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "New password must be different from current password." 
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Confirm password does not match new password." 
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await User.findByIdAndUpdate(userId, { $set: { password: hashedPassword } });
+
+    return res.status(200).json({ success: true, message: "Password updated successfully." });
+
+  } catch (error) {
+    console.error("Edit password error:", error);
+    return res.status(500).json({ success: false, message: "Internal server error." });
   }
- 
-  
-}
+};
+
+
 
 
 function generateOtp(){
@@ -258,7 +328,6 @@ const getAddaddress = async (req,res)=>{
 const AddAddress = async (req, res) => {
   try {
     const userId = req.session.user;
-
     const {
       addressType,
       name,
@@ -271,10 +340,69 @@ const AddAddress = async (req, res) => {
       isDefault
     } = req.body;
 
+    // Utility: Count unique digits
+    const countUniqueDigits = (value) => new Set(value.split('')).size;
+
+    // Validation rules
+    const validationRules = {
+      name: {
+        pattern: /^[A-Za-z\s]{2,50}$/,
+        additionalCheck: (value) => !/(\s{2,})/.test(value),
+        message: 'Invalid name: 2-50 letters and single spaces only'
+      },
+      phone: {
+        pattern: /^[6-9]\d{9}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 3,
+        message: 'Invalid phone: 10 digits starting with 6-9, min 3 unique digits'
+      },
+      altPhone: {
+        pattern: /^[6-9]\d{9}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 3 && value !== phone,
+        message: 'Invalid alt phone: must differ from phone, meet phone rules'
+      },
+      city: {
+        pattern: /^[A-Za-z]{2,50}$/,
+        additionalCheck: () => true,
+        message: 'Invalid city: 2-50 letters only'
+      },
+      state: {
+        pattern: /^[A-Za-z]{2,50}$/,
+        additionalCheck: () => true,
+        message: 'Invalid state: 2-50 letters only'
+      },
+      landMark: {
+        pattern: /^[A-Za-z0-9,\-\s]{6,100}$/,
+        additionalCheck: (value) => {
+          const uniqueChars = new Set(value.replace(/[\s,\-]/g, '')).size;
+          return (
+            !/(\s{2,}|,{2,}|-{2,})/.test(value) &&
+            /[A-Za-z0-9]/.test(value) &&
+            uniqueChars >= 2
+          );
+        },
+        message: 'Invalid landmark: follow allowed pattern, no consecutive symbols'
+      },
+      pincode: {
+        pattern: /^\d{6}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 2,
+        message: 'Invalid pincode: must be 6 digits, at least 2 unique'
+      }
+    };
+
+    // Apply validation
+    const fields = { name, phone, altPhone, city, state, landMark, pincode };
+    for (const [key, rule] of Object.entries(validationRules)) {
+      const value = fields[key];
+      if (!rule.pattern.test(value) || !rule.additionalCheck(value)) {
+        return res.status(400).json({ success: false, message: rule.message });
+      }
+    }
+
     const user = await User.findById(userId);
     let addressDoc = await Address.findOne({ userId });
 
     if (!addressDoc) {
+      // First address, automatically default
       addressDoc = new Address({
         userId,
         address: [{
@@ -286,13 +414,40 @@ const AddAddress = async (req, res) => {
           state,
           landMark,
           pincode,
-          isDefault: true // First address is default by default
-        }],
+          isDefault: true
+        }]
       });
     } else {
-      // Unset existing defaults if the new one is marked default
-      if (isDefault===true) {
-        addressDoc.address.forEach(addr => (addr.isDefault = false));
+      // Check max limit
+      if (addressDoc.address.length >= 5) {
+        return res.status(400).json({
+          success: false,
+          message: "Maximum of 5 addresses allowed"
+        });
+      }
+
+      // Check for duplicates
+      const isDuplicate = addressDoc.address.some(addr =>
+        addr.addressType === addressType &&
+        addr.name === name &&
+        addr.phone === phone &&
+        addr.altPhone === altPhone &&
+        addr.city === city &&
+        addr.state === state &&
+        addr.landMark === landMark &&
+        addr.pincode === Number(pincode)
+      );
+
+      if (isDuplicate) {
+        return res.status(400).json({
+          success: false,
+          message: "This address already exists"
+        });
+      }
+
+      // Handle isDefault flag
+      if (isDefault === true) {
+        addressDoc.address.forEach(addr => addr.isDefault = false);
       }
 
       const newAddress = {
@@ -304,7 +459,7 @@ const AddAddress = async (req, res) => {
         state,
         landMark,
         pincode,
-        isDefault 
+        isDefault
       };
 
       addressDoc.address.push(newAddress);
@@ -327,6 +482,7 @@ const AddAddress = async (req, res) => {
     });
   }
 };
+
 
 
 
@@ -363,6 +519,7 @@ const setDefault = async (req, res) => {
 
 
 
+
 const loadEditAddress = async (req, res) => {
   try {
     const addressId = req.params.id;
@@ -382,11 +539,9 @@ const loadEditAddress = async (req, res) => {
   }
 };
 
-
-
 const editAddress = async (req, res) => {
   try {
-    const userId = req.session.user
+    const userId = req.session.user;
     const {
       addressId,
       addressType,
@@ -400,48 +555,139 @@ const editAddress = async (req, res) => {
       isDefault
     } = req.body;
     
-    const updateQuery = {
-      "userId": userId,
-      "address._id": addressId
+
+    console.log(req.body);
+    
+    // Utility to count unique digits
+    const countUniqueDigits = (value) => new Set(value.split('')).size;
+
+    // Validation rules (same as in AddAddress)
+    const validationRules = {
+      name: {
+        pattern: /^[A-Za-z\s]{2,50}$/,
+        additionalCheck: (value) => !/(\s{2,})/.test(value),
+        message: 'Invalid name'
+      },
+      phone: {
+        pattern: /^[6-9]\d{9}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 3,
+        message: 'Invalid phone'
+      },
+      altPhone: {
+        pattern: /^[6-9]\d{9}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 3 && value !== phone,
+        message: 'Invalid alt phone'
+      },
+      city: {
+        pattern: /^[A-Za-z]{2,50}$/,
+        additionalCheck: () => true,
+        message: 'Invalid city'
+      },
+      state: {
+        pattern: /^[A-Za-z]{2,50}$/,
+        additionalCheck: () => true,
+        message: 'Invalid state'
+      },
+      landMark: {
+        pattern: /^[A-Za-z0-9,\-\s]{6,100}$/,
+        additionalCheck: (value) => {
+          const uniqueChars = new Set(value.replace(/[\s,\-]/g, '')).size;
+          return (
+            !/(\s{2,}|,{2,}|-{2,})/.test(value) &&
+            /[A-Za-z0-9]/.test(value) &&
+            uniqueChars >= 2
+          );
+        },
+        message: 'Invalid landmark'
+      },
+      pincode: {
+        pattern: /^\d{6}$/,
+        additionalCheck: (value) => countUniqueDigits(value) >= 2,
+        message: 'Invalid pincode'
+      }
     };
 
-  
-    let def = isDefault
-    if(isDefault===false){
-    const address = await Address.findOne({userId:userId})
-    if(address && address.address.length <= 1){
-         def=true
-    }else{
-      def=isDefault
-    }
+    // Validate input fields
+    const fields = { name, phone, altPhone, city, state, landMark, pincode };
+    for (const [key, rule] of Object.entries(validationRules)) {
+      const value = fields[key];
+      if (!rule.pattern.test(value) || !rule.additionalCheck(value)) {
+        return res.status(400).json({ success: false, message: rule.message });
+      }
     }
 
+    const addressDoc = await Address.findOne({ userId });
+    if (!addressDoc) {
+      return res.status(404).json({ success: false, message: "User address record not found" });
+    }
 
-    const updateFields = {
-      "address.$.addressType": addressType,
-      "address.$.name": name,
-      "address.$.phone": phone,
-      "address.$.altPhone": altPhone,
-      "address.$.city": city,
-      "address.$.state": state,
-      "address.$.landMark": landMark,
-      "address.$.pincode": pincode,
-      "address.$.isDefault": def
-    };
-    const updatedUserAddress = await Address.findOneAndUpdate(
-      updateQuery,
-      { $set: updateFields },
-      { new: true, runValidators: true }
+    // Check for duplicate (excluding the one being edited)
+    const isDuplicate = addressDoc.address.some(addr =>
+      addr._id.toString() !== addressId &&
+      addr.addressType === addressType &&
+      addr.name === name &&
+      addr.phone === phone &&
+      addr.altPhone === altPhone &&
+      addr.city === city &&
+      addr.state === state &&
+      addr.landMark === landMark &&
+      addr.pincode === Number(pincode)
     );
-    if (!updatedUserAddress) {
-      return res.status(404).json({ error: "Address not found" });
+
+    if (isDuplicate) {
+      return res.status(400).json({ success: false, message: "This address already exists" });
     }
-    res.status(200).json({ success:true ,message: "Address updated successfully"});
+
+    // Force the only address to be default
+    let def = isDefault;
+    if (isDefault === false && addressDoc.address.length <= 1) {
+      def = true;
+    }
+
+    // If making this one default, unset others
+    if (def === true) {
+      addressDoc.address.forEach(addr => {
+        if (addr._id.toString() !== addressId) addr.isDefault = false;
+      });
+    }
+
+    // Find the target address and update it
+    const addressIndex = addressDoc.address.findIndex(addr => addr._id.toString() === addressId);
+    if (addressIndex === -1) {
+      return res.status(404).json({ success: false, message: "Address not found" });
+    }
+
+    addressDoc.address[addressIndex] = {
+      ...addressDoc.address[addressIndex]._doc,
+      addressType,
+      name,
+      phone,
+      altPhone,
+      city,
+      state,
+      landMark,
+      pincode,
+      isDefault: def
+    };
+
+    await addressDoc.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Address updated successfully",
+      addresses: addressDoc.address
+    });
+
   } catch (error) {
     console.error("Edit address error:", error);
-    res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
   }
-}
+};
+
 
 
 

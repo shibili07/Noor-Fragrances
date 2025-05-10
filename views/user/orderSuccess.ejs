@@ -829,8 +829,8 @@
                 body: order.orderedItems.map(item => [
                     item.name,
                     item.quantity,
-                    `₹${item.price.toFixed(2)}`,
-                    `₹${(item.price * item.quantity).toFixed(2)}`
+                    `Rs:${item.price.toFixed(2)}`,
+                    `Rs:${(item.price * item.quantity).toFixed(2)}`
                 ]),
                 theme: 'striped',
                 headStyles: { fillColor: [240, 240, 240], textColor: [51, 51, 51], fontStyle: 'bold' },
@@ -847,14 +847,14 @@
             const tableEndY = doc.lastAutoTable.finalY + 10;
             doc.setFontSize(10);
             doc.text('Subtotal:', 140, tableEndY);
-            doc.text(`₹${order.totalPrice.toFixed(2)}`, 190, tableEndY, { align: 'right' });
+            doc.text(`Rs:${order.totalPrice.toFixed(2)}`, 190, tableEndY, { align: 'right' });
             doc.text('Coupon Discount:', 140, tableEndY + 7);
-            doc.text(`₹${order.couponDiscount.toFixed(2)}`, 190, tableEndY + 7, { align: 'right' });
+            doc.text(`Rs:${order.couponDiscount.toFixed(2)}`, 190, tableEndY + 7, { align: 'right' });
             doc.text('Offer Discount:', 140, tableEndY + 14);
-            doc.text(`₹${order.offerDiscount.toFixed(2)}`, 190, tableEndY + 14, { align: 'right' });
+            doc.text(`Rs:${order.offerDiscount.toFixed(2)}`, 190, tableEndY + 14, { align: 'right' });
             doc.setFont('helvetica', 'bold');
             doc.text('Total:', 140, tableEndY + 21);
-            doc.text(`₹${order.finalAmount.toFixed(2)}`, 190, tableEndY + 21, { align: 'right' });
+            doc.text(`Rs:${order.finalAmount.toFixed(2)}`, 190, tableEndY + 21, { align: 'right' });
 
             // Payment Info
             doc.setFont('helvetica', 'normal');
