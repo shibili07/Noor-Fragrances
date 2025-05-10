@@ -303,6 +303,9 @@
       const email = result.newEmail
       window.location.href = `/email-sent-confirmation?email=${email}`; // Redirects to a new page on the same domain
 
+    }else{
+      Swal.fire({ icon: 'error', title: 'Error', text: result.message });
+
     }
 
   } catch (error) {

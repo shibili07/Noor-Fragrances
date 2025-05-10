@@ -546,44 +546,53 @@ const loadChangePasswordPage = async (req,res)=>{
     }
 }
 
-const changePassword = async(req,res)=>{
+const changePassword = async (req, res) => {
     try {
-        const {password,confirmPassword} = req.body
-        console.log(req.body)
+        const { password, confirmPassword } = req.body;
+        console.log(req.body);
+
         if (!password || !confirmPassword) {
-            return res.status(400).json({success:false, message: "Both password fields are required" });
+            return res.status(400).json({ success: false, message: "Both password fields are required" });
         }
-        if(password !== confirmPassword){
-            return res.status(400).json({success:false,message: "Passwords do not match" });
+
+        if (password !== confirmPassword) {
+            return res.status(400).json({ success: false, message: "Passwords do not match" });
         }
-        const email = req.session.emailForget
-        if(!email){
-            return res.status(400).json({success:false,message:"Session expired or email not found"});
+
+        // Password validation
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[^\s]{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return res.status(400).json({
+                success: false,
+                message: "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and no spaces",
+            });
         }
-        const saltRounds = 10
-        const hashedPassword = await bcrypt.hash(password,saltRounds);
+
+        const email = req.session.emailForget;
+        if (!email) {
+            return res.status(400).json({ success: false, message: "Session expired or email not found" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
 
         const updatedUser = await User.findOneAndUpdate(
-            {email},
-            {$set:{password:hashedPassword}},
-            {new:true}
+            { email },
+            { $set: { password: hashedPassword } },
+            { new: true }
         );
-        
-        if(updatedUser){
-            return res.status(200).json({ success:true,message: "Password updated successfully!" });
 
-        }else{
-            
-            return res.status(404).json({success:false, message: "User not found" });
-        } 
-       
+        if (updatedUser) {
+            return res.status(200).json({ success: true, message: "Password updated successfully!" });
+        } else {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
     } catch (error) {
         console.error("Error changing password:", error);
-        return res.status(500).json({success:true,message: "Internal Server Error" });
-        
+        return res.status(500).json({ success: false, message: "Internal Server Error" });
     }
+};
 
-}
 
 const emailSentConfirmation = async (req, res) => {
   try {

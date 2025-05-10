@@ -904,240 +904,268 @@
 
   <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const notyf = new Notyf();
-      const variants = <%- JSON.stringify(product.variants) %>;
-      const priceContainer = document.getElementById("price-container");
-      const currentPrice = document.getElementById("currentPrice");
-      const sizeInputs = document.querySelectorAll('input[name="productSize"]');
-      const quantityInput = document.getElementById("quantityInput");
-      const maxStockInput = document.getElementById("maxStock");
-      const form = document.getElementById("form");
-      let selectedSku = variants[0]?.sku; // Initialize with first variant's SKU
+  document.addEventListener("DOMContentLoaded", () => {
+    const notyf = new Notyf();
+    const variants = <%- JSON.stringify(product.variants) %>;
+    const priceContainer = document.getElementById("price-container");
+    const currentPrice = document.getElementById("currentPrice");
+    const sizeInputs = document.querySelectorAll('input[name="productSize"]');
+    const quantityInput = document.getElementById("quantityInput");
+    const maxStockInput = document.getElementById("maxStock");
+    const form = document.getElementById("form");
+    const MAX_CART_QUANTITY = 5; // Match backend limit
+    let selectedSku = variants[0]?.sku;
 
-      // Function to update price and stock display
-      function updatePriceAndStock(selectedSize) {
-        const variant = variants.find(v => v.size === selectedSize);
-        if (!variant) return;
+    // Function to update price and stock display
+    function updatePriceAndStock(selectedSize) {
+      const variant = variants.find((v) => v.size === selectedSize);
+      if (!variant) return;
 
-        // Update current price display (show discounted price if available, otherwise sale price)
-        currentPrice.textContent = variant.discountedPrice || variant.salePrice;
+      currentPrice.textContent = variant.discountedPrice || variant.salePrice;
+      let priceHTML = `₹<span id="currentPrice">${
+        variant.discountedPrice || variant.salePrice
+      }</span>`;
+      if (variant.discountedPrice && variant.discountedPrice < variant.salePrice) {
+        priceHTML += `<span style="text-decoration: line-through; color: #666; font-size: 18px; margin-left: 10px;">₹${variant.salePrice}</span>`;
+      }
+      priceContainer.querySelector(".price").innerHTML = priceHTML;
 
-        // Update price display with strikethrough if discounted
-        let priceHTML = `₹<span id="currentPrice">${variant.discountedPrice || variant.salePrice}</span>`;
-        if (variant.discountedPrice && variant.discountedPrice < variant.salePrice) {
-          priceHTML += `<span style="text-decoration: line-through; color: #666; font-size: 18px; margin-left: 10px;">₹${variant.salePrice}</span>`;
-        }
-        priceContainer.querySelector('.price').innerHTML = priceHTML;
-
-        // Update max stock
-        maxStockInput.value = variant.quantity;
-
-        // Make sure quantity doesn't exceed stock
-        if (parseInt(quantityInput.value) > variant.quantity) {
-          quantityInput.value = Math.max(1, variant.quantity);
-        }
+      maxStockInput.value = variant.quantity;
+      if (parseInt(quantityInput.value) > variant.quantity) {
+        quantityInput.value = Math.max(1, variant.quantity);
       }
 
-      // Fetch stock from backend API
-      async function fetchStock(productId, size) {
-        try {
-          const response = await fetch(`/productQuantity?productId=${productId}&size=${size}`);
-          const data = await response.json();
-          if (data.success) {
-            return data.stock;
-          } else {
-            notyf.error(data.message || "Unable to fetch stock.");
-            return 0;
-          }
-        } catch (error) {
-          console.error("Error fetching stock:", error);
-          notyf.error("Error checking stock availability.");
+      // Update selectedSku
+      selectedSku = variant?.sku || variants[0]?.sku;
+    }
+
+    // Fetch stock from backend API
+    async function fetchStock(productId, size) {
+      try {
+        const response = await fetch(`/productQuantity?productId=${productId}&size=${size}`);
+        const data = await response.json();
+        if (data.success) {
+          return data.stock;
+        } else {
+          notyf.error(data.message || "Unable to fetch stock.");
           return 0;
         }
+      } catch (error) {
+        console.error("Error fetching stock:", error);
+        notyf.error("Error checking stock availability.");
+        return 0;
       }
+    }
 
-      // Update stock and price when size changes
-      sizeInputs.forEach(input => {
-        input.addEventListener("change", async () => {
-          const productId = form.querySelector('input[name="productId"]').value;
-          const selectedSize = input.value;
+    // Fetch cart quantity from backend
+    async function fetchCartQuantity(productId, size) {
+      try {
+        const response = await fetch(`/cartQuantity?productId=${productId}&size=${size}`);
+        const data = await response.json();
+        return data.success ? data.quantity : 0;
+      } catch (error) {
+        console.error("Error fetching cart quantity:", error);
+        return 0;
+      }
+    }
 
-          // Update UI immediately with variant data
-          updatePriceAndStock(selectedSize);
+    // Update stock and price when size changes
+    sizeInputs.forEach((input) => {
+      input.addEventListener("change", async () => {
+        const productId = form.querySelector('input[name="productId"]').value;
+        const selectedSize = input.value;
 
-          // Then fetch latest stock from server
-          const stock = await fetchStock(productId, selectedSize);
-          maxStockInput.value = stock;
-        });
-      });
-
-      // Initialize with the selected size
-      const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value;
-      if (selectedSize) {
         updatePriceAndStock(selectedSize);
-
-        // Set initial max stock
-        const initialVariant = variants.find(v => v.size === selectedSize);
-        if (initialVariant) {
-          maxStockInput.value = initialVariant.quantity;
-        }
-
-        // Also fetch latest stock from server
-        const productId = form.querySelector('input[name="productId"]').value;
-        fetchStock(productId, selectedSize).then(stock => {
-          maxStockInput.value = stock;
-        });
-      }
-
-      // Quantity increase function
-      window.increaseQuantity = function() {
-        const currentQuantity = parseInt(quantityInput.value);
-        const maxStock = parseInt(maxStockInput.value);
-        const maxLimit = Math.min(maxStock, 5); // Max 5 or stock, whichever is lower
-
-        if (currentQuantity >= maxLimit) {
-          notyf.warning(`Cannot add more. ${maxStock > 5 ? 'Maximum limit is 5' : 'Only ' + maxStock + ' items in stock.'}`);
-          return;
-        }
-
-        quantityInput.value = currentQuantity + 1;
-      };
-
-
-
-      window.addToWishlist = async function(productId, sku) {
-        try {
-          const response = await fetch(`/addToWishlist/${productId}/${selectedSku}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
-
-          const data = await response.json();
-          if (data.success) {
-            notyf.success("Added to Wishlist!");
-          } else {
-            notyf.error(data.message || "Failed to add to wishlist.");
-          }
-        } catch (error) {
-          console.error("Error adding to wishlist:", error);
-          notyf.error("You must be logged in to add items to the wishlist.");
-        }
-      };
-
-
-
-      // Quantity decrease function
-      window.decreaseQuantity = function() {
-        const currentQuantity = parseInt(quantityInput.value);
-        if (currentQuantity <= 1) {
-          notyf.warning("Quantity cannot be less than 1.");
-          return;
-        }
-
-        quantityInput.value = currentQuantity - 1;
-      };
-
-      // Form submission for adding to cart
-      form.addEventListener("submit", async function(event) {
-        event.preventDefault();
-
-        const selectedSizeElement = form.querySelector('input[name="productSize"]:checked');
-        if (!selectedSizeElement) {
-          notyf.error("Please select a size.");
-          return;
-        }
-
-        const quantity = parseInt(quantityInput.value);
-        const productId = form.querySelector('input[name="productId"]').value;
-        const selectedSize = selectedSizeElement.value;
-
-        // Verify stock availability before adding to cart
         const stock = await fetchStock(productId, selectedSize);
+        maxStockInput.value = stock;
 
-        if (stock < quantity) {
-          notyf.error(`Cannot add to cart. Only ${stock} items available in stock.`);
-          return;
-        }
-
-        const query = new URLSearchParams({
-          size: selectedSize,
-          quantity: quantity,
-          productId: productId
-        });
-
-        fetch(`/addToCart?${query.toString()}`, {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json"
-            }
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            if (data.success) {
-              notyf.success("Added to Cart!");
-            } else {
-              notyf.error(data.message || "Something went wrong.");
-            }
-          })
-          .catch(error => {
-            console.error("Error adding to cart:", error);
-            notyf.error("You must be logged in to add items to the cart.");
-          });
-      });
-
-      // Thumbnail and zoom functionality
-      const thumbnails = document.querySelectorAll('.thumbnail');
-      const mainImage = document.getElementById('Main-Image-container');
-      const zoomContainer = document.querySelector('.zoom-container');
-      const zoomLens = document.querySelector('.zoom-lens');
-
-      zoomLens.style.backgroundImage = `url(${mainImage.src})`;
-
-      thumbnails.forEach(thumbnail => {
-        thumbnail.addEventListener('click', function() {
-          thumbnails.forEach(t => t.classList.remove('active'));
-          this.classList.add('active');
-          const newSrc = this.getAttribute('src');
-          mainImage.setAttribute('src', newSrc);
-          zoomLens.style.backgroundImage = `url(${newSrc})`;
-        });
-      });
-
-      zoomContainer.addEventListener('mousemove', (e) => {
-        const rect = zoomContainer.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        let lensX = x - zoomLens.offsetWidth / 2;
-        let lensY = y - zoomLens.offsetHeight / 2;
-
-        lensX = Math.max(0, Math.min(lensX, rect.width - zoomLens.offsetWidth));
-        lensY = Math.max(0, Math.min(lensY, rect.height - zoomLens.offsetHeight));
-
-        zoomLens.style.left = `${lensX}px`;
-        zoomLens.style.top = `${lensY}px`;
-
-        const bgPosX = (x / rect.width) * 100;
-        const bgPosY = (y / rect.height) * 100;
-        zoomLens.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
-      });
-
-      zoomContainer.addEventListener('mouseenter', () => {
-        zoomLens.style.opacity = '1';
-      });
-      zoomContainer.addEventListener('mouseleave', () => {
-        zoomLens.style.opacity = '0';
+        // Disable button if out of stock
+        const addToCartBtn = form.querySelector(".add-to-cart");
+        addToCartBtn.disabled = stock === 0;
+        addToCartBtn.style.opacity = stock === 0 ? "0.5" : "1";
       });
     });
-  </script>
+
+    // Initialize with the selected size
+    const selectedSize = document.querySelector('input[name="productSize"]:checked')?.value;
+    if (selectedSize) {
+      updatePriceAndStock(selectedSize);
+      const productId = form.querySelector('input[name="productId"]').value;
+      fetchStock(productId, selectedSize).then((stock) => {
+        maxStockInput.value = stock;
+        const addToCartBtn = form.querySelector(".add-to-cart");
+        addToCartBtn.disabled = stock === 0;
+        addToCartBtn.style.opacity = stock === 0 ? "0.5" : "1";
+      });
+    }
+
+    // Quantity increase function
+    window.increaseQuantity = function () {
+      const currentQuantity = parseInt(quantityInput.value);
+      const maxStock = parseInt(maxStockInput.value);
+      const maxLimit = Math.min(maxStock, MAX_CART_QUANTITY);
+
+      if (currentQuantity >= maxLimit) {
+        notyf.warning(
+          `Cannot add more. ${
+            maxStock > MAX_CART_QUANTITY
+              ? `Maximum limit is ${MAX_CART_QUANTITY}`
+              : `Only ${maxStock} items in stock`
+          }.`
+        );
+        return;
+      }
+
+      quantityInput.value = currentQuantity + 1;
+    };
+
+    // Quantity decrease function
+    window.decreaseQuantity = function () {
+      const currentQuantity = parseInt(quantityInput.value);
+      if (currentQuantity <= 1) {
+        notyf.warning("Quantity cannot be less than 1.");
+        return;
+      }
+
+      quantityInput.value = currentQuantity - 1;
+    };
+
+    // Add to wishlist function
+    window.addToWishlist = async function (productId, sku) {
+      try {
+        const response = await fetch(`/addToWishlist/${productId}/${selectedSku}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          notyf.success("Added to Wishlist!");
+        } else {
+          notyf.error(data.message || "Failed to add to wishlist.");
+        }
+      } catch (error) {
+        console.error("Error adding to wishlist:", error);
+        notyf.error("You must be logged in to add items to the wishlist.");
+      }
+    };
+
+    // Form submission for adding to cart
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const selectedSizeElement = form.querySelector('input[name="productSize"]:checked');
+      if (!selectedSizeElement) {
+        notyf.error("Please select a size.");
+        return;
+      }
+
+      const quantity = parseInt(quantityInput.value);
+      const productId = form.querySelector('input[name="productId"]').value;
+      const selectedSize = selectedSizeElement.value;
+
+      // Client-side validation
+      const stock = await fetchStock(productId, selectedSize);
+      const cartQuantity = await fetchCartQuantity(productId, selectedSize);
+      const totalRequested = cartQuantity + quantity;
+
+      if (totalRequested > stock) {
+        notyf.error(
+          `Only ${stock - cartQuantity} more items can be added. You already have ${cartQuantity} in your cart.`
+        );
+        return;
+      }
+
+      if (totalRequested > MAX_CART_QUANTITY) {
+        notyf.error(
+          `You can add a maximum of ${MAX_CART_QUANTITY} items. You already have ${cartQuantity} in your cart.`
+        );
+        return;
+      }
+
+      const query = new URLSearchParams({
+        size: selectedSize,
+        quantity: quantity,
+        productId: productId,
+      });
+
+      try {
+        const response = await fetch(`/addToCart?${query.toString()}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        
+
+        const data = await response.json();
+        if (data.success) {
+          notyf.success("Added to Cart!");
+        } else {
+          notyf.error(data.message || "Something went wrong.");
+          // Refresh stock
+          const stock = await fetchStock(productId, selectedSize);
+          maxStockInput.value = stock;
+          updatePriceAndStock(selectedSize);
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+        notyf.error(
+          error.message.includes("401")
+            ? "You must be logged in to add items to the cart."
+            : "Failed to add to cart. Please try again."
+        );
+      }
+    });
+
+    // Thumbnail and zoom functionality
+    const thumbnails = document.querySelectorAll(".thumbnail");
+    const mainImage = document.getElementById("Main-Image-container");
+    const zoomContainer = document.querySelector(".zoom-container");
+    const zoomLens = document.querySelector(".zoom-lens");
+
+    zoomLens.style.backgroundImage = `url(${mainImage.src})`;
+
+    thumbnails.forEach((thumbnail) => {
+      thumbnail.addEventListener("click", function () {
+        thumbnails.forEach((t) => t.classList.remove("active"));
+        this.classList.add("active");
+        const newSrc = this.getAttribute("src");
+        mainImage.setAttribute("src", newSrc);
+        zoomLens.style.backgroundImage = `url(${newSrc})`;
+      });
+    });
+
+    zoomContainer.addEventListener("mousemove", (e) => {
+      const rect = zoomContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      let lensX = x - zoomLens.offsetWidth / 2;
+      let lensY = y - zoomLens.offsetHeight / 2;
+
+      lensX = Math.max(0, Math.min(lensX, rect.width - zoomLens.offsetWidth));
+      lensY = Math.max(0, Math.min(lensY, rect.height - zoomLens.offsetHeight));
+
+      zoomLens.style.left = `${lensX}px`;
+      zoomLens.style.top = `${lensY}px`;
+
+      const bgPosX = (x / rect.width) * 100;
+      const bgPosY = (y / rect.height) * 100;
+      zoomLens.style.backgroundPosition = `${bgPosX}% ${bgPosY}%`;
+    });
+
+    zoomContainer.addEventListener("mouseenter", () => {
+      zoomLens.style.opacity = "1";
+    });
+    zoomContainer.addEventListener("mouseleave", () => {
+      zoomLens.style.opacity = "0";
+    });
+  });
+</script>
 </body>
 
 </html>

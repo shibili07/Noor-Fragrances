@@ -984,7 +984,8 @@
                   </div>
                   <div class="payment-details">
                     <div class="payment-label">Cash on Delivery</div>
-                    <div class="payment-sublabel">Pay with cash upon delivery</div>
+                    <div class="payment-sublabel">Pay with cash upon delivery, <br>COD is only available for orders
+                      above ₹1,000.</div>
                   </div>
                 </label>
                 <label class="payment-option">
@@ -1196,154 +1197,167 @@
 
     // Coupon apply logic
     const applyCouponBtn = document.getElementById('applyCouponBtn');
-    if (applyCouponBtn) {
-      applyCouponBtn.addEventListener('click', async () => {
-        const couponCode = document.getElementById('couponCode').value.trim();
-        const messageDiv = document.getElementById('couponMessage');
-        const grandTotalSpan = document.getElementById('grandTotal');
-        const couponCodeHidden = document.getElementById('couponCodeHidden');
+if (applyCouponBtn) {
+  applyCouponBtn.addEventListener('click', async () => {
+    const couponCode = document.getElementById('couponCode').value.trim();
+    const messageDiv = document.getElementById('couponMessage');
+    const grandTotalSpan = document.getElementById('grandTotal');
+    const couponCodeHidden = document.getElementById('couponCodeHidden');
 
-        if (!couponCode) {
-          messageDiv.innerHTML = `<p class="text-danger">Please enter a coupon code.</p>`;
+    if (!couponCode) {
+      messageDiv.innerHTML = `<p class="text-danger">Please enter a coupon code.</p>`;
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Coupon Entered',
+        text: 'Please enter a coupon code to apply.',
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch('/apply-coupon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ couponCode }),
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        messageDiv.innerHTML = `<p class="text-success">Coupon applied: ${data.coupon.name}</p>`;
+        grandTotalSpan.textContent = `₹${data.grandTotal}`;
+        couponCodeHidden.value = couponCode;
+
+        // Update summary totals
+        document.querySelector('.summary-totals').innerHTML = `
+          <div class="summary-row">
+            <span class="summary-key">Subtotal</span>
+            <span class="summary-value">₹${data.subtotal}</span>
+          </div>
+          <div class="summary-row savings-row">
+            <span class="summary-key">Savings</span>
+            <span class="summary-value"><i class="fas fa-tag"></i> -₹${data.savings}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-key">Shipping</span>
+            <span class="summary-value">₹0.00</span>
+          </div>
+          <div class="summary-discount">
+            <span class="summary-key">Coupon (${data.coupon.code})</span>
+            <div>
+              <span class="summary-value"><i class="fas fa-ticket-alt"></i> -₹${data.couponDiscount}</span>
+              <button type="button" id="removeCouponBtn" class="remove-coupon-btn">Remove</button>
+            </div>
+          </div>
+          <div class="grand-total">
+            <span>Grand Total</span>
+            <span id="grandTotal">₹${data.grandTotal}</span>
+          </div>
+          <input type="hidden" name="cartId" value="<%= cart && cart._id ? cart._id : '' %>">
+          <input type="hidden" name="couponCode" id="couponCodeHidden" value="${couponCode}">
+        `;
+
+        Swal.fire({
+          icon: 'success',
+          title: 'Coupon Applied!',
+          text: `Coupon ${data.coupon.code} applied successfully. You saved ₹${data.couponDiscount}.`,
+        });
+
+        // Re-attach remove coupon event listener
+        attachRemoveCouponListener();
+      } else {
+        messageDiv.innerHTML = `<p class="text-danger">${data.message}</p>`;
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Coupon',
+          text: data.message,
+        });
+      }
+    } catch (error) {
+      messageDiv.innerHTML = `<p class="text-danger">Error applying coupon.</p>`;
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'An error occurred while applying the coupon.',
+      });
+    }
+  });
+}
+
+// Remove coupon logic
+function attachRemoveCouponListener() {
+  const removeCouponBtn = document.getElementById('removeCouponBtn');
+  if (removeCouponBtn) {
+    removeCouponBtn.addEventListener('click', async () => {
+      const messageDiv = document.getElementById('couponMessage');
+      const grandTotalSpan = document.getElementById('grandTotal');
+      const couponCodeInput = document.getElementById('couponCode');
+      const couponCodeHidden = document.getElementById('couponCodeHidden');
+
+      try {
+        const response = await fetch('/remove-coupon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          messageDiv.innerHTML = `<p class="text-success">Coupon removed successfully.</p>`;
+          grandTotalSpan.textContent = `₹${data.grandTotal}`;
+          couponCodeInput.value = '';
+          couponCodeHidden.value = '';
+
+          // Update summary totals
+          document.querySelector('.summary-totals').innerHTML = `
+            <div class="summary-row">
+              <span class="summary-key">Subtotal</span>
+              <span class="summary-value">₹${data.subtotal}</span>
+            </div>
+            <div class="summary-row savings-row">
+              <span class="summary-key">Savings</span>
+              <span class="summary-value"><i class="fas fa-tag"></i> -₹${data.savings}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-key">Shipping</span>
+              <span class="summary-value">₹0.00</span>
+            </div>
+            <div class="grand-total">
+              <span>Grand Total</span>
+              <span id="grandTotal">₹${data.grandTotal}</span>
+            </div>
+            <input type="hidden" name="cartId" value="<%= cart && cart._id ? cart._id : '' %>">
+            <input type="hidden" name="couponCode" id="couponCodeHidden" value="">
+          `;
+
           Swal.fire({
-            icon: 'warning',
-            title: 'No Coupon Entered',
-            text: 'Please enter a coupon code to apply.',
+            icon: 'success',
+            title: 'Coupon Removed',
+            text: 'The coupon has been removed successfully.',
+            timer: 1500,
+            showConfirmButton: false,
           });
-          return;
-        }
-
-        try {
-          const response = await axios.post('/apply-coupon', {
-            couponCode
-          });
-          if (response.data.success) {
-            messageDiv.innerHTML = `<p class="text-success">Coupon applied: ${response.data.coupon.name}</p>`;
-            grandTotalSpan.textContent = `₹${response.data.grandTotal}`;
-            couponCodeHidden.value = couponCode;
-
-            // Update summary totals
-            document.querySelector('.summary-totals').innerHTML = `
-              <div class="summary-row">
-                <span class="summary-key">Subtotal</span>
-                <span class="summary-value">₹${response.data.subtotal}</span>
-              </div>
-              <div class="summary-row savings-row">
-                <span class="summary-key">Savings</span>
-                <span class="summary-value"><i class="fas fa-tag"></i> -₹${response.data.savings}</span>
-              </div>
-              <div class="summary-row">
-                <span class="summary-key">Shipping</span>
-                <span class="summary-value">₹0.00</span>
-              </div>
-              <div class="summary-discount">
-                <span class="summary-key">Coupon (${response.data.coupon.code})</span>
-                <div>
-                  <span class="summary-value"><i class="fas fa-ticket-alt"></i> -₹${response.data.couponDiscount}</span>
-                  <button type="button" id="removeCouponBtn" class="remove-coupon-btn">Remove</button>
-                </div>
-              </div>
-              <div class="grand-total">
-                <span>Grand Total</span>
-                <span id="grandTotal">₹${response.data.grandTotal}</span>
-              </div>
-              <input type="hidden" name="cartId" value="<%= cart && cart._id ? cart._id : '' %>">
-              <input type="hidden" name="couponCode" id="couponCodeHidden" value="${couponCode}">
-            `;
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Coupon Applied!',
-              text: `Coupon ${response.data.coupon.code} applied successfully. You saved ₹${response.data.couponDiscount}.`,
-            });
-
-            // Re-attach remove coupon event listener
-            attachRemoveCouponListener();
-          } else {
-            messageDiv.innerHTML = `<p class="text-danger">${response.data.error}</p>`;
-            Swal.fire({
-              icon: 'error',
-              title: 'Invalid Coupon',
-              text: response.data.error,
-            });
-          }
-        } catch (error) {
-          messageDiv.innerHTML = `<p class="text-danger">Error applying coupon.</p>`;
+        } else {
+          messageDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: 'An error occurred while applying the coupon.',
+            text: data.error,
           });
         }
-      });
-    }
-
-    // Remove coupon logic
-    function attachRemoveCouponListener() {
-      const removeCouponBtn = document.getElementById('removeCouponBtn');
-      if (removeCouponBtn) {
-        removeCouponBtn.addEventListener('click', async () => {
-          const messageDiv = document.getElementById('couponMessage');
-          const grandTotalSpan = document.getElementById('grandTotal');
-          const couponCodeInput = document.getElementById('couponCode');
-          const couponCodeHidden = document.getElementById('couponCodeHidden');
-
-          try {
-            const response = await axios.post('/remove-coupon');
-            if (response.data.success) {
-              messageDiv.innerHTML = `<p class="text-success">Coupon removed successfully.</p>`;
-              grandTotalSpan.textContent = `₹${response.data.grandTotal}`;
-              couponCodeInput.value = '';
-              couponCodeHidden.value = '';
-
-              // Update summary totals
-              document.querySelector('.summary-totals').innerHTML = `
-                <div class="summary-row">
-                  <span class="summary-key">Subtotal</span>
-                  <span class="summary-value">₹${response.data.subtotal}</span>
-                </div>
-                <div class="summary-row savings-row">
-                  <span class="summary-key">Savings</span>
-                  <span class="summary-value"><i class="fas fa-tag"></i> -₹${response.data.savings}</span>
-                </div>
-                <div class="summary-row">
-                  <span class="summary-key">Shipping</span>
-                  <span class="summary-value">₹0.00</span>
-                </div>
-                <div class="grand-total">
-                  <span>Grand Total</span>
-                  <span id="grandTotal">₹${response.data.grandTotal}</span>
-                </div>
-                <input type="hidden" name="cartId" value="<%= cart && cart._id ? cart._id : '' %>">
-                <input type="hidden" name="couponCode" id="couponCodeHidden" value="">
-              `;
-
-              Swal.fire({
-                icon: 'success',
-                title: 'Coupon Removed',
-                text: 'The coupon has been removed successfully.',
-                timer: 1500,
-                showConfirmButton: false,
-              });
-            } else {
-              messageDiv.innerHTML = `<p class="text-danger">${response.data.error}</p>`;
-              Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: response.data.error,
-              });
-            }
-          } catch (error) {
-            messageDiv.innerHTML = `<p class="text-danger">Error removing coupon.</p>`;
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'An error occurred while removing the coupon.',
-            });
-          }
+      } catch (error) {
+        messageDiv.innerHTML = `<p class="text-danger">Error removing coupon.</p>`;
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'An error occurred while removing the coupon.',
         });
       }
-    }
+    });
+  }
+}
 
     // Attach remove coupon listener on page load if coupon is applied
     attachRemoveCouponListener();
@@ -1613,6 +1627,23 @@
               }
             }
           } else {
+            const amountString = document.getElementById("grandTotal").textContent;
+            const numericAmount = amountString.replace(/[^\d.-]/g, ''); 
+            const amount = parseFloat(numericAmount);
+
+            if (amount < 1000) {
+              e.preventDefault(); 
+              Swal.fire({
+                icon: 'warning',
+                title: 'COD Unavailable',
+                text: 'Cash on Delivery is only available for orders above ₹1,000.',
+                confirmButtonText: 'OK'
+              });
+              paymentBtn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
+              paymentBtn.disabled = false;
+              return; 
+            }
+
             // Handle COD payment
             const response = await fetch('/cod', {
               method: 'POST',

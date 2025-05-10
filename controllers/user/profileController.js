@@ -197,6 +197,8 @@ const editProfile = async (req, res) => {
 const editPassword = async (req, res) => {
   try {
     const userId = req.session.user;
+   
+    
     const user = await User.findById(userId);
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
@@ -720,6 +722,7 @@ const deleteAddress = async (req,res) =>{
 const changeEmailForm = async (req,res)=>{
   try{
     const user = req.session.user
+
     const userData = await User.findById(user)
     if(user){
       return res.render('changeEmail', { message: null, user:userData});
@@ -743,6 +746,8 @@ const changeEmail = async (req, res) => {
     }
 
     const { newEmail, password } = req.body;
+    console.log(req.body);
+    
     const sanitizedEmail = newEmail.trim().toLowerCase();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

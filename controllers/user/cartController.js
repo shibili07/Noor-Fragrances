@@ -13,27 +13,33 @@ const crypto = require('crypto');
 const wishlist = require("../../models/wishlistSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema")
-
-
-
 const addToCart = async (req, res) => {
   try {
-
-    console.log(req.query,"added to cart this items");
-    
     const userId = req.session.user;
-    const { size, quantity, productId,flag} = req.query;
- 
+    const { size, quantity, productId, flag } = req.query;
+    const MAX_CART_QUANTITY = 5; // Configurable maximum quantity
 
-    if (flag==="1") {
-      //if we add from the wish list this item will be delete from the wish list 
-      const wishlist = await Wishlist.findOne({ userId });
-      const productIndex = wishlist.items.findIndex(item => item.product.toString() === productId.toString());
-      wishlist.items.splice(productIndex, 1);
-      await wishlist.save();
+    // Validate inputs
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid product ID.",
+      });
     }
-    
 
+    if (flag === "1") {
+      // Remove item from wishlist if adding from there
+      const wishlist = await Wishlist.findOne({ userId });
+      if (wishlist) {
+        const productIndex = wishlist.items.findIndex(
+          (item) => item.product.toString() === productId.toString()
+        );
+        if (productIndex !== -1) {
+          wishlist.items.splice(productIndex, 1);
+          await wishlist.save();
+        }
+      }
+    }
 
     if (!userId) {
       return res.status(401).json({
@@ -45,9 +51,9 @@ const addToCart = async (req, res) => {
     const product = await Product.findOne({
       _id: productId,
       isBlocked: false,
-      isDeleted: false
+      isDeleted: false,
     });
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
@@ -71,11 +77,43 @@ const addToCart = async (req, res) => {
       });
     }
 
+    // Check available stock
+    const availableStock = variant.quantity;
+    let cart = await Cart.findOne({ userId });
+
+    // Check if the item already exists in the cart
+    let existingQuantity = 0;
+    if (cart) {
+      const itemIndex = cart.items.findIndex(
+        (item) => item.productId.toString() === productId && item.size === size
+      );
+      if (itemIndex !== -1) {
+        existingQuantity = cart.items[itemIndex].quantity;
+      }
+    }
+
+    // Validate maximum cart quantity
+    const totalRequestedQuantity = existingQuantity + qty;
+    if (totalRequestedQuantity > MAX_CART_QUANTITY) {
+      return res.status(400).json({
+        success: false,
+        message: `You can add a maximum of ${MAX_CART_QUANTITY} items. You already have ${existingQuantity} in your cart.`,
+      });
+    }
+
+    // Validate stock
+    if (totalRequestedQuantity > availableStock) {
+      return res.status(400).json({
+        success: false,
+        message: `Only ${availableStock - existingQuantity} more items can be added. You already have ${existingQuantity} in your cart.`,
+      });
+    }
+
     const price = variant.salePrice;
     const totalPrice = qty * price;
 
-    let cart = await Cart.findOne({ userId }); 
     if (!cart) {
+      // Create new cart if none exists
       cart = new Cart({
         userId,
         items: [
@@ -90,13 +128,15 @@ const addToCart = async (req, res) => {
       });
     } else {
       const itemIndex = cart.items.findIndex(
-        (item) => item.productId.toString() === productId && item.size === size 
+        (item) => item.productId.toString() === productId && item.size === size
       );
 
       if (itemIndex !== -1) {
-        cart.items[itemIndex].quantity = qty;
-        cart.items[itemIndex].totalPrice = totalPrice;
+        // Update existing item
+        cart.items[itemIndex].quantity = totalRequestedQuantity;
+        cart.items[itemIndex].totalPrice = cart.items[itemIndex].quantity * price;
       } else {
+        // Add new item
         cart.items.push({
           productId,
           size: variant.size,
@@ -122,10 +162,6 @@ const addToCart = async (req, res) => {
     });
   }
 };
-
-
-
-
 
 const productQuantity =  async (req, res) => {
   try {
@@ -251,9 +287,9 @@ const cart = async (req, res) => {
           _id: item.productId,
           isBlocked: false,
           isDeleted: false,
-        });
+        }).populate({path:"category",match:{isDeleted:false,isListed:true}})
 
-        if (!product) {
+        if (!product || !product.category) {
           console.log(`Product not found for productId: ${item.productId}`);
           return null;
         }
@@ -645,11 +681,12 @@ const checkOut = async (req, res) => {
         continue;
       }
       const variant = product.variants.find((v) => v.size === item.size);
-      if (!variant || variant.quantity === 0 || product.status === 'out of stock') {
-        continue;
-      }
+     
+      // if (!variant || variant.quantity === 0 || product.status === 'out of stock') {
+      //   continue;
+      // }
       // Calculate price
-      const salePrice = variant.salePrice || variant.regularPrice;
+      const salePrice = variant.salePrice 
       const updatedQuantity = item.quantity;
       // Fetch applicable offers
       const offers = await Offer.find({
@@ -790,16 +827,16 @@ const applyCoupon = async (req, res) => {
     const { couponCode } = req.body;
 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(401).json({ success: false, error: 'Please log in to apply a coupon.' });
+      return res.status(401).json({ success: false, message: 'Please log in to apply a coupon.' });
     }
 
     if (!couponCode || typeof couponCode !== 'string') {
-      return res.status(400).json({ success: false, error: 'Coupon code is required.' });
+      return res.status(400).json({ success: false, message: 'Coupon code is required.' });
     }
 
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || !cart.items.length) {
-      return res.status(400).json({ success: false, error: 'Your cart is empty.' });
+      return res.status(400).json({ success: false, message: 'Your cart is empty.' });
     }
 
     // Calculate subtotal and savings
@@ -856,14 +893,14 @@ const applyCoupon = async (req, res) => {
     });
 
     if (!coupon) {
-      return res.status(400).json({ success: false, error: 'Invalid or expired coupon code.' });
+      return res.status(400).json({ success: false, message: 'Invalid or expired coupon code.' });
     }
 
     const cartTotalAfterSavings = subtotal - savings;
     if (cartTotalAfterSavings < coupon.minimumPrice) {
       return res.status(400).json({
         success: false,
-        error: `Cart total must be at least ₹${coupon.minimumPrice} after discounts to apply this coupon.`,
+        message: `Cart total must be at least ₹${coupon.minimumPrice} after discounts to apply this coupon.`,
       });
     }
 
@@ -887,7 +924,7 @@ const applyCoupon = async (req, res) => {
     });
   } catch (error) {
     console.error('Apply coupon error:', error);
-    res.status(500).json({ success: false, error: 'Unable to apply coupon due to a server error.' });
+    res.status(500).json({ success: false, message: 'Unable to apply coupon due to a server error.' });
   }
 };
 
@@ -1104,6 +1141,8 @@ const placeOrder = async (req, res, orderStatus = 'Pending') => {
       throw new Error('Invalid payment method.');
     }
 
+    
+
     // Generate unique orderId
     let orderId;
     let isUnique = false;
@@ -1159,8 +1198,10 @@ const placeOrder = async (req, res, orderStatus = 'Pending') => {
   }
 };
 
-const cod = async (req, res) => {
+const cod = async (req, res) => {//cash on delevery
   try {
+    console.log(req.body);
+    
     const order = await placeOrder(req, res);
     res.json({ success: true, orderId: order._id, message: 'Order placed successfully with Cash on Delivery.' });
   } catch (error) {

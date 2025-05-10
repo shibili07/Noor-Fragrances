@@ -429,13 +429,27 @@ const loadWishlist = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // Find the user's wishlist and populate product details
+   
     const wishlist = await Wishlist.findOne({ userId })
-      .populate({
-        path: 'items.product',
-        select: 'productName shortDescription productImage variants brand status isListed isDeleted',
-        match: { isListed: true, isDeleted: false },
-      })
-      .lean();
+    .populate({
+      path: 'items.product',
+      select: 'productName shortDescription productImage variants brand status isListed isDeleted category',
+      match: { isListed: true, isDeleted: false,isBlocked:false },
+      populate: {
+        path: 'category',
+        select: 'name',
+        match: { isListed: true, isDeleted: false }
+      }
+    })
+    .lean();
+
+  
+  if (wishlist) {
+    wishlist.items = wishlist.items.filter(
+      item => item.product && item.product.category
+    );
+  }
+  
 
     // Prepare data for frontend
     let wishlistData = {
