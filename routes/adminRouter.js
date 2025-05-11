@@ -52,7 +52,8 @@ router.get("/product",adminAuth,productController.productInfo)
 
 router.get("/addProduct",adminAuth,productController.addProductPage)
 // router.post("/migrate-images", adminAuth,productController.triggerImageMigration);
-router.post("/addproduct",adminAuth,uploadMemory.array("images"),productController.addProducts); // image upload into claudnary 
+router.post("/addproduct",adminAuth,uploadMemory.array("images"),productController.addProducts);
+// image upload into claudnary 
 
  
 router.get("/blockProduct",adminAuth,productController.blockProduct)
@@ -60,7 +61,7 @@ router.get("/unblockProduct",adminAuth,productController.unblockProduct)
 router.get("/deleteProduct",adminAuth,productController.deleteProduct)
 
 router.get("/editProduct",adminAuth,productController.editProductPage)
-router.patch("/editProduct",adminAuth,uploadMemory.array("images"),productController.editProduct)
+router.patch('/editProduct', adminAuth, uploadMemory.array('images', 5), productController.editProduct);
 
 //<<order Management>>
 

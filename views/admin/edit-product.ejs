@@ -233,43 +233,6 @@
             font-size: 16px;
         }
 
-        .image-preview {
-            width: 150px;
-            height: 150px;
-            background-color: #f8fafc;
-            background-position: center;
-            background-size: contain;
-            background-repeat: no-repeat;
-            border: 1px solid var(--border-color);
-            margin-bottom: 15px;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-        }
-
-        .image-preview:hover::after {
-            content: "Click to upload";
-            position: absolute;
-            background: rgba(67, 97, 238, 0.8);
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            color: white;
-            border-radius: 8px;
-        }
-
-        .image-preview-empty::before {
-            content: "+";
-            font-size: 40px;
-            color: #cbd5e0;
-        }
-
         .image-preview-container {
             display: flex;
             gap: 15px;
@@ -277,48 +240,32 @@
             flex-wrap: wrap;
         }
 
-        .variant-section {
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .variant-section .delete-variant-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
+        .size-options {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .size-option {
+            display: inline-block;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 14px;
+            transition: all 0.3s;
         }
 
-        .variant-section .delete-variant-btn:hover {
-            background-color: #e53e3e;
+        .size-option:hover {
+            border-color: var(--primary-color);
         }
 
-        .btn-add-variant {
+        .size-option.active {
             background-color: var(--primary-color);
             color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s;
-            border: none;
-        }
-
-        .btn-add-variant:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
+            border-color: var(--primary-color);
         }
 
         .btn-back-inline {
@@ -512,6 +459,35 @@
             color: var(--text-color);
         }
 
+        .select2-container--default .select2-selection--multiple {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 45px;
+            padding: 5px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .select2-dropdown {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: var(--primary-color);
+        }
+
         .scroll-top-btn {
             position: fixed;
             bottom: 20px;
@@ -542,8 +518,9 @@
         <div class="content-wrapper">
             <h1 class="section-title">Edit Product Details</h1>
 
-            <form method="patch" action="/admin/editProduct" enctype="multipart/form-data" id="productForm" onsubmit="return validateAndSubmit()">
+            <form id="productForm" enctype="multipart/form-data">
                 <input type="hidden" name="productId" value="<%= product._id %>">
+                <input type="hidden" id="removedImages" name="removedImages">
 
                 <div id="cropModal" class="crop-modal">
                     <div class="crop-modal-content">
@@ -559,8 +536,6 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="removedImages" name="removedImages">
-
                 <div class="row">
                     <div class="col-lg-8">
                         <div class="card">
@@ -571,32 +546,29 @@
                                 <div class="form-section">
                                     <div class="mb-4">
                                         <label for="productName" class="form-label required-label">Product Name</label>
-                                        <input type="text" value="<%= product.productName %>" name="productName" class="form-control" id="productName">
+                                        <input type="text" placeholder="Enter product name" name="productName" value="<%= product.productName %>" class="form-control" id="productName">
                                         <div id="productName-error" class="error-message"></div>
                                     </div>
-                                    <div class="mb-4">
-                                        <label for="shortDescription" class="form-label required-label">Short Description</label>
-                                        <input type="text" value="<%= product.shortDescription %>" name="shortDescription" class="form-control" id="shortDescription">
-                                        <div id="shortDescription-error" class="error-message"></div>
-                                    </div>
-                                    <div class="mb-4">
-                                        <label for="description" class="form-label required-label">Product Description</label>
-                                        <textarea placeholder="Enter detailed product description" id="description" name="description" class="form-control" rows="5"><%= product.description %></textarea>
-                                        <div id="description-error" class="error-message"></div>
-                                    </div>
+                                    <br>
                                     <div class="row">
                                         <div class="col-md-6 mb-4">
                                             <label class="form-label required-label">Category</label>
-                                            <select class="form-select" name="category">
-                                                <% categories.forEach(category => { %>
-                                                    <option value="<%= category._id %>" <%= product.category && category._id.toString() === product.category.toString() ? 'selected' : '' %>><%= category.name %></option>
-                                                <% }); %>
+                                            <select class="form-select" name="category" id="category">
+                                              <% categories.forEach(category => { 
+                                                   const selectedCategoryId = product.category?._id || product.category;
+                                                   const isSelected = category._id.toString() === selectedCategoryId?.toString();
+                                              %>
+                                                <option value="<%= category._id %>" <%= isSelected ? 'selected' : '' %>><%= category.name %></option>
+                                              <% }); %>
                                             </select>
                                             <div id="category-error" class="error-message"></div>
-                                        </div>
+                                          </div>
+                                          
+                                        <br>
                                         <div class="col-md-6 mb-4">
                                             <label class="form-label required-label">Gender</label>
-                                            <select class="form-select" name="gender">
+                                            <select class="form-select" name="gender" id="gender">
+                                                <option value="">Select Gender</option>
                                                 <option value="Men" <%= product.gender === "Men" ? "selected" : "" %>>Men</option>
                                                 <option value="Women" <%= product.gender === "Women" ? "selected" : "" %>>Women</option>
                                                 <option value="Kids" <%= product.gender === "Kids" ? "selected" : "" %>>Kids</option>
@@ -608,36 +580,43 @@
                                     <div class="row">
                                         <div class="col-md-6 mb-4">
                                             <label for="productType" class="form-label required-label">Fragrance Type</label>
-                                            <input type="text" value="<%= product.productType %>" name="productType" class="form-control" id="productType">
+                                            <input type="text" placeholder="Enter Fragrance Type" name="productType" value="<%= product.productType %>" class="form-control" id="productType">
                                             <div id="productType-error" class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-4">
                                             <label for="fragranceFamily" class="form-label required-label">Fragrance Family</label>
-                                            <input type="text" value="<%= product.fragranceFamily %>" name="fragranceFamily" class="form-control" id="fragranceFamily">
+                                            <input type="text" placeholder="Enter Fragrance Family" name="fragranceFamily" value="<%= product.fragranceFamily %>" class="form-control" id="fragranceFamily">
                                             <div id="fragranceFamily-error" class="error-message"></div>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-4">
                                             <label for="longevity" class="form-label required-label">Fragrance Longevity</label>
-                                            <input type="text" value="<%= product.longevity %>" name="longevity" class="form-control" id="longevity">
+                                            <input type="text" placeholder="Enter Fragrance Longevity" name="longevity" value="<%= product.longevity %>" class="form-control" id="longevity">
                                             <div id="longevity-error" class="error-message"></div>
                                         </div>
                                         <div class="col-md-6 mb-4">
                                             <label for="brand" class="form-label required-label">Brand</label>
-                                            <input type="text" value="<%= product.brand %>" name="brand" class="form-control" id="brand">
+                                            <input type="text" placeholder="Enter Brand Name" name="brand" value="<%= product.brand %>" class="form-control" id="brand">
                                             <div id="brand-error" class="error-message"></div>
                                         </div>
                                     </div>
                                     <div class="mb-4">
                                         <label for="usage" class="form-label required-label">Usage</label>
-                                        <input type="text" value="<%= product.usage %>" name="usage" class="form-control" id="usage">
+                                        <input type="text" placeholder="Enter the Usage" name="usage" value="<%= product.usage %>" class="form-control" id="usage">
                                         <div id="usage-error" class="error-message"></div>
                                     </div>
                                     <div class="mb-4">
-                                        <label for="productOffer" class="form-label">Product Offer (%)</label>
-                                        <input type="number" value="<%= product.productOffer %>" name="productOffer" class="form-control" id="productOffer" min="0" max="100">
-                                        <div id="productOffer-error" class="error-message"></div>
+                                        <label for="shortDescription" class="form-label required-label">Short Description</label>
+                                        <input type="text" placeholder="Enter Short Product Description" name="shortDescription" value="<%= product.shortDescription %>" class="form-control" id="shortDescription">
+                                        <div id="shortDescription-error" class="error-message"></div>
+                                    </div>
+                                </div>
+                                <div class="form-section">
+                                    <h6 class="form-section-title">Product Description</h6>
+                                    <div class="mb-4">
+                                        <textarea placeholder="Enter detailed product description" id="productDescription" name="description" class="form-control" rows="5"><%= product.description %></textarea>
+                                        <div id="description-error" class="error-message"></div>
                                     </div>
                                 </div>
                             </div>
@@ -645,69 +624,61 @@
 
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title"><i class="fas fa-sliders-h me-2"></i> Product Variants</h5>
+                                <h5 class="card-title"><i class="fas fa-cubes me-2"></i> Product Variants</h5>
                             </div>
                             <div class="card-body">
+                                <div id="variants-error" class="error-message"></div>
                                 <div id="variants-container">
                                     <% product.variants.forEach((variant, index) => { %>
                                         <div class="variant-section" id="variant-<%= index %>">
-                                            <button type="button" class="delete-variant-btn" onclick="removeVariant(<%= index %>)">×</button>
-                                            <div class="row">
-                                                <div class="col-md-4 mb-4">
-                                                    <label class="form-label required-label">Size (ml)</label>
-                                                    <input type="text" name="variants[<%= index %>][size]" value="<%= variant.size %>" class="form-control" id="variant-size-<%= index %>">
-                                                    <div id="variant-size-<%= index %>-error" class="error-message"></div>
-                                                </div>
-                                                <div class="col-md-4 mb-4">
-                                                    <label class="form-label required-label">Regular Price</label>
-                                                    <div class="price-input-group">
-                                                        <input type="number" name="variants[<%= index %>][regularPrice]" value="<%= variant.regularPrice %>" class="form-control" id="variant-regularPrice-<%= index %>" min="0" step="0.01">
-                                                    </div>
-                                                    <div id="variant-regularPrice-<%= index %>-error" class="error-message"></div>
-                                                </div>
-                                                <div class="col-md-4 mb-4">
-                                                    <label class="form-label">Sale Price</label>
-                                                    <div class="price-input-group">
-                                                        <input type="number" name="variants[<%= index %>][salePrice]" value="<%= variant.salePrice || '' %>" class="form-control" id="variant-salePrice-<%= index %>" min="0" step="0.01">
-                                                    </div>
-                                                    <div id="variant-salePrice-<%= index %>-error" class="error-message"></div>
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="form-section-title mb-0">Variant <%= index + 1 %></h6>
+                                                <div class="variant-actions">
+                                                    <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('<%= index %>')">
+                                                        <i class="fas fa-trash"></i> Remove
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: <%= index === product.variants.length - 1 ? 'inline-block' : 'none' %>;">
+                                                        <i class="fas fa-plus"></i> Add Variant
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-6 mb-4">
-                                                    <label class="form-label required-label">Quantity</label>
-                                                    <input type="number" name="variants[<%= index %>][quantity]" value="<%= variant.quantity %>" class="form-control" id="variant-quantity-<%= index %>" min="0">
-                                                    <div id="variant-quantity-<%= index %>-error" class="error-message"></div>
+                                                <div class="col-md-4 mb-4">
+                                                    <label class="form-label required-label">Size</label>
+                                                    <select class="form-select variant-size" name="variants[<%= index %>][size]">
+                                                        <option value="">Select Size</option>
+                                                        <option value="20" <%= variant.size === "20" ? "selected" : "" %>>20 ml</option>
+                                                        <option value="50" <%= variant.size === "50" ? "selected" : "" %>>50 ml</option>
+                                                        <option value="100" <%= variant.size === "100" ? "selected" : "" %>>100 ml</option>
+                                                        <option value="150" <%= variant.size === "150" ? "selected" : "" %>>150 ml</option>
+                                                        <option value="200" <%= variant.size === "200" ? "selected" : "" %>>200 ml</option>
+                                                        <option value="250" <%= variant.size === "250" ? "selected" : "" %>>250 ml</option>
+                                                    </select>
+                                                    <div class="error-message size-error"></div>
                                                 </div>
-                                                <div class="col-md-6 mb-4">
+                                                <div class="col-md-4 mb-4">
                                                     <label class="form-label required-label">SKU</label>
-                                                    <input type="text" name="variants[<%= index %>][sku]" value="<%= variant.sku %>" class="form-control" id="variant-sku-<%= index %>">
-                                                    <div id="variant-sku-<%= index %>-error" class="error-message"></div>
+                                                    <input type="text" placeholder="SKU identifier" name="variants[<%= index %>][sku]" value="<%= variant.sku %>" class="form-control variant-sku">
+                                                    <div class="error-message sku-error"></div>
+                                                </div>
+                                                <div class="col-md-4 mb-4">
+                                                    <label class="form-label required-label">Quantity</label>
+                                                    <input placeholder="Stock quantity" name="variants[<%= index %>][quantity]" type="number" min="0" value="<%= variant.quantity %>" class="form-control variant-quantity">
+                                                    <div class="error-message quantity-error"></div>
                                                 </div>
                                             </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-4">
+                                                    <label class="form-label required-label">Price</label>
+                                                    <div class="price-input-group">
+                                                        <input placeholder="0.00" name="variants[<%= index %>][salePrice]" type="number" step="0.01" min="0" value="<%= variant.salePrice || variant.regularPrice || '' %>" class="form-control variant-sale-price">
+                                                    </div>
+                                                    <div class="error-message sale-price-error"></div>
+                                                </div>
+                                            </div>
+                                            <hr class="mb-4">
                                         </div>
                                     <% }); %>
-                                </div>
-                                <button type="button" class="btn-add-variant" onclick="addVariant()"><i class="fas fa-plus me-2"></i>Add Variant</button>
-                                <div id="variants-error" class="error-message"></div>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title"><i class="fas fa-cog me-2"></i> Product Status</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-4 mb-4">
-                                        <label class="form-label required-label">Status</label>
-                                        <select class="form-select" name="status">
-                                            <option value="Available" <%= product.status === "Available" ? "selected" : "" %>>Available</option>
-                                            <option value="out of stock" <%= product.status === "out of stock" ? "selected" : "" %>>Out of Stock</option>
-                                            <option value="Discontinued" <%= product.status === "Discontinued" ? "selected" : "" %>>Discontinued</option>
-                                        </select>
-                                        <div id="status-error" class="error-message"></div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -719,43 +690,35 @@
                                 <h5 class="card-title"><i class="fas fa-images me-2"></i> Product Images</h5>
                             </div>
                             <div class="card-body">
-                                <label class="form-label">Product Images (Up to 3):</label>
-                                <div class="image-preview-container">
-                                    <% for(let i = 0; i < 3; i++) { 
-                                        let imageUrl = product && product.productImage && product.productImage[i] ? product.productImage[i] : ''; 
-                                        let imageName = product && product.productImage && product.productImage[i] ? product.productImage[i] : '';
-                                    %>
-                                        <div class="image-wrapper" id="image-wrapper-<%= i %>">
-                                            <div class="image-preview <%= !imageUrl ? 'image-preview-empty' : '' %>" id="imagePreview<%= i %>"
-                                                 onclick="triggerFileInput('<%= i %>')"
-                                                 style="background-image: url('<%= imageUrl %>')"
-                                                 data-existing-image="<%= imageName %>">
-                                            </div>
-                                            <input type="file" name="images" id="productImage<%= i %>"
-                                                   accept="image/png, image/jpeg, image/jpg" style="display:none;"
-                                                   onchange="handleFileSelect(event, '<%= i %>')">
-                                            <input type="hidden" name="existingImages[<%= i %>]" id="existingImage<%= i %>" value="<%= imageName %>">
-                                            <% if (imageUrl) { %>
-                                                <button type="button" class="delete-image-btn" onclick="removeExistingImage('<%= i %>')">×</button>
-                                            <% } %>
-                                        </div>
-                                    <% } %>
+                                <label class="form-label required-label">Product Images (3 to 5 images):</label>
+                                <div class="image-upload-container">
+                                    <input type="file" name="images" id="productImages" accept="image/png, image/jpeg, image/jpg, image/webp" multiple onchange="handleFileSelect(event)">
+                                    <p>Click or drag to upload images (PNG, JPEG, WebP)</p>
                                 </div>
                                 <div id="images-error" class="error-message"></div>
                                 <div class="mt-2">
-                                    <span class="text-muted" style="font-size: 12px;">Only support the png or jpeg image formats</span>
+                                    <span class="text-muted" style="font-size: 12px;">Only PNG, JPEG, and WebP formats supported</span>
                                 </div>
-                                <div id="croppedThumbnails" class="thumbnails-container"></div>
+                                <div id="croppedThumbnails" class="thumbnails-container">
+                                    <% product.productImage.forEach((image, index) => { %>
+                                        <div class="image-wrapper">
+                                            <div class="thumbnail" style="background-image: url('<%= image %>')" data-existing-image="<%= image %>">
+                                                <button type="button" class="delete-image-btn" onclick="removeExistingImage('<%= index %>', '<%= image %>')">×</button>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
                             </div>
                         </div>
+
                         <div class="card">
                             <div class="card-body">
                                 <div class="button-group">
                                     <a href="/admin/product" class="btn-back-inline" style="text-decoration: none;">
                                         <i class="fas fa-arrow-left"></i> Back
                                     </a>
-                                    <button class="btn btn-publish btn-publish-inline" type="submit">
-                                        <i class="fas fa-save"></i> Update Product
+                                    <button class="btn btn-publish btn-publish-inline" type="submit" onclick="validateAndSubmit(event)">
+                                        <i class="fas fa-cloud-upload-alt"></i> Update Product
                                     </button>
                                 </div>
                             </div>
@@ -773,176 +736,506 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/cropperjs@1.5.12/dist/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-    let cropper;
-    let currentImageIndex;
-    let croppedFiles = [];
-    let imagesToRemove = [];
-    let variantCount = <%= product.variants.length %>;
+        // Variant Management
+        let variantCount = <%= product.variants.length %>;
+        const MAX_VARIANTS = 5;
 
-    // Image Handling Functions
-    window.triggerFileInput = function(index) {
-        index = parseInt(index);
-        document.getElementById(`productImage${index}`).click();
-    };
+        window.addVariant = function() {
+            if (variantCount >= MAX_VARIANTS) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Maximum Limit Reached',
+                    text: 'You can add a maximum of 5 variants.',
+                    confirmButtonText: 'OK'
+                });
+                return;
+            }
 
-    window.handleFileSelect = function(event, index) {
-        index = parseInt(index);
-        const file = event.target.files[0];
-        if (!file) return;
+            variantCount++;
+            const newVariantId = `variant-${variantCount}`;
+            const variantIndex = variantCount - 1;
 
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            currentImageIndex = index;
-            const cropImage = document.getElementById('cropImage');
-            cropImage.src = e.target.result;
-            document.getElementById('cropModal').style.display = 'block';
+            const variantHTML = `
+                <div class="variant-section" id="${newVariantId}">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="form-section-title mb-0">Variant ${variantCount}</h6>
+                        <div class="variant-actions">
+                            <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('${newVariantId}')">
+                                <i class="fas fa-trash"></i> Remove
+                            </button>
+                            <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: none;">
+                                <i class="fas fa-plus"></i> Add Variant
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label required-label">Size</label>
+                            <select class="form-select variant-size" name="variants[${variantIndex}][size]">
+                                <option value="">Select Size</option>
+                                <option value="20">20 ml</option>
+                                <option value="50">50 ml</option>
+                                <option value="100">100 ml</option>
+                                <option value="150">150 ml</option>
+                                <option value="200">200 ml</option>
+                                <option value="250">250 ml</option>
+                            </select>
+                            <div class="error-message size-error"></div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label required-label">SKU</label>
+                            <input type="text" placeholder="SKU identifier" name="variants[${variantIndex}][sku]" class="form-control variant-sku">
+                            <div class="error-message sku-error"></div>
+                        </div>
+                        <div class="col-md-4 mb-4">
+                            <label class="form-label required-label">Quantity</label>
+                            <input placeholder="Stock quantity" name="variants[${variantIndex}][quantity]" type="number" min="0" class="form-control variant-quantity">
+                            <div class="error-message quantity-error"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label class="form-label required-label">Price</label>
+                            <div class="price-input-group">
+                                <input placeholder="0.00" name="variants[${variantIndex}][salePrice]" type="number" step="0.01" min="0" class="form-control variant-sale-price">
+                            </div>
+                            <div class="error-message sale-price-error"></div>
+                        </div>
+                    </div>
+                    <hr class="mb-4">
+                </div>
+            `;
 
-            if (cropper) cropper.destroy();
-            cropper = new Cropper(cropImage, {
-                aspectRatio: 1,
-                viewMode: 1,
-                dragMode: 'move',
-                autoCropArea: 0.8,
-                restore: false,
-                guides: true,
-                center: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false
+            document.getElementById('variants-container').insertAdjacentHTML('beforeend', variantHTML);
+            updateAddVariantButtonVisibility();
+            updateSizeOptions();
+        };
+
+        window.removeVariant = function(variantId) {
+            document.getElementById(variantId).remove();
+            variantCount--;
+            reindexVariants();
+            updateAddVariantButtonVisibility();
+            updateSizeOptions();
+            Swal.fire({
+                position: 'top-end',
+                icon: 'success',
+                title: 'Variant removed',
+                showConfirmButton: false,
+                timer: 1500,
+                toast: true
             });
         };
-        reader.readAsDataURL(file);
-    };
 
-    window.closeCropModal = function() {
-        document.getElementById("cropModal").style.display = "none";
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    };
+        function reindexVariants() {
+            const variantSections = document.querySelectorAll('.variant-section');
+            variantSections.forEach((section, index) => {
+                section.id = `variant-${index + 1}`;
+                section.querySelector('.form-section-title').textContent = `Variant ${index + 1}`;
 
-    function performCrop() {
-        if (!cropper) {
-            Swal.fire({ icon: "error", title: "Oops...", text: "Please select an image to crop first!" });
-            return;
-        }
-
-        const canvas = cropper.getCroppedCanvas({ width: 440, height: 440 });
-        if (!canvas) return;
-
-        canvas.toBlob((blob) => {
-            if (!blob) return;
-
-            const imagePreview = document.getElementById(`imagePreview${currentImageIndex}`);
-            const fileInput = document.getElementById(`productImage${currentImageIndex}`);
-            const thumbnailsContainer = document.getElementById("croppedThumbnails");
-
-            const imageUrl = URL.createObjectURL(blob);
-            imagePreview.style.backgroundImage = `url(${imageUrl})`;
-            imagePreview.style.backgroundSize = "cover";
-            imagePreview.classList.remove("image-preview-empty");
-
-            if (imagePreview.getAttribute('data-existing-image')) {
-                const existingImageName = imagePreview.getAttribute('data-existing-image');
-                if (existingImageName && existingImageName.trim() !== '') {
-                    if (!imagesToRemove.includes(existingImageName)) {
-                        imagesToRemove.push(existingImageName);
+                const fields = section.querySelectorAll('input, select');
+                fields.forEach(field => {
+                    const name = field.getAttribute('name');
+                    if (name) {
+                        field.setAttribute('name', name.replace(/variants\[\d+\]/, `variants[${index}]`));
                     }
+                });
+
+                const removeBtn = section.querySelector('.btn-danger');
+                if (removeBtn) {
+                    removeBtn.setAttribute('onclick', `removeVariant('variant-${index + 1}')`);
                 }
-                imagePreview.setAttribute('data-existing-image', '');
-            }
-
-            const existingThumbnail = thumbnailsContainer.querySelector(`.thumbnail[data-index="${currentImageIndex}"]`);
-            if (existingThumbnail) existingThumbnail.remove();
-
-            const thumbnail = document.createElement("div");
-            thumbnail.className = "thumbnail";
-            thumbnail.style.backgroundImage = `url(${imageUrl})`;
-            thumbnail.dataset.index = currentImageIndex;
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.className = "delete-image-btn";
-            deleteBtn.innerHTML = "×";
-            deleteBtn.onclick = function (e) {
-                e.stopPropagation();
-                removeNewImage(this.parentNode.dataset.index);
-            };
-
-            thumbnail.appendChild(deleteBtn);
-            thumbnailsContainer.appendChild(thumbnail);
-
-            const fileName = `cropped-image-${currentImageIndex}-${Date.now()}.jpg`;
-            const croppedFile = new File([blob], fileName, { type: "image/jpeg" });
-            croppedFiles[currentImageIndex] = croppedFile;
-
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(croppedFile);
-            fileInput.files = dataTransfer.files;
-
-            closeCropModal();
-        }, "image/jpeg", 0.9);
-    }
-
-    function removeNewImage(index) {
-        index = parseInt(index);
-        const imagePreview = document.getElementById(`imagePreview${index}`);
-        const fileInput = document.getElementById(`productImage${index}`);
-        const thumbnailsContainer = document.getElementById("croppedThumbnails");
-        const thumbnailToRemove = thumbnailsContainer.querySelector(`.thumbnail[data-index="${index}"]`);
-
-        if (imagePreview.getAttribute('data-existing-image')) {
-            const existingImageName = imagePreview.getAttribute('data-existing-image');
-            if (existingImageName && existingImageName.trim() !== '') {
-                if (!imagesToRemove.includes(existingImageName)) {
-                    imagesToRemove.push(existingImageName);
-                }
-            }
-            imagePreview.setAttribute('data-existing-image', '');
+            });
         }
 
-        imagePreview.style.backgroundImage = "";
-        imagePreview.classList.add("image-preview-empty");
-        fileInput.value = "";
-        croppedFiles[index] = null;
-
-        if (thumbnailToRemove) thumbnailToRemove.remove();
-
-        Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Image removed',
-            showConfirmButton: false,
-            timer: 1500,
-            toast: true
-        });
-    }
-
-    window.removeExistingImage = function(index) {
-        index = parseInt(index);
-        const imageWrapper = document.getElementById(`image-wrapper-${index}`);
-        const imagePreview = document.getElementById(`imagePreview${index}`);
-        const existingImage = imagePreview.getAttribute('data-existing-image');
-
-        if (existingImage && existingImage.trim() !== '') {
-            if (!imagesToRemove.includes(existingImage)) {
-                imagesToRemove.push(existingImage);
+        function updateAddVariantButtonVisibility() {
+            const addBtn = document.getElementById('add-variant-btn');
+            if (variantCount >= MAX_VARIANTS) {
+                addBtn.style.display = 'none';
+            } else {
+                addBtn.style.display = 'inline-block';
             }
 
-            imagePreview.style.backgroundImage = '';
-            imagePreview.classList.add('image-preview-empty');
-            imagePreview.setAttribute('data-existing-image', '');
+            document.querySelectorAll('.variant-actions').forEach((actionDiv, index) => {
+                const addBtn = actionDiv.querySelector('#add-variant-btn');
+                if (addBtn) {
+                    addBtn.style.display = index === variantCount - 1 ? 'inline-block' : 'none';
+                }
+            });
+        }
 
-            const existingImageInput = document.getElementById(`existingImage${index}`);
-            if (existingImageInput) existingImageInput.value = '';
+        function updateSizeOptions() {
+            const sizeSelects = document.querySelectorAll('.variant-size');
+            const selectedSizes = Array.from(sizeSelects).map(select => select.value).filter(Boolean);
 
-            const deleteBtn = imageWrapper.querySelector('.delete-image-btn');
-            if (deleteBtn) deleteBtn.remove();
+            sizeSelects.forEach(select => {
+                const currentValue = select.value;
+                Array.from(select.options).forEach(option => {
+                    if (option.value && option.value !== currentValue) {
+                        option.disabled = selectedSizes.includes(option.value);
+                    } else {
+                        option.disabled = false;
+                    }
+                });
+            });
+        }
 
+        // Form Validation
+        function displayErrorMessage(element, message) {
+            if (element) {
+                element.innerText = message;
+                element.style.display = 'block';
+            }
+        }
+
+        function clearErrorMessages() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.innerText = '';
+                el.style.display = 'none';
+            });
+        }
+
+        function validateForm() {
+            clearErrorMessages();
+            let isValid = true;
+
+            // Basic Information
+            const fields = [
+                { id: 'productName', name: 'Product Name', required: true },
+                { id: 'category', name: 'Category', required: true },
+                { id: 'gender', name: 'Gender', required: true },
+                { id: 'productType', name: 'Fragrance Type', required: true },
+                { id: 'fragranceFamily', name: 'Fragrance Family', required: true },
+                { id: 'longevity', name: 'Fragrance Longevity', required: true },
+                { id: 'brand', name: 'Brand', required: true },
+                { id: 'usage', name: 'Usage', required: true },
+                { id: 'shortDescription', name: 'Short Description', required: true },
+                { id: 'productDescription', name: 'Description', required: true }
+            ];
+
+            fields.forEach(field => {
+                const input = document.getElementById(field.id);
+                if (field.required && (!input.value || input.value.trim() === '')) {
+                    displayErrorMessage(document.getElementById(`${field.id}-error`), `${field.name} is required.`);
+                    isValid = false;
+                }
+            });
+
+            // Product Name validation
+            const productName = document.getElementById('productName').value.trim();
+            if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
+                displayErrorMessage(document.getElementById('productName-error'), 'Product name must contain only letters, spaces, or hyphens, and include at least one letter.');
+                isValid = false;
+            } else if (!/^.{3,100}$/.test(productName)) {
+                displayErrorMessage(document.getElementById('productName-error'), 'Product name must be between 3 and 100 characters.');
+                isValid = false;
+            }
+
+            // Short Description validation
+            const shortDescription = document.getElementById('shortDescription').value.trim();
+            if (!/^.{10,200}$/.test(shortDescription)) {
+                displayErrorMessage(document.getElementById('shortDescription-error'), 'Short description must be between 10 and 200 characters.');
+                isValid = false;
+            }
+
+            // Variant Validation
+            const variantSections = document.querySelectorAll('.variant-section');
+            if (variantSections.length === 0) {
+                displayErrorMessage(document.getElementById('variants-error'), 'At least one product variant is required.');
+                isValid = false;
+            }
+
+            const sizes = [];
+            variantSections.forEach((section) => {
+                const sizeSelect = section.querySelector('.variant-size');
+                const skuInput = section.querySelector('.variant-sku');
+                const quantityInput = section.querySelector('.variant-quantity');
+                const salePriceInput = section.querySelector('.variant-sale-price');
+
+                // Size
+                if (!sizeSelect.value) {
+                    displayErrorMessage(section.querySelector('.size-error'), 'Please select a size.');
+                    isValid = false;
+                } else {
+                    sizes.push(sizeSelect.value);
+                }
+
+                // SKU
+                const sku = skuInput.value.trim();
+                if (!sku) {
+                    displayErrorMessage(section.querySelector('.sku-error'), 'SKU is required.');
+                    isValid = false;
+                } else if (!/^[a-zA-Z0-9-_]+$/.test(sku)) {
+                    displayErrorMessage(section.querySelector('.sku-error'), 'SKU should contain only alphanumeric characters, hyphens, and underscores.');
+                    isValid = false;
+                }
+
+                // Quantity
+                const quantity = parseInt(quantityInput.value);
+                if (isNaN(quantity) || quantity < 0) {
+                    displayErrorMessage(section.querySelector('.quantity-error'), 'Please enter a valid non-negative quantity.');
+                    isValid = false;
+                }
+
+                // Sale Price (must be > 0 and no leading zeros)
+                const salePriceValue = salePriceInput.value.trim();
+                if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || parseFloat(salePriceValue) <= 0) {
+                    displayErrorMessage(section.querySelector('.sale-price-error'), 'Price must be a valid number greater than 0, without leading zeros.');
+                    isValid = false;
+                }
+            });
+
+            // Check for duplicate sizes
+            const uniqueSizes = [...new Set(sizes)];
+            if (sizes.length !== uniqueSizes.length) {
+                displayErrorMessage(document.getElementById('variants-error'), 'Each variant must have a unique size.');
+                isValid = false;
+            }
+
+            // Image Validation
+            const thumbnails = document.querySelectorAll('#croppedThumbnails .thumbnail');
+            if (thumbnails.length < 3 || thumbnails.length > 5) {
+                displayErrorMessage(document.getElementById('images-error'), 'Please upload between 3 and 5 images.');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // Form Submission with Fetch
+        function validateAndSubmit(event) {
+            event.preventDefault();
+            if (validateForm()) {
+                submitForm();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Please fill all fields correctly. All fields are required!',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        async function submitForm() {
+            const form = document.getElementById('productForm');
+            const formData = new FormData();
+
+            // Append form fields (excluding images)
+            const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
+            inputs.forEach(input => {
+                formData.append(input.name, input.value);
+            });
+
+            // Append cropped image blobs
+            const thumbnails = document.querySelectorAll('#croppedThumbnails .thumbnail');
+            thumbnails.forEach((thumbnail, index) => {
+                const existingImage = thumbnail.getAttribute('data-existing-image');
+                if (existingImage) {
+                    formData.append(`existingImages[${index}]`, existingImage);
+                } else {
+                    const dataUrl = thumbnail.style.backgroundImage.slice(5, -2); // Remove 'url("")'
+                    const byteString = atob(dataUrl.split(',')[1]);
+                    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                    }
+                    const blob = new Blob([ab], { type: mimeString });
+                    formData.append('images', blob, `cropped-image-${index}.jpg`);
+                }
+            });
+
+            // Append removed images
+            formData.append('removedImages', document.getElementById('removedImages').value);
+
+            // Show loading Swal
+            Swal.fire({
+                title: 'Updating Product...',
+                html: 'Please wait while we update your product.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const response = await fetch('/admin/editProduct', {
+                    method: 'PATCH',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Product Updated',
+                        text: result.message,
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = '/admin/product';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message,
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Error',
+                    text: 'An error occurred while submitting the form. Please try again.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+
+        // Image Cropping and Handling
+        let cropper;
+        let currentImageIndex = 0;
+        let imagesToCrop = [];
+        let croppedImages = [];
+        let removedImages = [];
+
+        window.removeExistingImage = function(index, imageUrl) {
+            const thumbnail = document.querySelector(`#croppedThumbnails .thumbnail[data-existing-image="${imageUrl}"]`);
+            if (thumbnail) {
+                thumbnail.remove();
+                removedImages.push(imageUrl);
+                document.getElementById('removedImages').value = removedImages.join(',');
+                Swal.fire({
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Image removed',
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true
+                });
+            }
+        };
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+
+            const allowedFormats = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+            const totalImages = document.querySelectorAll('#croppedThumbnails .thumbnail').length + files.length;
+
+            if (totalImages > 5) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Maximum Limit Reached',
+                    text: 'You can upload a maximum of 5 images.',
+                    confirmButtonText: 'OK'
+                });
+                event.target.value = '';
+                return;
+            }
+
+            imagesToCrop = [];
+            for (let i = 0; i < files.length; i++) {
+                if (!allowedFormats.includes(files[i].type)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Format',
+                        text: 'Only PNG, JPEG, and WebP images are allowed.',
+                        confirmButtonText: 'OK'
+                    });
+                    event.target.value = '';
+                    return;
+                }
+                imagesToCrop.push(files[i]);
+            }
+
+            if (imagesToCrop.length > 0) {
+                currentImageIndex = 0;
+                processNextImage();
+            }
+        }
+
+        function processNextImage() {
+            if (currentImageIndex >= imagesToCrop.length) {
+                closeCropModal();
+                return;
+            }
+
+            const file = imagesToCrop[currentImageIndex];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById('cropImage');
+                img.src = e.target.result;
+                document.getElementById('cropModal').style.display = 'block';
+
+                if (cropper) {
+                    cropper.destroy();
+                }
+                cropper = new Cropper(img, {
+                    aspectRatio: 1,
+                    viewMode: 1,
+                    autoCropArea: 0.8,
+                    responsive: true
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        window.closeCropModal = function() {
+            document.getElementById('cropModal').style.display = 'none';
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            imagesToCrop = [];
+            currentImageIndex = 0;
+            document.getElementById('productImages').value = '';
+        };
+
+        document.getElementById('cropBtn').addEventListener('click', function() {
+            if (cropper) {
+                const canvas = cropper.getCroppedCanvas({
+                    width: 300,
+                    height: 300
+                });
+                const dataUrl = canvas.toDataURL('image/jpeg');
+
+                const thumbnailWrapper = document.createElement('div');
+                thumbnailWrapper.className = 'image-wrapper';
+                const thumbnail = document.createElement('div');
+                thumbnail.className = 'thumbnail';
+                thumbnail.style.backgroundImage = `url(${dataUrl})`;
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'delete-image-btn';
+                deleteBtn.innerHTML = '×';
+                deleteBtn.onclick = () => removeImage(thumbnailWrapper);
+
+                thumbnailWrapper.appendChild(thumbnail);
+                thumbnailWrapper.appendChild(deleteBtn);
+                document.getElementById('croppedThumbnails').appendChild(thumbnailWrapper);
+
+                croppedImages.push(dataUrl);
+
+                currentImageIndex++;
+                processNextImage();
+            }
+        });
+
+        function removeImage(thumbnailWrapper) {
+            const index = Array.from(document.querySelectorAll('#croppedThumbnails .thumbnail')).findIndex(
+                thumb => thumb.parentElement === thumbnailWrapper
+            );
+            croppedImages.splice(index, 1);
+            thumbnailWrapper.remove();
             Swal.fire({
                 position: 'top-end',
                 icon: 'success',
@@ -952,210 +1245,30 @@
                 toast: true
             });
         }
-    };
 
-    // Variant Handling Functions
-    window.addVariant = function() {
-        const container = document.getElementById('variants-container');
-        const variantHtml = `
-            <div class="variant-section" id="variant-${variantCount}">
-                <button type="button" class="delete-variant-btn" onclick="removeVariant(${variantCount})">×</button>
-                <div class="row">
-                    <div class="col-md-4 mb-4">
-                        <label class="form-label required-label">Size (ml)</label>
-                        <input type="text" name="variants[${variantCount}][size]" class="form-control" id="variant-size-${variantCount}">
-                        <div id="variant-size-${variantCount}-error" class="error-message"></div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <label class="form-label required-label">Regular Price</label>
-                        <div class="price-input-group">
-                            <input type="number" name="variants[${variantCount}][regularPrice]" class="form-control" id="variant-regularPrice-${variantCount}" min="0" step="0.01">
-                        </div>
-                        <div id="variant-regularPrice-${variantCount}-error" class="error-message"></div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <label class="form-label">Sale Price</label>
-                        <div class="price-input-group">
-                            <input type="number" name="variants[${variantCount}][salePrice]" class="form-control" id="variant-salePrice-${variantCount}" min="0" step="0.01">
-                        </div>
-                        <div id="variant-salePrice-${variantCount}-error" class="error-message"></div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label required-label">Quantity</label>
-                        <input type="number" name="variants[${variantCount}][quantity]" class="form-control" id="variant-quantity-${variantCount}" min="0">
-                        <div id="variant-quantity-${variantCount}-error" class="error-message"></div>
-                    </div>
-                    <div class="col-md-6 mb-4">
-                        <label class="form-label required-label">SKU</label>
-                        <input type="text" name="variants[${variantCount}][sku]" class="form-control" id="variant-sku-${variantCount}">
-                        <div id="variant-sku-${variantCount}-error" class="error-message"></div>
-                    </div>
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', variantHtml);
-        variantCount++;
-    };
-
-    window.removeVariant = function(index) {
-        const variantSection = document.getElementById(`variant-${index}`);
-        if (variantSection) {
-            variantSection.remove();
-            Swal.fire({
-                position: 'top-end',
-                icon: 'success',
-                title: 'Variant removed',
-                showConfirmButton: false,
-                timer: 1500,
-                toast: true
-            });
-        }
-    };
-
-    // Form Validation
-    function validateForm() {
-        clearErrorMessages();
-        let isValid = true;
-
-        function validateField(id, errorId, regex, errorMessage) {
-            const value = document.getElementById(id)?.value?.trim() || '';
-            if (!regex.test(value)) {
-                displayErrorMessage(errorId, errorMessage);
-                isValid = false;
-            }
-        }
-
-        validateField("productName", "productName-error", /^[a-zA-Z0-9\s]+$/, "Product name should contain only alphanumeric characters.");
-        validateField("shortDescription", "shortDescription-error", /.+/, "Please enter a short description.");
-        validateField("description", "description-error", /.+/, "Please enter a product description.");
-        validateField("productType", "productType-error", /.+/, "Please enter a fragrance type.");
-        validateField("fragranceFamily", "fragranceFamily-error", /.+/, "Please enter a fragrance family.");
-        validateField("longevity", "longevity-error", /.+/, "Please enter fragrance longevity.");
-        validateField("brand", "brand-error", /.+/, "Please enter brand name.");
-        validateField("usage", "usage-error", /.+/, "Please enter usage.");
-        validateField("productOffer", "productOffer-error", /^\d+$|^$/, "Please enter a valid offer percentage (0-100).");
-
-        // Validate images (exactly 3 images are required)
-        let imageCount = 0;
-        for (let i = 0; i < 3; i++) {
-            if (document.getElementById(`imagePreview${i}`).style.backgroundImage) {
-                imageCount++;
-            }
-        }
-        if (imageCount !== 3) {
-            displayErrorMessage("images-error", "Exactly 3 product images are required.");
-            isValid = false;
-        }
-
-        const variants = document.querySelectorAll('.variant-section');
-        if (variants.length === 0) {
-            displayErrorMessage("variants-error", "At least one variant is required.");
-            isValid = false;
-        } else {
-            variants.forEach((variant, index) => {
-                validateField(`variant-size-${index}`, `variant-size-${index}-error`, /.+/, "Please enter a size.");
-                validateField(`variant-regularPrice-${index}`, `variant-regularPrice-${index}-error`, /^\d+(\.\d{1,2})?$/, "Please enter a valid regular price.");
-                validateField(`variant-quantity-${index}`, `variant-quantity-${index}-error`, /^\d+$/, "Please enter a valid quantity.");
-                validateField(`variant-sku-${index}`, `variant-sku-${index}-error`, /.+/, "Please enter a valid SKU.");
-                const salePrice = document.getElementById(`variant-salePrice-${index}`)?.value?.trim();
-                if (salePrice && !/^\d+(\.\d{1,2})?$/.test(salePrice)) {
-                    displayErrorMessage(`variant-salePrice-${index}-error`, "Please enter a valid sale price.");
-                    isValid = false;
-                }
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         }
 
-        return isValid;
-    }
-
-    function displayErrorMessage(elementId, message) {
-        const errorElement = document.getElementById(elementId);
-        if (errorElement) {
-            errorElement.innerText = message;
-            errorElement.style.display = "block";
-        }
-    }
-
-    function clearErrorMessages() {
-        document.querySelectorAll(".error-message").forEach((element) => {
-            element.innerText = "";
-            element.style.display = "none";
+        window.addEventListener('scroll', function() {
+            const btn = document.getElementById('scrollTopBtn');
+            btn.style.display = window.scrollY > 300 ? 'flex' : 'none';
         });
-    }
 
-    // Form Submission
-    window.validateAndSubmit = function() {
-        if (validateForm()) {
-            const submitBtn = document.querySelector('.btn-publish');
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+        document.addEventListener('change', function(e) {
+            if (e.target.classList.contains('variant-size')) {
+                updateSizeOptions();
             }
+        });
 
-            document.getElementById("removedImages").value = imagesToRemove.join(",");
-
-            const form = document.getElementById("productForm");
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                method: "PATCH", // Changed from POST to PATCH
-                body: formData
-            })
-            .then(response => {
-                if (!response.ok) throw new Error(`Server responded with status ${response.status}`);
-                return response.json();
-            })
-            .then(data => {
-                Swal.fire({
-                    icon: data.success ? "success" : "error",
-                    title: data.success ? "Success!" : "Error!",
-                    text: data.message || "Something went wrong!",
-                    confirmButtonText: "OK"
-                }).then(() => {
-                    if (data.success) window.location.href = "/admin/product";
-                    else {
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
-                        }
-                    }
-                });
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                Swal.fire({
-                    icon: "error",
-                    title: "Error!",
-                    text: "Something went wrong. Please try again.",
-                    confirmButtonText: "OK"
-                });
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-save"></i> Update Product';
-                }
-            });
-
-            return false;
-        }
-        return false;
-    };
-
-    // Scroll to Top
-    window.scrollToTop = function() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
-
-    // Show/Hide Scroll to Top Button
-    window.addEventListener('scroll', function() {
-        const btn = document.getElementById('scrollTopBtn');
-        if (window.scrollY > 300) btn.style.display = 'flex';
-        else btn.style.display = 'none';
-    });
-
-    // Initialize Crop Button
-    document.getElementById("cropBtn").addEventListener("click", performCrop);
-});
+        document.addEventListener('DOMContentLoaded', function() {
+            updateSizeOptions();
+            updateAddVariantButtonVisibility();
+            $('select[name="category"]').select2();
+        });
     </script>
 </body>
 </html>

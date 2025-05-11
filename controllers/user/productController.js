@@ -252,7 +252,7 @@ const productDetails = async (req, res) => {
       _id: id,
       isListed: true,
       isBlocked: false,
-      isDeleted: false
+      isDeleted: false,
     })
     .populate({
       path: 'category',

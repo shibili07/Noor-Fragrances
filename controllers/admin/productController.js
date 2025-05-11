@@ -12,12 +12,12 @@ const productInfo = async (req, res) => {
   try {
     let search = req.query.search || "";
     let page = parseInt(req.query.page) || 1;
-    const limit = 5;
+    const limit = 7; // Changed from 5 to 7 to display 7 products per page
 
     const searchConditions = [
-      { productName: { $regex: new RegExp(search, "i") }},
-      { gender: { $regex: new RegExp(search, "i") }},
-      { brand: { $regex: new RegExp(search, "i") }}
+      { productName: { $regex: new RegExp(search, "i") } },
+      { gender: { $regex: new RegExp(search, "i") } },
+      { brand: { $regex: new RegExp(search, "i") } },
     ];
 
     if (/\d+ml/i.test(search)) {
@@ -30,10 +30,10 @@ const productInfo = async (req, res) => {
 
     // Check if search matches a listed + not-deleted category
     if (search) {
-      const matchingCategory = await Category.findOne({ 
+      const matchingCategory = await Category.findOne({
         name: { $regex: new RegExp(search, "i") },
         isListed: true,
-        isDeleted: false
+        isDeleted: false,
       });
       if (matchingCategory) {
         searchConditions.push({ category: matchingCategory._id });
@@ -42,17 +42,17 @@ const productInfo = async (req, res) => {
 
     const productData = await Product.find({
       $or: searchConditions,
-      category: { $in: validCategoryIds }
+      category: { $in: validCategoryIds },
     })
-    .populate('category')
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .skip((page - 1) * limit)
-    .exec();
+      .populate('category')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip((page - 1) * limit)
+      .exec();
 
     const count = await Product.countDocuments({
       $or: searchConditions,
-      category: { $in: validCategoryIds }
+      category: { $in: validCategoryIds },
     });
 
     const totalPages = Math.ceil(count / limit);
@@ -61,15 +61,13 @@ const productInfo = async (req, res) => {
       data: productData,
       totalPages,
       currentPage: page,
-      cat: listedCategories
+      cat: listedCategories,
     });
-
   } catch (error) {
     console.error("Error in productInfo:", error);
     res.redirect("/pageError");
   }
 };
-
 
 
 const addProductPage = async (req, res) => {
@@ -82,17 +80,38 @@ const addProductPage = async (req, res) => {
     res.redirect("/pageError");
   }
 };
-
-
 const addProducts = async (req, res) => {
   try {
     const products = req.body;
 
+    // Validate productName
+    const productName = products.productName ? products.productName.trim() : "";
+    if (!productName) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name is required",
+      });
+    }
+    if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name must contain only letters, spaces, or hyphens, and include at least one letter",
+      });
+    }
+    if (productName.length < 3 || productName.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: "Product name must be between 3 and 100 characters",
+      });
+    }
+
     // Check if product already exists
     const productExists = await Product.findOne({
-      productName: products.productName,
+      productName: { $regex: `^${productName}$`, $options: 'i' },
       isDeleted: false,
+      isBlocked: true,
     });
+    
     if (productExists) {
       return res.status(400).json({
         success: false,
@@ -100,9 +119,56 @@ const addProducts = async (req, res) => {
       });
     }
 
-    // Upload images to Cloudinary
+    // Validate shortDescription
+    const shortDescription = products.shortDescription ? products.shortDescription.trim() : "";
+    if (!shortDescription) {
+      return res.status(400).json({
+        success: false,
+        message: "Short description is required",
+      });
+    }
+    if (shortDescription.length < 10 || shortDescription.length > 200) {
+      return res.status(400).json({
+        success: false,
+        message: "Short description must be between 10 and 200 characters",
+      });
+    }
+
+    // Validate other required fields
+    const requiredFields = [
+      { field: products.description, name: "Description" },
+      { field: products.gender, name: "Gender" },
+      { field: products.brand, name: "Brand" },
+      { field: products.productType, name: "Fragrance Type" },
+      { field: products.fragranceFamily, name: "Fragrance Family" },
+      { field: products.usage, name: "Usage" },
+      { field: products.longevity, name: "Fragrance Longevity" },
+    ];
+
+    for (const { field, name } of requiredFields) {
+      if (!field || field.trim() === "") {
+        return res.status(400).json({
+          success: false,
+          message: `${name} is required`,
+        });
+      }
+    }
+
+    // Upload images to Cloudinary with high quality and format support
     const images = [];
     if (req.files && req.files.length > 0) {
+      // Validate image formats
+      const allowedFormats = ['image/png', 'image/jpeg', 'image/webp'];
+      for (const file of req.files) {
+        if (!allowedFormats.includes(file.mimetype)) {
+          return res.status(400).json({
+            success: false,
+            message: "Only PNG, JPEG, and WebP image formats are supported",
+          });
+        }
+      }
+
+      // Upload each image
       for (const file of req.files) {
         const uploaded = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
@@ -110,8 +176,9 @@ const addProducts = async (req, res) => {
               folder: "product-images",
               transformation: [
                 { width: 440, height: 440, crop: "fill" },
-                { quality: "auto", fetch_format: "auto" },
+                { quality: 90, fetch_format: "auto" }, // Let Cloudinary choose the best format
               ],
+              progressive: "semi", // Use semi-progressive rendering for better quality
             },
             (error, result) => {
               if (error) reject(error);
@@ -125,14 +192,14 @@ const addProducts = async (req, res) => {
       }
     }
 
-    if (images.length === 0) {
+    // Validate image count (3-5 images)
+    if (images.length < 3 || images.length > 5) {
       return res.status(400).json({
         success: false,
-        message: "At least one product image is required",
+        message: "Please upload between 3 and 5 images",
       });
     }
-    console.log(images);
-    
+
     // Parse variants if sent as a string (FormData case)
     let rawVariants = products.variants;
     if (typeof rawVariants === "string") {
@@ -146,49 +213,71 @@ const addProducts = async (req, res) => {
       }
     }
 
-    // Process variants
+    // Process and validate variants
     const variants = [];
+    const sizes = [];
     if (rawVariants && Array.isArray(rawVariants)) {
       rawVariants.forEach((variant, index) => {
-        const { size, regularPrice, salePrice, quantity, sku } = variant;
+        const { size, salePrice, quantity, sku } = variant;
 
-        if (!size || !regularPrice || !quantity || !sku) {
+        // Validate required fields
+        if (!size || !quantity || !sku || salePrice === undefined) {
           throw new Error(`Missing required fields in variant ${index + 1}`);
         }
 
-        const regularPriceNum = parseFloat(regularPrice);
-        const salePriceNum = salePrice ? parseFloat(salePrice) : 0;
+        // Validate size
+        if (!size.trim()) {
+          throw new Error(`Size is required in variant ${index + 1}`);
+        }
+        sizes.push(size.trim());
+
+        // Validate SKU
+        const skuTrimmed = sku.trim();
+        if (!skuTrimmed) {
+          throw new Error(`SKU is required in variant ${index + 1}`);
+        }
+        if (!/^[a-zA-Z0-9-_]+$/.test(skuTrimmed)) {
+          throw new Error(`SKU should contain only alphanumeric characters, hyphens, and underscores in variant ${index + 1}`);
+        }
+
+        // Validate quantity
         const quantityNum = parseInt(quantity);
-
-        if (isNaN(regularPriceNum) || regularPriceNum <= 0) {
-          throw new Error(`Invalid regular price in variant ${index + 1}`);
-        }
-        if (salePrice && (isNaN(salePriceNum) || salePriceNum < 0)) {
-          throw new Error(`Invalid sale price in variant ${index + 1}`);
-        }
         if (isNaN(quantityNum) || quantityNum < 0) {
-          throw new Error(`Invalid quantity in variant ${index + 1}`);
-        }
-        if (salePriceNum > 0 && salePriceNum >= regularPriceNum) {
-          throw new Error(
-            `Sale price must be less than regular price in variant ${index + 1}`
-          );
+          throw new Error(`Quantity must be a valid non-negative number in variant ${index + 1}`);
         }
 
+        // Validate salePrice
+        const salePriceStr = salePrice.toString().trim();
+        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceStr) || parseFloat(salePriceStr) <= 0) {
+          throw new Error(`Sale price must be a valid number greater than 0, without leading zeros in variant ${index + 1}`);
+        }
+        const salePriceNum = parseFloat(salePriceStr);
+
+        // Since regularPrice is removed from the frontend, we map salePrice to both fields
         variants.push({
-          size,
-          regularPrice: regularPriceNum,
+          size: size.trim(),
+          regularPrice: salePriceNum, // Map salePrice to regularPrice in the schema
           salePrice: salePriceNum,
           quantity: quantityNum,
-          sku,
+          sku: skuTrimmed,
         });
       });
     }
 
+    // Validate variants count
     if (variants.length === 0) {
       return res.status(400).json({
         success: false,
         message: "At least one product variant is required",
+      });
+    }
+
+    // Check for duplicate sizes
+    const uniqueSizes = [...new Set(sizes)];
+    if (sizes.length !== uniqueSizes.length) {
+      return res.status(400).json({
+        success: false,
+        message: "Each variant must have a unique size",
       });
     }
 
@@ -202,8 +291,8 @@ const addProducts = async (req, res) => {
 
     // Create new product
     const newProduct = new Product({
-      productName: products.productName,
-      shortDescription: products.shortDescription,
+      productName,
+      shortDescription,
       description: products.description,
       gender: products.gender,
       brand: products.brand,
@@ -231,9 +320,6 @@ const addProducts = async (req, res) => {
     });
   }
 };
-
-
-
 
 const blockProduct = async(req,res)=>{
    try {
@@ -323,9 +409,6 @@ const editProductPage = async(req,res)=>{
 }
 
 
-
-
-
 const editProduct = async (req, res) => {
   try {
     const productId = req.body.productId;
@@ -335,84 +418,165 @@ const editProduct = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid product ID",
+        message: 'Invalid product ID',
       });
     }
 
     // Find existing product
     const product = await Product.findById(productId);
     if (!product) {
-      console.error("Product not found with ID:", productId);
+      console.error('Product not found with ID:', productId);
       return res.status(404).json({
         success: false,
-        message: "Product not found",
+        message: 'Product not found',
       });
+    }
+
+    // Validate productName
+    const productName = productData.productName ? productData.productName.trim() : '';
+    if (!productName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product name is required',
+      });
+    }
+    if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product name must contain only letters, spaces, or hyphens, and include at least one letter',
+      });
+    }
+    if (productName.length < 3 || productName.length > 100) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product name must be between 3 and 100 characters',
+      });
+    }
+
+    // Check if product name already exists (excluding the current product)
+    const productExists = await Product.findOne({
+      productName: { $regex: `^${productName}$`, $options: 'i' },
+      isDeleted: false,
+      _id: { $ne: productId },
+    });
+    if (productExists) {
+      return res.status(400).json({
+        success: false,
+        message: 'Product already exists, please try with another name',
+      });
+    }
+
+    // Validate shortDescription
+    const shortDescription = productData.shortDescription ? productData.shortDescription.trim() : '';
+    if (!shortDescription) {
+      return res.status(400).json({
+        success: false,
+        message: 'Short description is required',
+      });
+    }
+    if (shortDescription.length < 10 || shortDescription.length > 200) {
+      return res.status(400).json({
+        success: false,
+        message: 'Short description must be between 10 and 200 characters',
+      });
+    }
+
+    // Validate other required fields
+    const requiredFields = [
+      { field: productData.description, name: 'Description' },
+      { field: productData.gender, name: 'Gender' },
+      { field: productData.brand, name: 'Brand' },
+      { field: productData.productType, name: 'Fragrance Type' },
+      { field: productData.fragranceFamily, name: 'Fragrance Family' },
+      { field: productData.usage, name: 'Usage' },
+      { field: productData.longevity, name: 'Fragrance Longevity' },
+    ];
+
+    for (const { field, name } of requiredFields) {
+      if (!field || field.trim() === '') {
+        return res.status(400).json({
+          success: false,
+          message: `${name} is required`,
+        });
+      }
     }
 
     // Validate category ID if provided
     if (productData.category) {
       if (!mongoose.Types.ObjectId.isValid(productData.category)) {
-        console.error("Invalid category ID:", productData.category);
+        console.error('Invalid category ID:', productData.category);
         return res.status(400).json({
           success: false,
-          message: "Invalid category ID",
+          message: 'Invalid category ID',
         });
       }
       const category = await Category.findById(productData.category);
       if (!category) {
-        console.error("Category not found:", productData.category);
+        console.error('Category not found:', productData.category);
         return res.status(400).json({
           success: false,
-          message: "Invalid category. Please select a valid category.",
+          message: 'Invalid category. Please select a valid category.',
         });
       }
     }
 
     // Handle images
     const images = [];
-    const existingImages = Array.isArray(productData.existingImages)
-      ? productData.existingImages
-      : Object.values(productData.existingImages || {});
-    const removedImages = productData.removedImages
-      ? productData.removedImages.split(",").filter((img) => img.trim())
+    const existingImages = productData.existingImages
+      ? Object.values(productData.existingImages).filter(img => img)
+      : [];
+    const removedImages = productData.removedImages && typeof productData.removedImages === 'string'
+      ? productData.removedImages.split(',').filter(img => img.trim())
       : [];
 
-    console.log("Existing images from form:", existingImages);
-    console.log("Removed images:", removedImages);
+    console.log('Existing images from form:', existingImages);
+    console.log('Removed images:', removedImages);
 
     // Keep existing images that are not removed
-    for (let i = 0; i < existingImages.length; i++) {
-      if (existingImages[i] && !removedImages.includes(existingImages[i])) {
-        images.push(existingImages[i]);
-        console.log(`Keeping existing image ${i}: ${existingImages[i]}`);
+    for (const image of existingImages) {
+      if (image && !removedImages.includes(image)) {
+        images.push(image);
+        console.log(`Keeping existing image: ${image}`);
       }
     }
 
     // Delete removed images from Cloudinary
     for (const imgToRemove of removedImages) {
-      if (!imgToRemove || imgToRemove.trim() === "") continue;
+      if (!imgToRemove || imgToRemove.trim() === '') continue;
       try {
-        // Extract public ID from Cloudinary URL
-        const publicId = imgToRemove.split("/").pop().split(".")[0];
+        const publicId = imgToRemove.split('/').pop().split('.')[0];
         await cloudinary.uploader.destroy(`product-images/${publicId}`);
-        console.log("Deleted image from Cloudinary:", imgToRemove);
+        console.log('Deleted image from Cloudinary:', imgToRemove);
       } catch (err) {
-        console.error("Error deleting image from Cloudinary:", err);
+        console.error('Error deleting image from Cloudinary:', err);
       }
     }
 
-    // Upload new images to Cloudinary
+    // Upload new images to Cloudinary with high quality
     if (req.files && req.files.length > 0) {
-      console.log("Processing new images:", req.files.length);
+      console.log('Processing new images:', req.files.length);
+
+      // Validate image formats
+      const allowedFormats = ['image/png', 'image/jpeg', 'image/webp'];
+      for (const file of req.files) {
+        if (!allowedFormats.includes(file.mimetype)) {
+          return res.status(400).json({
+            success: false,
+            message: 'Only PNG, JPEG, and WebP image formats are supported',
+          });
+        }
+      }
+
       for (const file of req.files) {
         const uploaded = await new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
             {
-              folder: "product-images",
+              folder: 'product-images',
               transformation: [
-                { width: 440, height: 440, crop: "fill" },
-                { quality: "auto", fetch_format: "auto" },
+                { width: 1200, height: 1200, crop: 'fill' },
+                { quality: 90, fetch_format: 'auto' },
               ],
+              progressive: 'semi',
             },
             (error, result) => {
               if (error) reject(error);
@@ -423,73 +587,102 @@ const editProduct = async (req, res) => {
         });
 
         images.push(uploaded.secure_url);
-        console.log("Uploaded new image to Cloudinary:", uploaded.secure_url);
+        console.log('Uploaded new image to Cloudinary:', uploaded.secure_url);
       }
     }
 
-    // Validate images
-    if (images.length === 0) {
+    // Validate image count (3-5 images)
+    if (images.length < 3 || images.length > 5) {
       return res.status(400).json({
         success: false,
-        message: "At least one product image is required",
+        message: 'Please upload between 3 and 5 images',
       });
     }
 
     // Parse and process variants
-    let rawVariants = productData.variants;
-    if (typeof rawVariants === "string") {
-      try {
-        rawVariants = JSON.parse(rawVariants);
-      } catch {
+    const rawVariants = productData.variants || {};
+    const variants = [];
+    const sizes = [];
+
+    // Convert the variants object into an array
+    Object.keys(rawVariants).forEach(index => {
+      const variant = rawVariants[index];
+      const { size, salePrice, quantity, sku } = variant;
+
+      // Validate required fields
+      if (!size || !salePrice || !quantity || !sku) {
         return res.status(400).json({
           success: false,
-          message: "Invalid variants format",
+          message: `Missing required fields in variant ${parseInt(index) + 1}`,
         });
       }
-    }
 
-    const variants = [];
-    if (rawVariants && Array.isArray(rawVariants)) {
-      rawVariants.forEach((variant, index) => {
-        const { size, regularPrice, salePrice, quantity, sku } = variant;
-
-        if (!size || !regularPrice || !quantity || !sku) {
-          throw new Error(`Missing required fields in variant ${index + 1}`);
-        }
-
-        const regularPriceNum = parseFloat(regularPrice);
-        const salePriceNum = salePrice ? parseFloat(salePrice) : 0;
-        const quantityNum = parseInt(quantity);
-
-        if (isNaN(regularPriceNum) || regularPriceNum <= 0) {
-          throw new Error(`Invalid regular price in variant ${index + 1}`);
-        }
-        if (salePrice && (isNaN(salePriceNum) || salePriceNum < 0)) {
-          throw new Error(`Invalid sale price in variant ${index + 1}`);
-        }
-        if (isNaN(quantityNum) || quantityNum < 0) {
-          throw new Error(`Invalid quantity in variant ${index + 1}`);
-        }
-        if (salePriceNum > 0 && salePriceNum >= regularPriceNum) {
-          throw new Error(
-            `Sale price must be less than regular price in variant ${index + 1}`
-          );
-        }
-
-        variants.push({
-          size,
-          regularPrice: regularPriceNum,
-          salePrice: salePriceNum,
-          quantity: quantityNum,
-          sku,
+      // Validate size
+      const sizeTrimmed = size.trim();
+      if (!sizeTrimmed) {
+        return res.status(400).json({
+          success: false,
+          message: `Size is required in variant ${parseInt(index) + 1}`,
         });
-      });
-    }
+      }
+      sizes.push(sizeTrimmed);
 
+      // Validate SKU
+      const skuTrimmed = sku.trim();
+      if (!skuTrimmed) {
+        return res.status(400).json({
+          success: false,
+          message: `SKU is required in variant ${parseInt(index) + 1}`,
+        });
+      }
+      if (!/^[a-zA-Z0-9-_]+$/.test(skuTrimmed)) {
+        return res.status(400).json({
+          success: false,
+          message: `SKU should contain only alphanumeric characters, hyphens, and underscores in variant ${parseInt(index) + 1}`,
+        });
+      }
+
+      // Validate quantity
+      const quantityNum = parseInt(quantity);
+      if (isNaN(quantityNum) || quantityNum < 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Quantity must be a valid non-negative number in variant ${parseInt(index) + 1}`,
+        });
+      }
+
+      // Validate salePrice
+      const salePriceStr = salePrice.toString().trim();
+      if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceStr) || parseFloat(salePriceStr) <= 0) {
+        return res.status(400).json({
+          success: false,
+          message: `Price must be a valid number greater than 0, without leading zeros in variant ${parseInt(index) + 1}`,
+        });
+      }
+      const salePriceNum = parseFloat(salePriceStr);
+
+      variants.push({
+        size: sizeTrimmed,
+        salePrice: salePriceNum,
+        quantity: quantityNum,
+        sku: skuTrimmed,
+      });
+    });
+
+    // Validate variants count
     if (variants.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "At least one product variant is required",
+        message: 'At least one product variant is required',
+      });
+    }
+
+    // Check for duplicate sizes
+    const uniqueSizes = [...new Set(sizes)];
+    if (sizes.length !== uniqueSizes.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'Each variant must have a unique size',
       });
     }
 
@@ -512,36 +705,40 @@ const editProduct = async (req, res) => {
       updatedAt: new Date(),
     };
 
-    console.log("Update data:", JSON.stringify(updateData, null, 2));
+    console.log('Update data:', JSON.stringify(updateData, null, 2));
 
-    // Update product using PATCH semantics
+    // Update product using PATCH semantics and remove regularPrice field from variants
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
-      { $set: updateData },
+      {
+        $set: updateData,
+        $unset: { 'variants.$[].regularPrice': '' }, // Remove regularPrice field from all variants
+      },
       { new: true, runValidators: true }
     );
 
     if (updatedProduct) {
-      console.log("Product updated successfully:", updatedProduct._id);
+      console.log('Product updated successfully:', updatedProduct._id);
       return res.status(200).json({
         success: true,
-        message: "Product updated successfully",
+        message: 'Product updated successfully',
       });
     } else {
-      console.error("Failed to update product");
+      console.error('Failed to update product');
       return res.status(400).json({
         success: false,
-        message: "Failed to update product",
+        message: 'Failed to update product',
       });
     }
   } catch (error) {
-    console.error("Error updating product:", error);
+    console.error('Error updating product:', error);
     return res.status(500).json({
       success: false,
       message: `Internal Server Error: ${error.message}`,
     });
   }
 };
+
 
 
 module.exports = {

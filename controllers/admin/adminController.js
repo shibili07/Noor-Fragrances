@@ -11,10 +11,14 @@ const pageError = async(req,res)=>{
 
 const loadLogin = (req,res)=>{
     if(req.session.admin){
-        return res.redirect("/admin/dashboard")
+        return res.redirect("/admin")
+    }else{
+        return res.render("admin-login")
     }
-    res.render("admin-login",{message:null })
+    
 }
+
+
 const login = async (req,res) =>{
     try {
         
@@ -23,26 +27,25 @@ const login = async (req,res) =>{
         const admin = await User.findOne({isAdmin:true,email})
 
         if(!admin){
-            return res.redirect("/admin/login")
+            return res.status(404).json({success:false,message:"Invalid Email!"})
         }
         console.log(password);
         
         const passwordMatch = await bcrypt.compare(password,admin.password)
         if(!passwordMatch){
-            
-            return res.redirect("/admin/login")
-             
+            return res.status(404).json({success:false,message:"Invalid Password!"})
         }
+
         req.session.admin = true 
+        
         if(req.session.admin){
-            res.redirect("/admin")
+           return res.status(200).json({success:true,message:"Admin Logged Successfully!"})
         }else{
-            res.redirect("/admin/login")
+            return res.status(404).json({success:false,message:"Admin Does not Exist"})  
         }
 
     }catch(error) {
-        console.error('Admin login error',error)
-        return res.redirect("/pageError")
+        return res.status(500).json({success:false,message:"Internal Server Error!"})
     }
 }
 

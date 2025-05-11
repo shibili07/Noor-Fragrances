@@ -56,7 +56,6 @@ const productSchema = new Schema({
   variants: [
     {
       size: { type: String, required: true },
-      regularPrice: { type: Number, required: true },
       salePrice: { type: Number, default: 0 }, // Made optional
       quantity: { type: Number, required: true },
       sku: { type: String, required: true }, // Explicitly required

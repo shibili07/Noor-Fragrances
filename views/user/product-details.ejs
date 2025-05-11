@@ -607,7 +607,7 @@
           <div class="zoom-lens"></div>
         </div>
         <div class="thumbnail-container">
-          <% for(let i=0; i < Math.min(product.productImage.length, 3); i++) { %>
+          <% for(let i=0; i < Math.min(product.productImage.length, 5); i++) { %>
           <img src="<%= product.productImage[i] %>" alt="Thumbnail <%= i %>" class="thumbnail <%= i === 0 ? 'active' : '' %>">
           <% } %>
         </div>
@@ -896,6 +896,9 @@
       </div>
     </div>
   </div>
+  
+
+ 
 
   <!-- Footer Partial Placeholder -->
   <div class="footer-space">
@@ -1098,9 +1101,6 @@
             "Content-Type": "application/json",
           },
         });
-
-        
-
         const data = await response.json();
         if (data.success) {
           notyf.success("Added to Cart!");
@@ -1113,11 +1113,7 @@
         }
       } catch (error) {
         console.error("Error adding to cart:", error);
-        notyf.error(
-          error.message.includes("401")
-            ? "You must be logged in to add items to the cart."
-            : "Failed to add to cart. Please try again."
-        );
+        notyf.error("You must be logged in to add items to the cart.");
       }
     });
 

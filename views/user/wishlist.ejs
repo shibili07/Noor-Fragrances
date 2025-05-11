@@ -368,7 +368,7 @@
         <% } %>
 
         <!-- Pagination -->
-        <% if (wishlist?.data?.items?.length > 0 && totalPages > 1) { %>
+        <% if (wishlist?.data?.items?.length > 0) { %>
         <div class="pagination">
           <button class="prev <%= currentPage === 1 ? 'disabled' : '' %>" onclick="navigatePage(<%= currentPage - 1 %>)" <%= currentPage === 1 ? 'disabled' : '' %>>
             <i class="fas fa-chevron-left"></i>

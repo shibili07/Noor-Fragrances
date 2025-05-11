@@ -3,8 +3,6 @@ const User = require("../models/userSchema")
 const userAuth = (req, res, next) => {
     const publicRoutes = ['/', '/login', '/register'];
     
-
-
     if (publicRoutes.includes(req.path)) {
         if (req.session.user) {
             User.findById(req.session.user)

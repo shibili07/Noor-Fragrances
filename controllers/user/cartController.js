@@ -13,6 +13,8 @@ const crypto = require('crypto');
 const wishlist = require("../../models/wishlistSchema");
 const Wishlist = require("../../models/wishlistSchema");
 const Wallet = require("../../models/walletSchema")
+
+
 const addToCart = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -52,14 +54,22 @@ const addToCart = async (req, res) => {
       _id: productId,
       isBlocked: false,
       isDeleted: false,
+    }).populate({
+      path: "category",
+      match: { isListed: true, isDeleted: false },
+      select: "_id name isBlocked isListed"
     });
 
-    if (!product) {
+    if (!product || !product.category || product.category.isListed === false || product.category.isDeleted===true)
+      {
+      
       return res.status(404).json({
         success: false,
-        message: "Product not found.",
+        message: "Product is Unavailable",
       });
     }
+    
+    
 
     const variant = product.variants.find((v) => v.size === size);
     if (!variant) {
@@ -314,7 +324,7 @@ const cart = async (req, res) => {
           };
         }
 
-        const variantPrice = variant.salePrice > 0 ? variant.salePrice : variant.regularPrice;
+        const variantPrice = variant.salePrice
         if (typeof variantPrice !== 'number' || variantPrice <= 0) {
           console.log(`Invalid price for productId: ${item.productId}, variant:`, variant);
           return {
@@ -639,17 +649,19 @@ const generateOrderId = (prefix = 'ORD') => {
 const checkOut = async (req, res) => {
   try {
     const userId = req.session.user;
-    
+
     if (!userId) {
       return res.redirect('/login');
     }
+
     const userData = await User.findById(userId);
     if (!userData) {
       return res.redirect('/login');
     }
+
     const cart = await Cart.findOne({ userId });
     const addressDoc = await Address.findOne({ userId });
-    const wallet = await Wallet.findOne({ userId: userId });
+    const wallet = await Wallet.findOne({ userId });
 
     // Check if cart exists and has items
     if (!cart || !cart.items.length) {
@@ -666,7 +678,7 @@ const checkOut = async (req, res) => {
         appliedCoupon: null,
         availableCoupons: [],
         error: 'Your cart is empty.',
-        wallet
+        wallet,
       });
     }
 
@@ -674,20 +686,34 @@ const checkOut = async (req, res) => {
     let subtotal = 0;
     let savings = 0;
     let validProducts = [];
+    const updatedCartItems = [];
+
     for (let i = 0; i < cart.items.length; i++) {
       const item = cart.items[i];
-      const product = await Product.findById(item.productId).populate('category');
-      if (!product || product.isBlocked || !product.isListed || product.isDeleted) {
-        continue;
+      const product = await Product.findOne({
+        _id: item.productId,
+        isBlocked: false,
+        isDeleted: false,
+        isListed: true, // Added to align with product schema
+      }).populate({
+        path: 'category',
+        match: { isListed: true, isDeleted: false },
+        select: '_id name',
+      });
+
+      if (!product || !product.category) {
+        continue; // Skip if product or category is invalid
       }
+
       const variant = product.variants.find((v) => v.size === item.size);
-     
-      // if (!variant || variant.quantity === 0 || product.status === 'out of stock') {
-      //   continue;
-      // }
+      if (!variant || variant.quantity === 0 || product.status === 'out of stock') {
+        continue; // Skip if variant is invalid or out of stock
+      }
+
       // Calculate price
-      const salePrice = variant.salePrice 
+      const salePrice = variant.salePrice;
       const updatedQuantity = item.quantity;
+
       // Fetch applicable offers
       const offers = await Offer.find({
         $or: [
@@ -699,6 +725,7 @@ const checkOut = async (req, res) => {
         validFrom: { $lte: new Date() },
         validUpto: { $gte: new Date() },
       }).lean();
+
       // Select best offer
       let bestOffer = null;
       let maxDiscount = 0;
@@ -716,11 +743,20 @@ const checkOut = async (req, res) => {
           offerPrice = Math.max(0, salePrice - discount);
         }
       });
+
       const itemTotal = offerPrice * updatedQuantity;
-      // Update cart
-      cart.items[i].quantity = updatedQuantity;
-      cart.items[i].price = offerPrice;
-      cart.items[i].totalPrice = itemTotal;
+
+      // Update cart item
+      updatedCartItems.push({
+        productId: item.productId,
+        size: item.size,
+        quantity: updatedQuantity,
+        price: offerPrice,
+        totalPrice: itemTotal,
+        status: item.status,
+        cancellationReason: item.cancellationReason,
+      });
+
       validProducts.push({
         ...product.toObject(),
         quantity: updatedQuantity,
@@ -732,10 +768,14 @@ const checkOut = async (req, res) => {
         offerSavings: (salePrice - offerPrice).toFixed(2),
         offerType: bestOffer ? bestOffer.offerName : 'No Offer',
       });
+
       subtotal += salePrice * updatedQuantity;
       savings += maxDiscount * updatedQuantity;
     }
+
     if (validProducts.length === 0) {
+      cart.items = []; // Clear cart if no valid products
+      await cart.save();
       return res.render('checkOut', {
         user: userData,
         cart,
@@ -749,9 +789,14 @@ const checkOut = async (req, res) => {
         appliedCoupon: null,
         availableCoupons: [],
         error: 'No valid products in cart.',
-        wallet
+        wallet,
       });
     }
+
+    // Update cart with valid items
+    cart.items = updatedCartItems;
+    await cart.save();
+
     // Fetch available coupons
     const availableCoupons = await Coupon.find({
       isListed: true,
@@ -760,6 +805,8 @@ const checkOut = async (req, res) => {
       endDate: { $gte: new Date() },
       $or: [{ userId: { $exists: false } }, { userId }],
     });
+
+
     // Apply coupon from session
     let couponDiscount = 0;
     let appliedCoupon = null;
@@ -782,8 +829,9 @@ const checkOut = async (req, res) => {
         };
       }
     }
+
     const grandTotal = Math.max(0, subtotal - savings - couponDiscount);
-    await cart.save();
+
     res.render('checkOut', {
       user: userData,
       cart,
@@ -797,7 +845,7 @@ const checkOut = async (req, res) => {
       appliedCoupon,
       availableCoupons,
       error: sessionCoupon && !appliedCoupon ? 'Invalid or expired coupon.' : null,
-      wallet
+      wallet,
     });
   } catch (error) {
     console.error('Checkout error:', error);
@@ -814,10 +862,11 @@ const checkOut = async (req, res) => {
       appliedCoupon: null,
       availableCoupons: [],
       error: 'Something went wrong while loading the checkout page.',
-      wallet: null
+      wallet: null,
     });
   }
 };
+
 
 
 
