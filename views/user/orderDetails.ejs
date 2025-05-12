@@ -1247,105 +1247,140 @@
       document.getElementById('retryPaymentModal').style.display = 'none';
     }
 
-    async function initiateRetryPayment() {
-      if (!currentOrderId) {
-        notyf.error('No order selected for payment.');
-        closeRetryPaymentModal();
-        return;
-      }
 
+    
+    async function initiateRetryPayment() {
+  if (!currentOrderId) {
+    notyf.error('No order selected for payment.');
+    closeRetryPaymentModal();
+    return;
+  }
+
+  try {
+    const response = await fetch('/retryRazorpayPayment', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderId: currentOrderId }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      notyf.error(data.message || 'Failed to initiate payment.');
+      closeRetryPaymentModal();
+      return;
+    }
+
+    const options = {
+      key: data.razorpayKey, // Use key from server
+      amount: data.amount * 100,
+      currency: 'INR',
+      name: 'NOOR Fragrance',
+      description: `Retry Payment for Order #${currentOrderId}`,
+      order_id: data.razorpayOrderId,
+      handler: async function (response) {
+        try {
+          const verifyResponse = await fetch('/verifyRetryPayment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId: currentOrderId,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+
+          if (!verifyResponse.ok) {
+            throw new Error('Verification response was not ok');
+          }
+
+          const verifyData = await verifyResponse.json();
+
+          if (verifyData.success) {
+            notyf.success('Payment successful!');
+            window.location.href = verifyData.redirect;
+          } else {
+            notyf.error(verifyData.message || 'Payment verification failed.');
+            window.location.href = verifyData.redirect;
+          }
+        } catch (error) {
+          console.error('Error verifying payment:', error);
+          notyf.error('Failed to verify payment.');
+          window.location.href = `/orderFailed?orderId=${currentOrderId}&message=${encodeURIComponent('Payment verification failed.')}&errorCode=PAYMENT_VERIFICATION_FAILED`;
+        }
+      },
+      prefill: {
+        name: '<%= order.address.name %>',
+        email: '<%= user.email %>',
+        contact: '<%= order.address.phone %>',
+      },
+      theme: {
+        color: '#fd334e',
+      },
+      modal: {
+        ondismiss: async () => {
+          try {
+            await fetch('/updateFailedPayment', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                orderId: currentOrderId,
+                errorCode: 'PAYMENT_CANCELLED',
+                errorDescription: 'Payment cancelled by user.',
+              }),
+            });
+          } catch (error) {
+            console.error('Error notifying server of cancelled payment:', error);
+          }
+
+          notyf.error('Payment cancelled by user.');
+          window.location.href = `/orderFailed?orderId=${currentOrderId}&message=${encodeURIComponent('Payment cancelled by user.')}&errorCode=PAYMENT_CANCELLED`;
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.on('payment.failed', async function (response) {
       try {
-        const response = await fetch('/retryRazorpayPayment', {
+        await fetch('/updateFailedPayment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ orderId: currentOrderId }),
+          body: JSON.stringify({
+            orderId: currentOrderId,
+            errorCode: response.error.code || 'PAYMENT_FAILED',
+            errorDescription: response.error.description || 'Payment failed.',
+          }),
         });
-
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-
-        if (!data.success) {
-          notyf.error(data.message || 'Failed to initiate payment.');
-          closeRetryPaymentModal();
-          return;
-        }
-
-        const options = {
-          key: '<%= process.env.RAZORPAY_KEY_ID %>',
-          amount: data.amount * 100,
-          currency: 'INR',
-          name: 'NOOR Fragrance',
-          description: `Retry Payment for Order #<%= order.orderId %>`,
-          order_id: data.razorpayOrderId,
-          handler: async function (response) {
-            try {
-              const verifyResponse = await fetch('/verifyRetryPayment', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  orderId: currentOrderId,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                }),
-              });
-
-              if (!verifyResponse.ok) {
-                throw new Error('Verification response was not ok');
-              }
-
-              const verifyData = await verifyResponse.json();
-
-              if (verifyData.success) {
-                notyf.success('Payment successful!');
-                window.location.href = verifyData.redirect;
-              } else {
-                notyf.error(verifyData.message || 'Payment verification failed.');
-                window.location.href = verifyData.redirect;
-              }
-            } catch (error) {
-              console.error('Error verifying payment:', error);
-              notyf.error('Failed to verify payment.');
-              window.location.href = `/order-details/${currentOrderId}?message=${encodeURIComponent('Payment verification failed.')}&errorCode=PAYMENT_VERIFICATION_FAILED`;
-            }
-          },
-          prefill: {
-            name: '<%= order.address.name %>',
-            email: '<%= user.email %>',
-            contact: '<%= order.address.phone %>',
-          },
-          theme: {
-            color: '#fd334e',
-          },
-          modal: {
-            ondismiss: async () => {
-              notyf.error('Payment cancelled by user.');
-              window.location.href = `/order-details/${currentOrderId}?message=${encodeURIComponent('Payment cancelled by user.')}&errorCode=PAYMENT_CANCELLED`;
-            },
-          },
-        };
-
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', function (response) {
-          notyf.error(response.error.description || 'Payment failed.');
-          window.location.href = `/order-details/${currentOrderId}?message=${encodeURIComponent(response.error.description || 'Payment failed.')}&errorCode=${response.error.code || 'PAYMENT_FAILED'}`;
-        });
-
-        rzp.open();
-        closeRetryPaymentModal();
       } catch (error) {
-        console.error('Error initiating retry payment:', error);
-        notyf.error('Failed to initiate payment.');
-        closeRetryPaymentModal();
+        console.error('Error notifying server of failed payment:', error);
       }
-    }
+
+      notyf.error(response.error.description || 'Payment failed.');
+      window.location.href = `/orderFailed?orderId=${currentOrderId}&message=${encodeURIComponent(response.error.description || 'Payment failed.')}&errorCode=${response.error.code || 'PAYMENT_FAILED'}`;
+    });
+
+    rzp.open();
+    closeRetryPaymentModal();
+  } catch (error) {
+    console.error('Error initiating retry payment:', error);
+    notyf.error('Failed to initiate payment.');
+    closeRetryPaymentModal();
+  }
+}
+
 
     // Bind Retry Payment Button
     const retryBtn = document.querySelector('.retry-btn');

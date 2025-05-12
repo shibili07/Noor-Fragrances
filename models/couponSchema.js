@@ -43,23 +43,7 @@ const couponSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-    },
-    status: {
-        type: String,
-        enum: ["Valid", "Expired","Active"],
-        default: "Valid"
     }
-});
-
-// Automatically set status based on endDate before saving
-couponSchema.pre('save', function (next) {
-    const now = new Date();
-    if (this.endDate && now > this.endDate) {
-        this.status = 'Expired';
-    } else {
-        this.status = 'Valid';
-    }
-    next();
 });
 
 const Coupon = mongoose.model('Coupon', couponSchema);

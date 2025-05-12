@@ -230,7 +230,14 @@
                                 <td><%=data[i].name%></td>
                                 <td><%=data[i].email%></td>
                                 <td><%=data[i].phone%></td>
-                                <td><%= new Date(data[i].createdAt).toLocaleDateString() %></td>
+                                <td><% 
+                                    const date = new Date(data[i].createdAt);
+                                    const day = String(date.getDate()).padStart(2, '0');
+                                    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+                                    const year = date.getFullYear();
+                                  %>
+                                  <%= `${day}/${month}/${year}` %>
+                                  </td>
                                 <td><a href="/admin/walletDetails/<%= data[i]._id %>" class="btn btn-info">Details</a></td>
                                 <td>
                                     <div class="d-flex align-items-center">

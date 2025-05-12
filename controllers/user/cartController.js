@@ -19,6 +19,9 @@ const addToCart = async (req, res) => {
   try {
     const userId = req.session.user;
     const { size, quantity, productId, flag } = req.query;
+
+    console.log(req.query);
+    
     const MAX_CART_QUANTITY = 5; // Configurable maximum quantity
 
     // Validate inputs
@@ -158,7 +161,8 @@ const addToCart = async (req, res) => {
     }
 
     await cart.save();
-
+    
+    
     return res.status(200).json({
       success: true,
       message: "Item added to cart.",
@@ -1762,6 +1766,7 @@ const checkoutWallet = async (req, res) => {
       // Deduct amount from wallet
       wallet.balance -= order.finalAmount;
       wallet.transactions.push({
+        orderId:order._id,
         amount: order.finalAmount,
         type: 'Debit',
         method: 'OrderPayment',
@@ -1835,51 +1840,49 @@ const checkoutWallet = async (req, res) => {
 
 
 
-
-  
 const retryRazorpayPayment = async (req, res) => {
   try {
     const { orderId } = req.body;
     const userId = req.session.user;
-    console.log(orderId);
-    
+
     console.log('retryRazorpayPayment called with orderId:', orderId, 'userId:', userId);
-   
-     
+
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
       return res.status(401).json({ success: false, message: 'Please log in to retry payment.' });
     }
-  
+
     if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({ success: false, message: 'Invalid order ID.' });
     }
-   
-    const order = await Order.findById(orderId)
-    console.log(order);
-    
-    
+
+    // Validate order ownership
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found or not authorized.' });
+    }
+
     const amount = Math.round(order.finalAmount * 100);
     if (amount < 100) {
       return res.status(400).json({ success: false, message: 'Amount must be at least ₹1.' });
     }
-    
+
     const options = {
       amount: amount,
       currency: 'INR',
       receipt: `retry_order_${orderId}`,
     };
-    
+
     const razorpayOrder = await razorpay.orders.create(options);
-    console.log(razorpayOrder,"thuszjkxlchzsjkf zsdf dsz jfhsdfkjsdfsa sdhfjskadfh Dfhaf Dd fasjkdf hasd fsdf  hsdf");
-    
-   
+    console.log('Razorpay order created:', razorpayOrder);
+
     await Order.findByIdAndUpdate(orderId, { razorpayOrderId: razorpayOrder.id });
-   
+
     return res.json({
       success: true,
       orderId,
       razorpayOrderId: razorpayOrder.id,
       amount: order.finalAmount,
+      razorpayKey: process.env.RAZORPAY_KEY_ID, // Send key from server
     });
   } catch (error) {
     console.error('Retry Razorpay payment error:', error);
@@ -1887,16 +1890,11 @@ const retryRazorpayPayment = async (req, res) => {
   }
 };
 
-
-
-const verifyRetryPayment = async (req,res) => {
+const verifyRetryPayment = async (req, res) => {
   try {
-     
     const { orderId, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
     const userId = req.session.user;
-   
-    console.log(req.body);
-    
+
     console.log('verifyRetryPayment called with orderId:', orderId, 'userId:', userId);
 
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
@@ -1904,7 +1902,7 @@ const verifyRetryPayment = async (req,res) => {
       return res.status(401).json({
         success: false,
         message: 'Please log in to verify payment.',
-        redirect: '/login'
+        redirect: '/login',
       });
     }
 
@@ -1913,7 +1911,7 @@ const verifyRetryPayment = async (req,res) => {
       return res.status(400).json({
         success: false,
         message: 'Invalid order ID.',
-        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`
+        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`,
       });
     }
 
@@ -1923,7 +1921,7 @@ const verifyRetryPayment = async (req,res) => {
       return res.status(404).json({
         success: false,
         message: 'Order not found.',
-        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`
+        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`,
       });
     }
 
@@ -1935,50 +1933,86 @@ const verifyRetryPayment = async (req,res) => {
 
     if (expectedSignature === razorpay_signature) {
       await Order.findByIdAndUpdate(orderId, {
-        status: 'Processing',
+        status: 'Pending',
         paymentFailedStatus: false,
         razorpayPaymentId: razorpay_payment_id,
         orderType: 'razorPay',
-        'orderedItems.$[].status': 'Processing',
+        'orderedItems.$[].status': 'Pending',
       });
-      return res.json({ 
-        success: true, 
-        redirect: `/orderSuccess?orderId=${orderId}` 
+      return res.json({
+        success: true,
+        redirect: `/orderSuccess?orderId=${orderId}`,
       });
     } else {
-      await Order.findByIdAndUpdate(orderId, { 
-        status: 'payment failed', 
+      await Order.findByIdAndUpdate(orderId, {
+        status: 'Payment failed',
         paymentFailedStatus: true,
-        cancellationReason: 'Invalid payment signature on retry' 
+        cancellationReason: 'Invalid payment signature on retry',
       });
-      return res.json({ 
-        success: false, 
-        message: 'Invalid payment signature.', 
-        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Invalid payment signature.')}&errorCode=INVALID_SIGNATURE`
+      return res.json({
+        success: false,
+        message: 'Invalid payment signature.',
+        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Invalid payment signature.')}&errorCode=INVALID_SIGNATURE`,
       });
     }
   } catch (error) {
     console.error('Verify retry payment error:', error);
     const orderId = req.body.orderId;
     if (orderId && mongoose.Types.ObjectId.isValid(orderId)) {
-      await Order.findByIdAndUpdate(orderId, { 
-        status: 'payment failed',
+      await Order.findByIdAndUpdate(orderId, {
+        status: 'Payment failed',
         paymentFailedStatus: true,
-        cancellationReason: 'Payment verification failed on retry'
+        cancellationReason: 'Payment verification failed on retry',
       });
-      return res.json({ 
-        success: false, 
-        message: 'Unable to verify payment.', 
-        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`
+      return res.json({
+        success: false,
+        message: 'Unable to verify payment.',
+        redirect: `/orderFailed?orderId=${orderId}&message=${encodeURIComponent('Unable to verify payment.')}&errorCode=PAYMENT_VERIFICATION_FAILED`,
       });
     }
     return res.json({
       success: false,
       message: 'Unable to verify payment. Invalid order ID.',
-      redirect: `/orders?message=${encodeURIComponent('Payment verification failed.')}&errorCode=INVALID_ORDER_ID`
+      redirect: `/orders?message=${encodeURIComponent('Payment verification failed.')}&errorCode=INVALID_ORDER_ID`,
     });
   }
 };
+
+
+const updateFailedPayment = async (req, res) => {
+  try {
+    const { orderId, errorCode, errorDescription } = req.body;
+    const userId = req.session.user;
+
+    console.log('updateFailedPayment called with orderId:', orderId, 'userId:', userId);
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(401).json({ success: false, message: 'Please log in.' });
+    }
+
+    if (!orderId || !mongoose.Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ success: false, message: 'Invalid order ID.' });
+    }
+
+    const order = await Order.findOne({ _id: orderId, userId });
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Order not found or not authorized.' });
+    }
+
+    // Update order status to reflect the failed payment
+    await Order.findByIdAndUpdate(orderId, {
+      status: 'Payment failed',
+      paymentFailedStatus: true,
+      cancellationReason: `Payment failed: ${errorDescription}`,
+    });
+
+    return res.json({ success: true });
+  } catch (error) {
+    console.error('Error updating failed payment:', error);
+    return res.status(500).json({ success: false, message: 'Unable to update failed payment.' });
+  }
+};
+
 
 
 const checkStockAvailability = async (req, res) => {
@@ -2052,6 +2086,7 @@ module.exports = {
   orderSuccess,
   checkoutRazorpay,
   verifyPayment,
+  updateFailedPayment,
   orderFailed,
   checkoutWallet,
   retryRazorpayPayment,

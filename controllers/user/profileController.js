@@ -3,23 +3,21 @@ const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
 const Cart = require("../../models/cartSchema");
 const nodemailer = require("nodemailer");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
 const Order = require("../../models/orderSchema");
 const Address = require("../../models/addressSchema");
-const jwt = require('jsonwebtoken');
-const sendEmail = require('../../utils/sendEmail');
-const cloudinary = require("../../config/cloudinary")
-const Offer= require("../../models/offerSchema");
-const Wallet = require('../../models/walletSchema'); // Adjust path as needed
-
-
+const jwt = require("jsonwebtoken");
+const sendEmail = require("../../utils/sendEmail");
+const cloudinary = require("../../config/cloudinary");
+const Offer = require("../../models/offerSchema");
+const Wallet = require("../../models/walletSchema"); // Adjust path as needed
 
 const userInfo = async (req, res) => {
   try {
     const user = req.session.user;
-   
+
     if (user) {
-      const userData = await User.findById(user)
+      const userData = await User.findById(user);
       return res.render("userInfo", {
         user: userData,
         name: userData.name,
@@ -31,27 +29,49 @@ const userInfo = async (req, res) => {
   }
 };
 
+const loadEditProfile = async (req, res) => {
+  try {
+    const user = req.session.user;
 
-const loadEditProfile = async (req,res)=>{
-  try{
-    const user = req.session.user
- 
-    
-  const userData = await User.findById(user)
-  
-  return res.render("edit-profile",{
-    user:userData,
-    
-  })
+    const userData = await User.findById(user);
 
-  }catch(error){
-    console.log("profile rendaring error",error);
-    
+    return res.render("edit-profile", {
+      user: userData,
+    });
+  } catch (error) {
+    console.log("profile rendaring error", error);
   }
-  
+};
 
-}
+const deleteProfile = async (req, res) => {
+  try {
+    const { image } = req.body;
+   
+    const userId = req.session.user;
+    const deleteImage = await User.findByIdAndUpdate(
+      userId,
+      { $pull: { userImage: image } },
+      { new: true }
+    );
 
+    if (!deleteImage) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User Does not Exist!" });
+    } else {
+      return res
+        .status(200)
+        .json({
+          json: true,
+          message: "User Profile Picture deleted Successfull!",
+        });
+    }
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ json: false, message: "Internal Server Error!" });
+  }
+};
 
 const editProfile = async (req, res) => {
   try {
@@ -61,7 +81,7 @@ const editProfile = async (req, res) => {
     if (!userId) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid user',
+        message: "Invalid user",
       });
     }
 
@@ -69,7 +89,7 @@ const editProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found',
+        message: "User not found",
       });
     }
 
@@ -87,7 +107,7 @@ const editProfile = async (req, res) => {
     };
 
     const validateImage = (file) => {
-      const allowedTypes = ['image/png', 'image/jpeg', 'image/webp'];
+      const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
       const maxSize = 5 * 1024 * 1024; // 5MB
       return allowedTypes.includes(file.mimetype) && file.size <= maxSize;
     };
@@ -96,14 +116,16 @@ const editProfile = async (req, res) => {
     if (name && !validateName(name.trim())) {
       return res.status(400).json({
         success: false,
-        message: 'Name must be 2-50 characters long and contain only letters and spaces',
+        message:
+          "Name must be 2-50 characters long and contain only letters and spaces",
       });
     }
 
     if (phone && !validatePhone(phone.trim())) {
       return res.status(400).json({
         success: false,
-        message: 'Phone number must be a valid 10-digit Indian number starting with 6-9',
+        message:
+          "Phone number must be a valid 10-digit Indian number starting with 6-9",
       });
     }
 
@@ -112,7 +134,7 @@ const editProfile = async (req, res) => {
       if (!validateImage(req.file)) {
         return res.status(400).json({
           success: false,
-          message: 'Image must be PNG, JPEG, or WebP and not exceed 5MB',
+          message: "Image must be PNG, JPEG, or WebP and not exceed 5MB",
         });
       }
     }
@@ -122,17 +144,21 @@ const editProfile = async (req, res) => {
     if (name) updatedFields.name = name.trim();
     if (phone) updatedFields.phone = phone.trim();
 
-   
     if (req.file) {
-     
       if (user.userImage && user.userImage[0]) {
         try {
           // Extract public ID from Cloudinary URL
-          const publicId = user.userImage[0].split('/').pop().split('.')[0];
+          const publicId = user.userImage[0].split("/").pop().split(".")[0];
           await cloudinary.uploader.destroy(`profile-pictures/${publicId}`);
-          console.log('Deleted old profile picture from Cloudinary:', user.userImage[0]);
+          console.log(
+            "Deleted old profile picture from Cloudinary:",
+            user.userImage[0]
+          );
         } catch (err) {
-          console.error('Error deleting old profile picture from Cloudinary:', err);
+          console.error(
+            "Error deleting old profile picture from Cloudinary:",
+            err
+          );
         }
       }
 
@@ -140,10 +166,10 @@ const editProfile = async (req, res) => {
       const uploaded = await new Promise((resolve, reject) => {
         const stream = cloudinary.uploader.upload_stream(
           {
-            folder: 'profile-pictures',
+            folder: "profile-pictures",
             transformation: [
-              { width: 150, height: 150, crop: 'fill' },
-              { quality: 'auto', fetch_format: 'auto' },
+              { width: 150, height: 150, crop: "fill" },
+              { quality: "auto", fetch_format: "auto" },
             ],
           },
           (error, result) => {
@@ -155,14 +181,17 @@ const editProfile = async (req, res) => {
       });
 
       updatedFields.userImage = [uploaded.secure_url]; // Store as array to match schema
-      console.log('Uploaded new profile picture to Cloudinary:', uploaded.secure_url);
+      console.log(
+        "Uploaded new profile picture to Cloudinary:",
+        uploaded.secure_url
+      );
     }
 
     // Update user only if there are fields to update
     if (Object.keys(updatedFields).length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'No valid fields provided for update',
+        message: "No valid fields provided for update",
       });
     }
 
@@ -175,17 +204,17 @@ const editProfile = async (req, res) => {
     if (updatedUser) {
       res.json({
         success: true,
-        message: 'Profile updated successfully',
+        message: "Profile updated successfully",
         user: updatedUser,
       });
     } else {
       res.status(400).json({
         success: false,
-        message: 'Failed to update profile',
+        message: "Failed to update profile",
       });
     }
   } catch (error) {
-    console.error('Error updating profile:', error);
+    console.error("Error updating profile:", error);
     res.status(500).json({
       success: false,
       message: `Failed to update profile: ${error.message}`,
@@ -193,109 +222,102 @@ const editProfile = async (req, res) => {
   }
 };
 
-
 const editPassword = async (req, res) => {
   try {
     const userId = req.session.user;
-   
-    
+
     const user = await User.findById(userId);
     const { currentPassword, newPassword, confirmPassword } = req.body;
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found." });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found." });
     }
 
     const isMatch = await bcrypt.compare(currentPassword, user.password);
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Current password is incorrect." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Current password is incorrect." });
     }
 
     // Regex: at least 1 lowercase, 1 uppercase, 1 digit, min 8 chars, no special chars
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
     if (!passwordRegex.test(newPassword)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Password must be at least 8 characters long and include uppercase, lowercase, and a number. No special characters allowed." 
+      return res.status(400).json({
+        success: false,
+        message:
+          "Password must be at least 8 characters long and include uppercase, lowercase, and a number. No special characters allowed.",
       });
     }
 
     if (newPassword === currentPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "New password must be different from current password." 
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from current password.",
       });
     }
 
     if (newPassword !== confirmPassword) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Confirm password does not match new password." 
+      return res.status(400).json({
+        success: false,
+        message: "Confirm password does not match new password.",
       });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await User.findByIdAndUpdate(userId, { $set: { password: hashedPassword } });
+    await User.findByIdAndUpdate(userId, {
+      $set: { password: hashedPassword },
+    });
 
-    return res.status(200).json({ success: true, message: "Password updated successfully." });
-
+    return res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully." });
   } catch (error) {
     console.error("Edit password error:", error);
-    return res.status(500).json({ success: false, message: "Internal server error." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal server error." });
   }
 };
 
-
-
-
-function generateOtp(){
-    return Math.floor(100000+Math.random()*900000).toString();
+function generateOtp() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
+async function sendVerificationEmail(email, otp) {
+  try {
+    // define transport
 
-async function sendVerificationEmail(email,otp) {
-    try {
-        // define transport 
-        
-        const transporter = nodemailer.createTransport({
-            service:"gmail",
-            port:587,
-            secure:false,
-            requireTLS:true,
-            auth:{
-                user:process.env.NODEMAILER_EMAIL,
-                pass:process.env.NODEMAILER_PASSWORD
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_PASSWORD,
+      },
+    });
 
-            }
-        })
-        
-        //define info 
-        
-        const info = await transporter.sendMail({
-            from:process.env.NODEMAILER_EMAIL,
-            to:email,
-            subject:"Verify your account",
-            text:`your OTP  is ${otp}`,
-            html:`<b> Your OTP:${otp}</b>`,
-        })
+    //define info
 
-        return info.accepted.length>0
+    const info = await transporter.sendMail({
+      from: process.env.NODEMAILER_EMAIL,
+      to: email,
+      subject: "Verify your account",
+      text: `your OTP  is ${otp}`,
+      html: `<b> Your OTP:${otp}</b>`,
+    });
 
-    } catch (error) {
-        console.error("Error sending email",error)
-        return false;
-        
-    }
-    
+    return info.accepted.length > 0;
+  } catch (error) {
+    console.error("Error sending email", error);
+    return false;
+  }
 }
-
-
-
-
-
-
-
 
 const loadAddressPage = async (req, res) => {
   try {
@@ -306,26 +328,23 @@ const loadAddressPage = async (req, res) => {
 
     const addresses = addressDoc ? addressDoc.address : [];
 
-    return res.render('address', { user, addresses });
+    return res.render("address", { user, addresses });
   } catch (error) {
     console.log(error);
-    res.status(500).send('Something went wrong');
+    res.status(500).send("Something went wrong");
   }
 };
 
+const getAddaddress = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const userData = await User.findById(userId);
 
-const getAddaddress = async (req,res)=>{
-  try{
-    const userId = req.session.user
-    const userData = await User.findById(userId)
-    
-    
-    return res.render("addAddress",{user:userData})
-  }catch(error){
+    return res.render("addAddress", { user: userData });
+  } catch (error) {
     console.log(error);
-    
   }
-}
+};
 
 const AddAddress = async (req, res) => {
   try {
@@ -339,56 +358,59 @@ const AddAddress = async (req, res) => {
       state,
       landMark,
       pincode,
-      isDefault
+      isDefault,
     } = req.body;
 
     // Utility: Count unique digits
-    const countUniqueDigits = (value) => new Set(value.split('')).size;
+    const countUniqueDigits = (value) => new Set(value.split("")).size;
 
     // Validation rules
     const validationRules = {
       name: {
         pattern: /^[A-Za-z\s]{2,50}$/,
         additionalCheck: (value) => !/(\s{2,})/.test(value),
-        message: 'Invalid name: 2-50 letters and single spaces only'
+        message: "Invalid name: 2-50 letters and single spaces only",
       },
       phone: {
         pattern: /^[6-9]\d{9}$/,
         additionalCheck: (value) => countUniqueDigits(value) >= 3,
-        message: 'Invalid phone: 10 digits starting with 6-9, min 3 unique digits'
+        message:
+          "Invalid phone: 10 digits starting with 6-9, min 3 unique digits",
       },
       altPhone: {
         pattern: /^[6-9]\d{9}$/,
-        additionalCheck: (value) => countUniqueDigits(value) >= 3 && value !== phone,
-        message: 'Invalid alt phone: must differ from phone, meet phone rules'
+        additionalCheck: (value) =>
+          countUniqueDigits(value) >= 3 && value !== phone,
+        message: "Invalid alt phone: must differ from phone, meet phone rules",
       },
       city: {
         pattern: /^[A-Za-z]{2,50}$/,
         additionalCheck: () => true,
-        message: 'Invalid city: 2-50 letters only'
+        message: "Invalid city: 2-50 letters only",
       },
       state: {
         pattern: /^[A-Za-z]{2,50}$/,
         additionalCheck: () => true,
-        message: 'Invalid state: 2-50 letters only'
+        message: "Invalid state: 2-50 letters only",
       },
       landMark: {
         pattern: /^[A-Za-z0-9,\-\s]{6,100}$/,
         additionalCheck: (value) => {
-          const uniqueChars = new Set(value.replace(/[\s,\-]/g, '')).size;
+          const uniqueChars = new Set(value.replace(/[\s,\-]/g, "")).size;
           return (
             !/(\s{2,}|,{2,}|-{2,})/.test(value) &&
             /[A-Za-z0-9]/.test(value) &&
             uniqueChars >= 2
           );
         },
-        message: 'Invalid landmark: follow allowed pattern, no consecutive symbols'
+        message:
+          "Invalid landmark: follow allowed pattern, no consecutive symbols",
       },
       pincode: {
         pattern: /^\d{6}$/,
         additionalCheck: (value) => countUniqueDigits(value) >= 2,
-        message: 'Invalid pincode: must be 6 digits, at least 2 unique'
-      }
+        message: "Invalid pincode: must be 6 digits, at least 2 unique",
+      },
     };
 
     // Apply validation
@@ -407,49 +429,52 @@ const AddAddress = async (req, res) => {
       // First address, automatically default
       addressDoc = new Address({
         userId,
-        address: [{
-          addressType,
-          name,
-          phone,
-          altPhone,
-          city,
-          state,
-          landMark,
-          pincode,
-          isDefault: true
-        }]
+        address: [
+          {
+            addressType,
+            name,
+            phone,
+            altPhone,
+            city,
+            state,
+            landMark,
+            pincode,
+            isDefault: true,
+          },
+        ],
       });
     } else {
       // Check max limit
       if (addressDoc.address.length >= 5) {
         return res.status(400).json({
           success: false,
-          message: "Maximum of 5 addresses allowed"
+          message: "Maximum of 5 addresses allowed",
         });
       }
 
       // Check for duplicates
-      const isDuplicate = addressDoc.address.some(addr =>
-        addr.addressType === addressType &&
-        addr.name === name &&
-        addr.phone === phone &&
-        addr.altPhone === altPhone &&
-        addr.city === city &&
-        addr.state === state &&
-        addr.landMark === landMark &&
-        addr.pincode === Number(pincode)
+      const isDuplicate = addressDoc.address.some(
+        (addr) =>
+          addr.addressType === addressType &&
+          addr.name === name &&
+          addr.phone === phone &&
+          addr.altPhone === altPhone &&
+          addr.city === city &&
+          addr.state === state &&
+          addr.landMark === landMark &&
+          addr.pincode === Number(pincode)
       );
 
       if (isDuplicate) {
         return res.status(400).json({
           success: false,
-          message: "This address already exists"
+          message: "This address already exists",
         });
       }
 
       // Handle isDefault flag
       if (isDefault === true) {
-        addressDoc.address.forEach(addr => addr.isDefault = false);
+        addressDoc.address.forEach((addr) => (addr.isDefault = false));
       }
 
       const newAddress = {
@@ -461,7 +486,7 @@ const AddAddress = async (req, res) => {
         state,
         landMark,
         pincode,
-        isDefault
+        isDefault,
       };
 
       addressDoc.address.push(newAddress);
@@ -472,22 +497,17 @@ const AddAddress = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Address added successfully",
-      addresses: addressDoc.address
+      addresses: addressDoc.address,
     });
-
   } catch (error) {
     console.error("Error adding address:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
-
-
 
 const setDefault = async (req, res) => {
   try {
@@ -496,7 +516,7 @@ const setDefault = async (req, res) => {
 
     const addressDoc = await Address.findOne({ userId });
 
-    addressDoc.address.forEach(addr => {
+    addressDoc.address.forEach((addr) => {
       if (addr._id.toString() === id) {
         addr.isDefault = true;
         found = true;
@@ -506,21 +526,20 @@ const setDefault = async (req, res) => {
     });
 
     const setDefault = await addressDoc.save();
-    if(setDefault){
-      return res.status(201).json({success:true,message:"default address added"})
+    if (setDefault) {
+      return res
+        .status(201)
+        .json({ success: true, message: "default address added" });
     }
   } catch (error) {
     console.error("Error setting default address:", error);
     res.status(500).json({
       success: false,
       message: "Server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
-
 
 const loadEditAddress = async (req, res) => {
   try {
@@ -528,13 +547,18 @@ const loadEditAddress = async (req, res) => {
     const userId = req.session.user;
     const addressDoc = await Address.findOne({ userId });
     const userData = await User.findById(userId);
-    const addressToEdit = addressDoc.address.find(adr => adr._id.toString() === addressId);
+    const addressToEdit = addressDoc.address.find(
+      (adr) => adr._id.toString() === addressId
+    );
 
     if (!addressToEdit) {
       return res.status(404).send("Address not found.");
     }
-    res.render("edit-address", { address: addressToEdit, addressId, user: userData });
-
+    res.render("edit-address", {
+      address: addressToEdit,
+      addressId,
+      user: userData,
+    });
   } catch (err) {
     console.error("Error loading edit address:", err);
     res.status(500).send("Server error");
@@ -554,59 +578,59 @@ const editAddress = async (req, res) => {
       state,
       landMark,
       pincode,
-      isDefault
+      isDefault,
     } = req.body;
-    
 
     console.log(req.body);
-    
+
     // Utility to count unique digits
-    const countUniqueDigits = (value) => new Set(value.split('')).size;
+    const countUniqueDigits = (value) => new Set(value.split("")).size;
 
     // Validation rules (same as in AddAddress)
     const validationRules = {
       name: {
         pattern: /^[A-Za-z\s]{2,50}$/,
         additionalCheck: (value) => !/(\s{2,})/.test(value),
-        message: 'Invalid name'
+        message: "Invalid name",
       },
       phone: {
         pattern: /^[6-9]\d{9}$/,
         additionalCheck: (value) => countUniqueDigits(value) >= 3,
-        message: 'Invalid phone'
+        message: "Invalid phone",
       },
       altPhone: {
         pattern: /^[6-9]\d{9}$/,
-        additionalCheck: (value) => countUniqueDigits(value) >= 3 && value !== phone,
-        message: 'Invalid alt phone'
+        additionalCheck: (value) =>
+          countUniqueDigits(value) >= 3 && value !== phone,
+        message: "Invalid alt phone",
       },
       city: {
         pattern: /^[A-Za-z]{2,50}$/,
         additionalCheck: () => true,
-        message: 'Invalid city'
+        message: "Invalid city",
       },
       state: {
         pattern: /^[A-Za-z]{2,50}$/,
         additionalCheck: () => true,
-        message: 'Invalid state'
+        message: "Invalid state",
       },
       landMark: {
         pattern: /^[A-Za-z0-9,\-\s]{6,100}$/,
         additionalCheck: (value) => {
-          const uniqueChars = new Set(value.replace(/[\s,\-]/g, '')).size;
+          const uniqueChars = new Set(value.replace(/[\s,\-]/g, "")).size;
           return (
             !/(\s{2,}|,{2,}|-{2,})/.test(value) &&
             /[A-Za-z0-9]/.test(value) &&
             uniqueChars >= 2
           );
         },
-        message: 'Invalid landmark'
+        message: "Invalid landmark",
       },
       pincode: {
         pattern: /^\d{6}$/,
         additionalCheck: (value) => countUniqueDigits(value) >= 2,
-        message: 'Invalid pincode'
-      }
+        message: "Invalid pincode",
+      },
     };
 
     // Validate input fields
@@ -620,24 +644,29 @@ const editAddress = async (req, res) => {
 
     const addressDoc = await Address.findOne({ userId });
     if (!addressDoc) {
-      return res.status(404).json({ success: false, message: "User address record not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User address record not found" });
     }
 
     // Check for duplicate (excluding the one being edited)
-    const isDuplicate = addressDoc.address.some(addr =>
-      addr._id.toString() !== addressId &&
-      addr.addressType === addressType &&
-      addr.name === name &&
-      addr.phone === phone &&
-      addr.altPhone === altPhone &&
-      addr.city === city &&
-      addr.state === state &&
-      addr.landMark === landMark &&
-      addr.pincode === Number(pincode)
+    const isDuplicate = addressDoc.address.some(
+      (addr) =>
+        addr._id.toString() !== addressId &&
+        addr.addressType === addressType &&
+        addr.name === name &&
+        addr.phone === phone &&
+        addr.altPhone === altPhone &&
+        addr.city === city &&
+        addr.state === state &&
+        addr.landMark === landMark &&
+        addr.pincode === Number(pincode)
     );
 
     if (isDuplicate) {
-      return res.status(400).json({ success: false, message: "This address already exists" });
+      return res
+        .status(400)
+        .json({ success: false, message: "This address already exists" });
     }
 
     // Force the only address to be default
@@ -648,15 +677,19 @@ const editAddress = async (req, res) => {
 
     // If making this one default, unset others
     if (def === true) {
-      addressDoc.address.forEach(addr => {
+      addressDoc.address.forEach((addr) => {
         if (addr._id.toString() !== addressId) addr.isDefault = false;
       });
     }
 
     // Find the target address and update it
-    const addressIndex = addressDoc.address.findIndex(addr => addr._id.toString() === addressId);
+    const addressIndex = addressDoc.address.findIndex(
+      (addr) => addr._id.toString() === addressId
+    );
     if (addressIndex === -1) {
-      return res.status(404).json({ success: false, message: "Address not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Address not found" });
     }
 
     addressDoc.address[addressIndex] = {
@@ -669,7 +702,7 @@ const editAddress = async (req, res) => {
       state,
       landMark,
       pincode,
-      isDefault: def
+      isDefault: def,
     };
 
     await addressDoc.save();
@@ -677,100 +710,88 @@ const editAddress = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "Address updated successfully",
-      addresses: addressDoc.address
+      addresses: addressDoc.address,
     });
-
   } catch (error) {
     console.error("Edit address error:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message
+      error: error.message,
     });
   }
 };
 
+const deleteAddress = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const { id } = req.params;
 
-
-
-const deleteAddress = async (req,res) =>{
-  try{
-  const userId  =  req.session.user
-  const{id}= req.params
-
-
-  const updatedDoc = await Address.updateOne(
-    { userId },
-    { $pull: { address: { _id: id } } }
-);
-  if(!updatedDoc){
-    return res.status(404).json({message:"Address not found or already deleted"})
-  }
-  return res.status(200).json({message:'Address deleted successfully'})
-  }catch(error){
-    console.error('Error deleting address:', err);
-    return res.status(500).json({ message: 'Server error' });
-
-  }
-  
-}
-
-
-
-
-
-const changeEmailForm = async (req,res)=>{
-  try{
-    const user = req.session.user
-
-    const userData = await User.findById(user)
-    if(user){
-      return res.render('changeEmail', { message: null, user:userData});
+    const updatedDoc = await Address.updateOne(
+      { userId },
+      { $pull: { address: { _id: id } } }
+    );
+    if (!updatedDoc) {
+      return res
+        .status(404)
+        .json({ message: "Address not found or already deleted" });
     }
-  }catch(error){
-    console.log(error);
-  
+    return res.status(200).json({ message: "Address deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting address:", err);
+    return res.status(500).json({ message: "Server error" });
   }
-}
+};
 
+const changeEmailForm = async (req, res) => {
+  try {
+    const user = req.session.user;
 
+    const userData = await User.findById(user);
+    if (user) {
+      return res.render("changeEmail", { message: null, user: userData });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const changeEmail = async (req, res) => {
   try {
     const userId = req.session.user;
     if (!userId) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Please login to change your email address.' 
+      return res.status(401).json({
+        success: false,
+        message: "Please login to change your email address.",
       });
     }
 
     const { newEmail, password } = req.body;
     console.log(req.body);
-    
+
     const sanitizedEmail = newEmail.trim().toLowerCase();
 
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     if (!emailRegex.test(sanitizedEmail)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid email format.' 
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format.",
       });
     }
-    
+
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found.' 
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
       });
     }
 
     const existing = await User.findOne({ email: sanitizedEmail });
     if (existing) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email already in use.' 
+      return res.status(400).json({
+        success: false,
+        message: "Email already in use.",
       });
     }
 
@@ -779,98 +800,98 @@ const changeEmail = async (req, res) => {
     } else {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(401).json({ 
-          success: false, 
-          message: 'Incorrect password.' 
+        return res.status(401).json({
+          success: false,
+          message: "Incorrect password.",
         });
       }
     }
 
     const token = jwt.sign(
-      { userId, newEmail: sanitizedEmail, type: 'email_change' },
+      { userId, newEmail: sanitizedEmail, type: "email_change" },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: '15m' }
+      { expiresIn: "15m" }
     );
 
-    const link = `${process.env.CLIENT_BASE_URL || 'http://localhost:7000'}/confirm-email?token=${token}`;
+    const link = `${
+      process.env.CLIENT_BASE_URL || "http://localhost:7000"
+    }/confirm-email?token=${token}`;
 
     try {
       await sendEmail(
         sanitizedEmail,
-        'Confirm Email Change',
+        "Confirm Email Change",
         `Click <a href="${link}">here</a> to confirm your email change. this link will expire in 15 minutes`
       );
 
       return res.status(200).json({
         success: true,
-        newEmail: sanitizedEmail
+        newEmail: sanitizedEmail,
       });
-      
     } catch (err) {
-      console.error('Email sending failed:', err);
-      return res.status(500).json({ 
-        success: false, 
-        message: 'Failed to send confirmation email. Please try again.' 
+      console.error("Email sending failed:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send confirmation email. Please try again.",
       });
     }
-
-
   } catch (error) {
-    console.error('Internal error in changeEmail:', error);
-    return res.status(500).json({ 
-      success: false, 
-      message: 'Internal server error. Please try again later.' 
+    console.error("Internal error in changeEmail:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error. Please try again later.",
     });
   }
 };
 
-
-
 const confirmEmailChange = async (req, res) => {
   try {
-    const { token } = req.query; 
+    const { token } = req.query;
     if (!token) {
       return res.render("gmailChangedfailed", {
-        message: "Missing token. Please try the email change process again."
+        message: "Missing token. Please try the email change process again.",
       });
     }
-    
+
     let decodedToken;
     try {
       decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY);
     } catch (tokenError) {
-      console.error('Token verification error:', tokenError);
+      console.error("Token verification error:", tokenError);
       return res.render("gmailChangedfailed", {
-        message: "Invalid or expired token. Please try the email change process again."
+        message:
+          "Invalid or expired token. Please try the email change process again.",
       });
     }
-    
+
     const { userId, newEmail, type } = decodedToken;
-    
+
     // Verify this is an email change token
-    if (type !== 'email_change') {
+    if (type !== "email_change") {
       return res.render("gmailChangedfailed", {
-        message: "Invalid token type. Please try the email change process again."
+        message:
+          "Invalid token type. Please try the email change process again.",
       });
     }
-    
+
     const user = await User.findById(userId);
     if (!user) {
-      console.log('User not found with ID:', userId);
-      return res.render("gmailChangedfailed", {success:true,
-        message: "User not found. Please contact support."
+      console.log("User not found with ID:", userId);
+      return res.render("gmailChangedfailed", {
+        success: true,
+        message: "User not found. Please contact support.",
       });
     }
 
     // Check if email is already in use by another account
-    const existingUser = await User.findOne({ 
-      email: newEmail, 
-      _id: { $ne: userId } 
+    const existingUser = await User.findOne({
+      email: newEmail,
+      _id: { $ne: userId },
     });
-    
+
     if (existingUser) {
       return res.render("gmailChangedfailed", {
-        message: "This email is already in use by another account."
+        message: "This email is already in use by another account.",
       });
     }
 
@@ -879,59 +900,53 @@ const confirmEmailChange = async (req, res) => {
     await user.save();
 
     return res.render("gmailChangedSuccess", {
-      newEmail: newEmail
+      newEmail: newEmail,
     });
-    
   } catch (err) {
-    console.error('Error in email change confirmation:', err);
+    console.error("Error in email change confirmation:", err);
     return res.render("gmailChangedfailed", {
-      message: "An unexpected error occurred. Please try again or contact support."
+      message:
+        "An unexpected error occurred. Please try again or contact support.",
     });
   }
 };
-
-
 
 const emailSentConfirmation = async (req, res) => {
   try {
     const { email } = req.query;
     if (!email) {
-      return res.redirect('/profile');
+      return res.redirect("/profile");
     }
-    
-    return res.render('emailSentConfirmation', {
-      newEmail: email
+
+    return res.render("emailSentConfirmation", {
+      newEmail: email,
     });
   } catch (error) {
-    console.error('Error in email sent confirmation page:', error);
-    return res.redirect('/profile');
+    console.error("Error in email sent confirmation page:", error);
+    return res.redirect("/profile");
   }
 };
-
-
-
 
 const loadWallet = async (req, res) => {
   try {
     const user = req.session.user;
     const userData = await User.findById(user);
-    
+
     if (!userData) {
-      return res.status(404).render('error', { 
-        message: 'User not found',
-        user: null
+      return res.status(404).render("error", {
+        message: "User not found",
+        user: null,
       });
     }
 
-  
     let wallet = await Wallet.findOne({ userId: user });
-    
+
     // If wallet doesn't exist, create a new one
     if (!wallet) {
       wallet = new Wallet({
         userId: user,
         balance: 0,
-        transactions: []
+        transactions: [],
       });
       await wallet.save();
     }
@@ -964,23 +979,21 @@ const loadWallet = async (req, res) => {
       nextPage: page + 1,
       prevPage: page - 1,
       startItem: skip + 1,
-      endItem: Math.min(skip + limit, totalTransactions)
+      endItem: Math.min(skip + limit, totalTransactions),
     });
   } catch (error) {
     console.error("Error in wallet page:", error);
-    return res.status(500).render('error', { 
-      message: 'An error occurred while loading the wallet',
-      user: null
+    return res.status(500).render("error", {
+      message: "An error occurred while loading the wallet",
+      user: null,
     });
   }
 };
 
-
-
-
 module.exports = {
   userInfo,
   loadEditProfile,
+  deleteProfile,
   editProfile,
   editPassword,
   loadAddressPage,
@@ -994,8 +1007,5 @@ module.exports = {
   changeEmail,
   changeEmailForm,
   loadWallet,
-  emailSentConfirmation
-
-  
+  emailSentConfirmation,
 };
-

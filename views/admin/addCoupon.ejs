@@ -9,10 +9,10 @@
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 />
-<!-- Datepicker CSS -->
+<!-- Flatpickr CSS -->
 <link
   rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css"
+  href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
 />
 
 <style>
@@ -78,8 +78,9 @@
   }
 
   .error-message {
-    color: red;
-    font-size: 14px;
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
     display: none;
   }
 
@@ -134,6 +135,7 @@
               id="code"
               name="code"
               placeholder="Enter coupon code"
+             
             />
             <div id="code-error" class="error-message"></div>
           </div>
@@ -154,20 +156,22 @@
             <div class="col-md-6">
               <label for="createdAt" class="form-label">Created Date</label>
               <input
-                type="date"
+                type="text"
                 class="form-control"
                 id="createdAt"
                 name="createdAt"
+                placeholder="DD/MM/YYYY"
               />
               <div id="createdAt-error" class="error-message"></div>
             </div>
             <div class="col-md-6">
               <label for="expireOn" class="form-label">Expiry Date</label>
               <input
-                type="date"
+                type="text"
                 class="form-control"
                 id="expireOn"
                 name="expireOn"
+                placeholder="DD/MM/YYYY"
               />
               <div id="expireOn-error" class="error-message"></div>
             </div>
@@ -188,9 +192,7 @@
               <div id="offerPrice-error" class="error-message"></div>
             </div>
             <div class="col-md-6">
-              <label for="minimumPrice" class="form-label"
-                >Minimum Purchase Amount</label
-              >
+              <label for="minimumPrice" class="form-label">Minimum Purchase Amount</label>
               <input
                 type="number"
                 class="form-control"
@@ -202,16 +204,6 @@
               />
               <div id="minimumPrice-error" class="error-message"></div>
             </div>
-          </div>
-
-          <div class="mb-4">
-            <label for="status" class="form-label">Status</label>
-            <select class="form-select" id="status" name="status">
-              <option value="Active">Active</option>
-              <option value="Expired">Expired</option>
-              
-            </select>
-            <div id="status-error" class="error-message"></div>
           </div>
 
           <div class="d-flex gap-3">
@@ -227,25 +219,30 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const today = new Date();
-      const todayStr = today.toISOString().split("T")[0];
-      const createdAtInput = document.getElementById("createdAt");
-      
-      // Set minimum and default created date to today
-      createdAtInput.min = todayStr;
-      createdAtInput.value = todayStr;
-
-      // Set minimum expiry date to tomorrow
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
-      document.getElementById("expireOn").min = tomorrow.toISOString().split("T")[0];
+
+      // Initialize Flatpickr for createdAt
+      flatpickr("#createdAt", {
+        dateFormat: "d/m/Y",
+        minDate: "today",
+        defaultDate: today,
+      });
+
+      // Initialize Flatpickr for expireOn
+      flatpickr("#expireOn", {
+        dateFormat: "d/m/Y",
+        minDate: tomorrow,
+      });
     });
 
     function handleFormSubmit(event) {
@@ -255,13 +252,18 @@
       }
 
       const name = document.getElementById("name").value.trim();
-      const code = document.getElementById("code").value.trim();
+      const code = document.getElementById("code").value.trim().toUpperCase();
       const description = document.getElementById("description").value.trim();
       const createdAt = document.getElementById("createdAt").value;
       const expireOn = document.getElementById("expireOn").value;
       const offerPrice = parseFloat(document.getElementById("offerPrice").value);
       const minimumPrice = parseFloat(document.getElementById("minimumPrice").value);
-      const status = document.getElementById("status").value;
+
+      // Convert Flatpickr format (dd/mm/yyyy) to ISO format (yyyy-mm-dd)
+      const parseDate = (dateStr) => {
+        const [day, month, year] = dateStr.split("/");
+        return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+      };
 
       fetch("/admin/addCoupon", {
         method: "POST",
@@ -272,218 +274,202 @@
           name,
           code,
           description,
-          createdAt,
-          expireOn,
+          createdAt: parseDate(createdAt),
+          expireOn: parseDate(expireOn),
           offerPrice,
-          minimumPrice,
-          status,
+          minimumPrice
         }),
       })
-        .then((response) => {
-          if (!response.ok) {
-            return response.json().then((err) => {
-              throw new Error(err.error);
-            });
-          }
-          return response.json();
-        })
+        .then((response) => response.json())
         .then((data) => {
+          if (!data.success) {
+            throw new Error(data.message);
+          }
           Swal.fire({
             icon: "success",
             title: "Success!",
-            text: "Coupon added successfully",
+            text: data.message,
             timer: 1500,
           }).then(() => {
             window.location.href = "/admin/coupons";
           });
         })
         .catch((error) => {
-          if (error.message === "Coupon code already exists") {
-            Swal.fire({
-              icon: "error",
-              title: "Oops",
-              text: "Coupon code already exists",
-            });
-          } else {
-            Swal.fire({
-              icon: "error",
-              title: "Oops",
-              text: "An error occurred while adding the coupon",
-            });
-          }
+          Swal.fire({
+            icon: "error",
+            title: "Oops",
+            text: error.message || "An error occurred while adding the coupon",
+          });
         });
 
       return false;
     }
 
     function validateForm() {
-    clearErrorMessages();
-    
-    // Get and sanitize inputs
-    const name = sanitizeInput(document.getElementById("name")?.value?.trim() || "");
-    const code = sanitizeInput(document.getElementById("code")?.value?.trim() || "");
-    const description = sanitizeInput(document.getElementById("description")?.value?.trim() || "");
-    const createdAt = document.getElementById("createdAt")?.value || "";
-    const expireOn = document.getElementById("expireOn")?.value || "";
-    const offerPrice = sanitizeInput(document.getElementById("offerPrice")?.value?.trim() || "");
-    const minimumPrice = sanitizeInput(document.getElementById("minimumPrice")?.value?.trim() || "");
-    
-    let isValid = true;
-    const errors = [];
+      clearErrorMessages();
 
-    try {
+      // Get and sanitize inputs
+      const name = sanitizeInput(document.getElementById("name")?.value?.trim() || "");
+      const code = sanitizeInput(document.getElementById("code")?.value?.trim() || "");
+      const description = sanitizeInput(document.getElementById("description")?.value?.trim() || "");
+      const createdAt = document.getElementById("createdAt")?.value || "";
+      const expireOn = document.getElementById("expireOn")?.value || "";
+      const offerPrice = document.getElementById("offerPrice")?.value?.trim() || "";
+      const minimumPrice = document.getElementById("minimumPrice")?.value?.trim() || "";
+
+      let isValid = true;
+      const errors = [];
+
+      try {
         // Validate name
         if (!name) {
-            errors.push({ id: "name-error", message: "Coupon name is required" });
-            isValid = false;
+          errors.push({ id: "name-error", message: "Coupon name is required" });
+          isValid = false;
         } else if (name.length < 3 || name.length > 50) {
-            errors.push({ id: "name-error", message: "Coupon name must be 3-50 characters long" });
-            isValid = false;
-        } else if (!/^[a-zA-Z0-9\s-]+$/.test(name)) {
-            errors.push({ id: "name-error", message: "Coupon name can only contain letters, numbers, spaces, and hyphens" });
-            isValid = false;
+          errors.push({ id: "name-error", message: "Coupon name must be 3-50 characters long" });
+          isValid = false;
+        } else if (!/^[a-zA-Z\s]+$/.test(name)) {
+          errors.push({ id: "name-error", message: "Coupon name can only contain letters and spaces" });
+          isValid = false;
         }
 
         // Validate code
         if (!code) {
-            errors.push({ id: "code-error", message: "Coupon code is required" });
-            isValid = false;
+          errors.push({ id: "code-error", message: "Coupon code is required" });
+          isValid = false;
         } else if (!/^[A-Z0-9]{5,12}$/.test(code)) {
-            errors.push({ id: "code-error", message: "Coupon code must be 5-12 uppercase letters or numbers" });
-            isValid = false;
+          errors.push({ id: "code-error", message: "Coupon code must be 5-12 uppercase letters or numbers Spaces Not Allowed" });
+          isValid = false;
         }
 
         // Validate description
         if (!description) {
-            errors.push({ id: "description-error", message: "Description is required" });
-            isValid = false;
+          errors.push({ id: "description-error", message: "Description is required" });
+          isValid = false;
         } else if (description.length < 10 || description.length > 500) {
-            errors.push({ id: "description-error", message: "Description must be 10-500 characters long" });
-            isValid = false;
+          errors.push({ id: "description-error", message: "Description must be 10-500 characters long" });
+          isValid = false;
         }
 
         // Validate created date
         if (!createdAt) {
-            errors.push({ id: "createdAt-error", message: "Created date is required" });
-            isValid = false;
+          errors.push({ id: "createdAt-error", message: "Created date is required" });
+          isValid = false;
+        } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(createdAt)) {
+          errors.push({ id: "createdAt-error", message: "Invalid created date format (DD/MM/YYYY)" });
+          isValid = false;
         } else {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const createdDate = new Date(createdAt);
-            
-            if (isNaN(createdDate.getTime())) {
-                errors.push({ id: "createdAt-error", message: "Invalid created date format" });
-                isValid = false;
-            } else if (createdDate < today) {
-                errors.push({ id: "createdAt-error", message: "Created date cannot be in the past" });
-                isValid = false;
-            }
+          const [day, month, year] = createdAt.split("/").map(Number);
+          const createdDate = new Date(year, month - 1, day);
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          if (isNaN(createdDate.getTime()) || createdDate < today) {
+            errors.push({ id: "createdAt-error", message: "Created date cannot be in the past" });
+            isValid = false;
+          }
         }
 
         // Validate expiry date
         if (!expireOn) {
-            errors.push({ id: "expireOn-error", message: "Expiry date is required" });
-            isValid = false;
+          errors.push({ id: "expireOn-error", message: "Expiry date is required" });
+          isValid = false;
+        } else if (!/^\d{2}\/\d{2}\/\d{4}$/.test(expireOn)) {
+          errors.push({ id: "expireOn-error", message: "Invalid expiry date format (DD/MM/YYYY)" });
+          isValid = false;
         } else if (createdAt) {
-            const createdDate = new Date(createdAt);
-            const expireDate = new Date(expireOn);
-            
-            if (isNaN(expireDate.getTime())) {
-                errors.push({ id: "expireOn-error", message: "Invalid expiry date format" });
-                isValid = false;
-            } else if (expireDate <= createdDate) {
-                errors.push({ id: "expireOn-error", message: "Expiry date must be after created date" });
-                isValid = false;
-            } else {
-                // Ensure expiry is not more than 1 year from created date
-                const oneYearLater = new Date(createdDate);
-                oneYearLater.setFullYear(createdDate.getFullYear() + 1);
-                if (expireDate > oneYearLater) {
-                    errors.push({ id: "expireOn-error", message: "Expiry date cannot be more than 1 year from created date" });
-                    isValid = false;
-                }
+          const [cDay, cMonth, cYear] = createdAt.split("/").map(Number);
+          const [eDay, eMonth, eYear] = expireOn.split("/").map(Number);
+          const createdDate = new Date(cYear, cMonth - 1, cDay);
+          const expireDate = new Date(eYear, eMonth - 1, eDay);
+          if (isNaN(expireDate.getTime())) {
+            errors.push({ id: "expireOn-error", message: "Invalid expiry date" });
+            isValid = false;
+          } else if (expireDate <= createdDate) {
+            errors.push({ id: "expireOn-error", message: "Expiry date must be after created date" });
+            isValid = false;
+          } else {
+            const oneYearLater = new Date(createdDate);
+            oneYearLater.setFullYear(createdDate.getFullYear() + 1);
+            if (expireDate > oneYearLater) {
+              errors.push({ id: "expireOn-error", message: "Expiry date cannot be more than 1 year from created date" });
+              isValid = false;
             }
+          }
         }
 
         // Validate offer price
         const offerPriceNum = parseFloat(offerPrice);
         if (!offerPrice) {
-            errors.push({ id: "offerPrice-error", message: "Offer price is required" });
-            isValid = false;
+          errors.push({ id: "offerPrice-error", message: "Offer price is required" });
+          isValid = false;
         } else if (isNaN(offerPriceNum) || offerPriceNum <= 0) {
-            errors.push({ id: "offerPrice-error", message: "Offer price must be a positive number" });
-            isValid = false;
+          errors.push({ id: "offerPrice-error", message: "Offer price must be a positive number" });
+          isValid = false;
         } else if (offerPriceNum > 10000) {
-            errors.push({ id: "offerPrice-error", message: "Offer price cannot exceed 10000" });
-            isValid = false;
+          errors.push({ id: "offerPrice-error", message: "Offer price cannot exceed 10000" });
+          isValid = false;
         }
 
         // Validate minimum price
         const minimumPriceNum = parseFloat(minimumPrice);
         if (!minimumPrice) {
-            errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount is required" });
-            isValid = false;
+          errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount is required" });
+          isValid = false;
         } else if (isNaN(minimumPriceNum) || minimumPriceNum <= 0) {
-            errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount must be a positive number" });
-            isValid = false;
-        } else if (minimumPriceNum > 100000) {
-            errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount cannot exceed 100000" });
-            isValid = false;
+          errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount must be a positive number" });
+          isValid = false;
+        } else if (minimumPriceNum > 1000000) {
+          errors.push({ id: "minimumPrice-error", message: "Minimum purchase amount cannot exceed 100000" });
+          isValid = false;
         }
 
         // Cross-field validations
         if (!isNaN(offerPriceNum) && !isNaN(minimumPriceNum)) {
-            if (offerPriceNum >= minimumPriceNum) {
-                errors.push({ id: "offerPrice-error", message: "Offer price must be less than minimum purchase amount" });
-                isValid = false;
-            }
-            
-            // New requirement: Offer price cannot exceed 30% of minimum price
-            const maxOfferPrice = minimumPriceNum * 0.3;
-            if (offerPriceNum > maxOfferPrice) {
-                errors.push({ 
-                    id: "offerPrice-error", 
-                    message: `Offer price cannot exceed 30% of minimum purchase amount (${maxOfferPrice.toFixed(2)})`
-                });
-                isValid = false;
-            }
+          if (offerPriceNum >= minimumPriceNum) {
+            errors.push({ id: "offerPrice-error", message: "Offer price must be less than minimum purchase amount" });
+            isValid = false;
+          }
+          const maxOfferPrice = minimumPriceNum * 0.3;
+          if (offerPriceNum > maxOfferPrice) {
+            errors.push({
+              id: "offerPrice-error",
+              message: `Offer price cannot exceed 30% of minimum purchase amount (${maxOfferPrice.toFixed(2)})`,
+            });
+            isValid = false;
+          }
         }
 
         // Display all errors
-        errors.forEach(error => displayErrorMessage(error.id, error.message));
+        errors.forEach((error) => displayErrorMessage(error.id, error.message));
 
         return isValid;
 
-    } catch (error) {
+      } catch (error) {
         console.error("Validation error:", error);
         displayErrorMessage("form-error", "An unexpected error occurred. Please try again.");
         return false;
+      }
     }
-}
 
-function sanitizeInput(input) {
-    if (typeof input !== 'string') return '';
-    // Remove potentially dangerous characters and trim
-    return input.replace(/[<>{}]/g, '').trim();
-}
+    function sanitizeInput(input) {
+      if (typeof input !== "string") return "";
+      return input.replace(/[<>{}]/g, "").trim();
+    }
 
-function displayErrorMessage(elementId, message) {
-    const errorElement = document.getElementById(elementId);
-    if (errorElement) {
+    function displayErrorMessage(elementId, message) {
+      const errorElement = document.getElementById(elementId);
+      if (errorElement) {
         errorElement.innerText = message;
         errorElement.style.display = "block";
-        errorElement.style.color = "#dc3545";
-        errorElement.style.fontSize = "0.875rem";
-        errorElement.style.marginTop = "0.25rem";
+      }
     }
-}
 
-function clearErrorMessages() {
-    const errorElements = document.getElementsByClassName("error-message");
-    Array.from(errorElements).forEach((element) => {
+    function clearErrorMessages() {
+      const errorElements = document.getElementsByClassName("error-message");
+      Array.from(errorElements).forEach((element) => {
         element.innerText = "";
         element.style.display = "none";
-    });
-}
+      });
+    }
   </script>
 </body>

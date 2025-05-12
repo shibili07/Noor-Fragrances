@@ -15,7 +15,10 @@
         background-color: #f5f5f7;
         min-height: calc(100vh - 70px);
     }
-
+    .alert-warning {
+    background-color: #ffc107; /* Yellow background for expired status */
+    color: #212529; /* Dark text for readability */
+}
     .card {
         border-radius: 10px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -439,16 +442,24 @@
                                         <td><span class="date-field"><%= of.validFrom.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span></td>
                                         <td><span class="date-field"><%= of.validUpto.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }) %></span></td>
                                         <td class="text-start">
-                                            <span class="badge rounded-pill <%= of.isListed ? 'alert-success' : 'alert-danger' %>">
-                                                <%= of.isListed ? 'Active' : 'Inactive' %>
-                                            </span>
+                                            <% const today = new Date(); %>
+                                            <% const validUpto = new Date(of.validUpto); %>
+                                            <% if (validUpto < today) { %>
+                                                <span class="badge rounded-pill alert-warning">Expired</span>
+                                            <% } else { %>
+                                                <span class="badge rounded-pill <%= of.isListed ? 'alert-success' : 'alert-danger' %>">
+                                                    <%= of.isListed ? 'Active' : 'Inactive' %>
+                                                </span>
+                                            <% } %>
                                         </td>
                                         <td class="text-start">
-                                            <button class="btn <%= of.isListed ? 'btn-danger' : 'btn-success' %> list-unlist-btn" 
-                                                    data-id="<%= of._id %>" 
-                                                    data-action="<%= of.isListed ? 'unlist' : 'list' %>">
-                                                <%= of.isListed ? 'Unlist' : 'List' %>
-                                            </button>
+                                            <% if (validUpto >= today) { %>
+                                                <button class="btn <%= of.isListed ? 'btn-danger' : 'btn-success' %> list-unlist-btn" 
+                                                        data-id="<%= of._id %>" 
+                                                        data-action="<%= of.isListed ? 'unlist' : 'list' %>">
+                                                    <%= of.isListed ? 'Unlist' : 'List' %>
+                                                </button>
+                                            <% } %>
                                         </td>
                                         <td class="text-start">
                                             <a href="/admin/editOffer?id=<%= of._id %>" class="btn btn-info text-white">Edit</a>

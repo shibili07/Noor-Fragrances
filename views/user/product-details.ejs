@@ -613,28 +613,23 @@
         </div>
         <!-- Offer Section -->
         <div class="offer-section">
-          <h3 class="offer-title">Available Offers</h3>
-          <% if(offers && offers.length> 0) { %>
+          <h3 class="offer-title">Available Offer</h3>
+          <% if (bestOffer) { %>
           <ul class="offer-list">
-            <% offers.forEach((offer, index)=> { %>
-            <li class="offer-item <%= offer._id.toString() === (bestOffer && bestOffer._id.toString()) ? 'best-offer' : '' %>">
+            <li class="offer-item best-offer">
               <div class="offer-details">
                 <div class="offer-name">
-                  <%= offer.offerName %>
+                  <%= bestOffer.offerName %>
                 </div>
                 <div class="offer-description">
-                  <%= offer.description %>
+                  <%= bestOffer.description %>
                 </div>
-                <% if(offer._id.toString()===(bestOffer && bestOffer._id.toString())) { %>
                 <div class="best-offer-label">Best Offer - Applied</div>
-                <% } %>
               </div>
               <div class="offer-discount">
-                <%= offer.discountType==='percentage' ? `${offer.discountAmount}% OFF` :
-                                            `₹${offer.discountAmount} OFF` %>
+                <%= bestOffer.discountType === 'percentage' ? `${bestOffer.discountAmount}% OFF` : `₹${bestOffer.discountAmount} OFF` %>
               </div>
             </li>
-            <% }); %>
           </ul>
           <% } else { %>
           <p>No offers available.</p>

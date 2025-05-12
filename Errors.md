@@ -1,11 +1,12 @@
 ☛ Errors and Pending 𓂃🖊
 ------------------------
 
-- if i block a product change it unavailabe  statuse not the out of stock []
+
 - remove reguler price [✔]
-- offer adding validation admin side [*]
+- offer adding validation admin side [✔]
 - when i exit razor pay without payment completion that will become error[✔]
 - wallet error , if any balance[✔]
+- when i exit razor pay without payment completion that will become error[✔]
 
 
 11 the week pendings [✪]
@@ -31,15 +32,17 @@
  Admin
 -------
 
-- case insensitive category duplicate check [ⴵ...] 
+- case insensitive category duplicate check [✔]  
 - product name validation  [✔]
 - variant size input validation  [✔]
 - product edit doesn’t popular current category  [✔]
-- use local date format 
+- use local date format [✔]
 - regular price and sale price are not needed as product offer is handled separately  [✔]
-- sales report counts pending items as well
-- top categories only shows one category 
-- top products is buggy 
+- sales report counts pending items as well [✔]
+
+
+- top categories only shows one category [✔] 
+- top products is buggy [✔]
 
 
 
@@ -59,5 +62,13 @@
 
 - change password not working [✔]
 - in wish list delete a item in second page 
-- admin login fecth swal 
+- admin login fecth swal [✔]
+- user can delete the profile image [✔]
+- give sort also the offer 
 
+
+- add to cart , add to wishlist , shop home pages [✔]
+
+- Out of stok invisible into the cart [✔]
+
+- retry payment payment failed not done , also give ttl in order failed 

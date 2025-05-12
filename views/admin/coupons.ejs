@@ -3,8 +3,10 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
 <style>
     .content-wrapper {
@@ -199,6 +201,11 @@
         background-color: #ff3b30;
     }
 
+    .alert-expired {
+        background-color: #FFC107; /* Yellow background */
+        color: black; /* Black text */
+    }
+
     td .btn-success, 
     td .btn-danger {
         width: 90px !important;
@@ -292,7 +299,6 @@
     }
 </style>
 
-
 <body>
     <div class="content-wrapper">
         <!-- Header Section -->
@@ -343,8 +349,8 @@
                                 <span class="input-group-text bg-white">
                                     <i class="fas fa-calendar text-muted"></i>
                                 </span>
-                                <input type="date" class="form-control" name="dateFrom" value="<%= dateFrom %>" placeholder="From Date">
-                                <input type="date" class="form-control" name="dateTo" value="<%= dateTo %>" placeholder="To Date">
+                                <input type="text" class="form-control datepicker" name="dateFrom" value="<%= dateFrom %>" placeholder="From Date (dd/mm/yyyy)">
+                                <input type="text" class="form-control datepicker" name="dateTo" value="<%= dateTo %>" placeholder="To Date (dd/mm/yyyy)">
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -377,14 +383,29 @@
                                 <th>End Date</th>
                                 <th>Offer Price</th>
                                 <th>Min Purchase</th>
-                                <th>Valid</th>
                                 <th>Status</th>
                                 <th>List/Unlist</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <% coupons.forEach((cp, index) => { %>
+                            <% 
+                              const today = new Date(); 
+                              coupons.forEach((cp, index) => { 
+                                const endDate = new Date(cp.endDate); 
+                                const isExpired = endDate < today;
+                            
+                                let statusClass = '';
+                                let statusLabel = '';
+                            
+                                if (isExpired) {
+                                    statusClass = 'alert-expired';
+                                    statusLabel = 'Expired';
+                                } else {
+                                    statusClass = cp.isListed ? 'alert-success' : 'alert-danger';
+                                    statusLabel = cp.isListed ? 'Active' : 'Inactive';
+                                }
+                            %>
                                 <tr>
                                     <td><%= index + 1 %></td>
                                     <td><%= cp.couponName %></td>
@@ -394,41 +415,38 @@
                                     <td><%= cp.endDateFormatted %></td>
                                     <td>₹<%= cp.offerPrice.toFixed(2) %></td>
                                     <td>₹<%= cp.minimumPrice.toFixed(2) %></td>
+                            
+                                    <!-- STATUS -->
                                     <td class="text-start">
-                                      <%if(cp.status==="Valid"){%>
-                                        <span class="badge rounded-pil bg-primary">Valid</span>
-                                        <%}else{%>
-                                        <span class="badge rounded-pil bg-secondary">
-                                           Expired
-                                        </span>
-                                    <%}%>
+                                        <span class="badge rounded-pill <%= statusClass %>"><%= statusLabel %></span>
                                     </td>
-
+                            
+                                    <!-- LIST / UNLIST BUTTON (hidden if expired) -->
                                     <td class="text-start">
-                                        <span class="badge rounded-pill <%= cp.isListed ? 'alert-success' : 'alert-danger' %>">
-                                            <%= cp.isListed ? 'Active' : 'Inactive' %>
-                                        </span>
-                                    </td>
-                                    <td class="text-start">
-                                        <% if (cp.isListed) { %>
-                                            <button class="btn btn-danger text-white" style="width: 70px" onclick="toggleCoupon('<%= cp._id %>', false)">Unlist</button>
-                                        <% } else { %>
-                                            <button class="btn btn-success text-white" style="width: 70px" onclick="toggleCoupon('<%= cp._id %>', true)">List</button>
+                                        <% if (!isExpired) { %>
+                                            <% if (cp.isListed) { %>
+                                                <button class="btn btn-danger text-white" style="width: 70px" onclick="toggleCoupon('<%= cp._id %>', false)">Unlist</button>
+                                            <% } else { %>
+                                                <button class="btn btn-success text-white" style="width: 70px" onclick="toggleCoupon('<%= cp._id %>', true)">List</button>
+                                            <% } %>
                                         <% } %>
                                     </td>
+                            
+                                    <!-- ACTION BUTTONS -->
                                     <td class="text-start">
                                         <button class="btn btn-warning text-white" onclick="confirmAndDelete('<%= cp._id %>')">Delete</button>
-
                                         <a href="/admin/editCoupon?id=<%= cp._id %>" class="btn btn-info text-white">Edit</a>
                                     </td>
                                 </tr>
                             <% }) %>
+                            
                             <% if (coupons.length === 0) { %>
                                 <tr>
                                     <td colspan="11" class="text-center">No coupons found</td>
                                 </tr>
                             <% } %>
-                        </tbody>
+                            </tbody>
+                            
                     </table>
                 </div>
             </div>
@@ -503,45 +521,56 @@
             </ul>
         </nav>
 
-
     <!-- JS Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        async function toggleCoupon(couponId, shouldList) {
-        const action = shouldList ? 'List' : 'Unlist';
-
-        const result = await Swal.fire({
-            title: `${action} this coupon?`,
-            text: `Are you sure you want to ${action.toLowerCase()} this coupon?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: `Yes, ${action}`,
-            cancelButtonText: 'Cancel'
+        // Initialize Flatpickr on date inputs
+        flatpickr(".datepicker", {
+            dateFormat: "d/m/Y", // dd/mm/yyyy format
+            allowInput: true, // Allow manual typing
+            onChange: function(selectedDates, dateStr, instance) {
+                // Optional: Add validation or formatting on change
+            }
         });
 
-        if (result.isConfirmed) {
-            try {
-                const response = await fetch(`/admin/listOrUnlist/${couponId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ isListed: shouldList })
-                });
+        async function toggleCoupon(couponId, shouldList) {
+            const action = shouldList ? 'List' : 'Unlist';
 
-                if (response.ok) {
-                    Swal.fire('Success', `Coupon has been ${action.toLowerCase()}ed.`, 'success').then(() => {
-                        location.reload();
+            const result = await Swal.fire({
+                title: `${action} this coupon?`,
+                text: `Are you sure you want to ${action.toLowerCase()} this coupon?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: `Yes, ${action}`,
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/listOrUnlist/${couponId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ isListed: shouldList })
                     });
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || 'Failed to update coupon.');
+
+                    if (response.ok) {
+                        Swal.fire('Success', `Coupon has been ${action.toLowerCase()}ed.`, 'success').then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        const errorData = await response.json();
+                        throw new Error(errorData.message || 'Failed to update coupon.');
+                    }
+                } catch (err) {
+                    Swal.fire('Error', err.message || 'Something went wrong.', 'error');
                 }
-            } catch (err) {
-                Swal.fire('Error', err.message || 'Something went wrong.', 'error');
             }
         }
-    }
+
         function clearSearch() {
             document.getElementById('searchInput').value = '';
             document.getElementById('sortBy').value = 'newest';
@@ -551,45 +580,44 @@
         }
 
         function confirmAndDelete(id) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'This will delete the coupon!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            fetch(`/admin/deleteCoupon?id=${id}`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    Swal.fire('Deleted!', data.message, 'success').then(() => {
-                        location.reload(); 
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This will delete the coupon!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/deleteCoupon?id=${id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Deleted!', data.message, 'success').then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire('Error!', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
                     });
-                } else {
-                    Swal.fire('Error!', data.message, 'error');
                 }
-            })
-            .catch(error => {
-                console.error(error);
-                Swal.fire('Error!', 'Something went wrong while deleting.', 'error');
             });
+            return false; 
         }
-    });
 
-    return false; 
-}
-
-    // Add automatic form submission when sort option changes
-    document.getElementById('sortBy').addEventListener('change', function() {
-        document.querySelector('form').submit();
-    });
+        // Add automatic form submission when sort option changes
+        document.getElementById('sortBy').addEventListener('change', function() {
+            document.querySelector('form').submit();
+        });
     </script>
 </body>

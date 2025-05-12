@@ -4,71 +4,95 @@ const Product = require("../../models/productSchema")
 const Address = require("../../models/addressSchema");
 const Wallet = require("../../models/walletSchema");
 const Offer = require("../../models/offerSchema")
-
+const Coupon = require("../../models/couponSchema")
 const loadOrders = async (req, res) => {
-    try {
-        const perPage = 6;
-        const page = parseInt(req.query.page) || 1;
-        const search = req.query.search || '';
-        const status = req.query.status || '';
-        const startDate = req.query.startDate || '';
-        const endDate = req.query.endDate || '';
+  try {
+      const perPage = 6;
+      const page = parseInt(req.query.page) || 1;
+      const search = req.query.search || '';
+      const status = req.query.status || '';
+      const startDate = req.query.startDate || '';
+      const endDate = req.query.endDate || '';
 
-        let matchingUserIds = [];
-        if (search) {
-            const matchingUsers = await User.find({
-                name: { $regex: search, $options: 'i' }
-            }).select('_id');
-            matchingUserIds = matchingUsers.map(user => user._id);
-        }
+      let matchingUserIds = [];
+      if (search) {
+          const matchingUsers = await User.find({
+              name: { $regex: search, $options: 'i' }
+          }).select('_id');
+          matchingUserIds = matchingUsers.map(user => user._id);
+      }
 
-        const query = {
-            $or: [
-                { orderId: { $regex: search, $options: 'i' } },
-                { status: { $regex: search, $options: 'i' } },
-                ...(matchingUserIds.length > 0 ? [{ userId: { $in: matchingUserIds } }] : [])
-            ]
-        };
+      const query = {
+          $or: [
+              { orderId: { $regex: search, $options: 'i' } },
+              { status: { $regex: search, $options: 'i' } },
+              ...(matchingUserIds.length > 0 ? [{ userId: { $in: matchingUserIds } }] : [])
+          ]
+      };
 
-        // Add status filter if selected
-        if (status) {
-            query.status = status;
-        }
+      // Add status filter if selected (exclude 'All')
+      if (status && status !== 'All') {
+          query.status = status;
+      }
 
-        // Add date range filter if both dates are provided
-        if (startDate && endDate) {
-            query.createdOn = {
-                $gte: new Date(startDate),
-                $lte: new Date(endDate)
-            };
-        }
+      // Add date range filter if dates are provided
+      if (startDate && endDate) {
+          // Parse dd/mm/yyyy format
+          const parseDate = (dateStr) => {
+              const [day, month, year] = dateStr.split('/');
+              const date = new Date(year, month - 1, day);
+              return isNaN(date) ? null : date;
+          };
 
-        const totalOrders = await Order.countDocuments(query);
-        const totalPages = Math.ceil(totalOrders / perPage);
+          const start = parseDate(startDate);
+          const end = parseDate(endDate);
 
-        const orders = await Order.find(query)
-            .populate('address')
-            .populate('userId', 'name email')
-            .sort({ createdOn: -1 })
-            .skip((page - 1) * perPage)
-            .limit(perPage);
+          if (start && end) {
+              // Set start to beginning of the day and end to end of the day
+              start.setHours(0, 0, 0, 0);
+              end.setHours(23, 59, 59, 999);
 
-        res.render('order', {
-            orders,
-            currentPage: page,
-            totalPages,
-            search,
-            status,
-            startDate,
-            endDate,
-            statusOptions: ['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
-        });
+              if (end >= start) {
+                  query.createdOn = {
+                      $gte: start,
+                      $lte: end
+                  };
+              } else {
+                  // Invalid date range; ignore the filter
+                  console.warn('Invalid date range: endDate is before startDate');
+              }
+          } else {
+              console.warn('Invalid date format for startDate or endDate');
+          }
+      }
 
-    } catch (err) {
-        console.error('Error fetching orders:', err);
-        res.status(500).send('Server Error');
-    }
+      const totalOrders = await Order.countDocuments(query);
+      const totalPages = Math.ceil(totalOrders / perPage);
+
+      const orders = await Order.find(query)
+          .populate('address')
+          .populate('userId', 'name email')
+          .sort({ createdOn: -1 }) // Sort by createdOn descending (newest first)
+          .skip((page - 1) * perPage)
+          .limit(perPage);
+
+      res.render('order', {
+          orders,
+          currentPage: page,
+          totalPages,
+          search,
+          status,
+          startDate,
+          endDate,
+          statusOptions: ['All', 'Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled']
+      });
+
+  } catch (err) {
+      console.error('Error fetching orders:', err);
+      res.status(500).send('Server Error');
+  }
 };
+
 
 const viewOrder = async (req, res) => {
     try {

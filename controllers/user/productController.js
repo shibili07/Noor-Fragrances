@@ -6,6 +6,9 @@ const mongoose = require("mongoose");
 const Offer = require("../../models/offerSchema");
 const Wishlist = require("../../models/wishlistSchema")
 
+
+
+
 const loadShopPage = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -14,6 +17,8 @@ const loadShopPage = async (req, res) => {
       isListed: true,
       isDeleted: false,
     });
+
+    // Query parameters
     const search = req.query.search?.trim() || "";
     const sort = req.query.sort || "";
     const genderf = req.query.genderf || "";
@@ -24,33 +29,25 @@ const loadShopPage = async (req, res) => {
     const minValue = parseFloat(req.query.minValue) || 1;
     const maxValue = parseFloat(req.query.maxValue) || 100000;
 
-    // Base filter for products
+    // Build filter
     let filter = {
       isDeleted: false,
       isBlocked: false,
-      isListed: true,
+      isListed: true,    
+      "variants.salePrice": { $gte: minValue, $lte: maxValue },
     };
+
     if (search) {
       filter.productName = { $regex: search, $options: "i" };
     }
-    if (categoryf) {
-      if (mongoose.Types.ObjectId.isValid(categoryf)) {
-        filter.category = new mongoose.Types.ObjectId(categoryf);
-      } else {
-        throw new Error("Invalid category ID format");
-      }
+    if (categoryf && mongoose.Types.ObjectId.isValid(categoryf)) {
+      filter.category = new mongoose.Types.ObjectId(categoryf);
     }
     if (genderf) {
       filter.gender = genderf;
     }
-
-    // Variant conditions
-    let variantConditions = {
-      "variants.quantity": { $gte: 0 },
-      "variants.salePrice": { $gte: minValue, $lte: maxValue },
-    };
     if (size) {
-      variantConditions["variants.size"] = size;
+      filter["variants.size"] = size;
     }
 
     // Sorting options
@@ -59,132 +56,91 @@ const loadShopPage = async (req, res) => {
       sortOption = { productName: 1 };
     } else if (sort === "Z-A") {
       sortOption = { productName: -1 };
-    } else if (sort === "Price : low - high" || sort === "Price : high - low") {
-      sortOption = { minPrice: sort === "Price : low - high" ? 1 : -1 };
+    } else if (sort === "Price : low - high") {
+      sortOption = { "variants.salePrice": 1 };
+    } else if (sort === "Price : high - low") {
+      sortOption = { "variants.salePrice": -1 };
     } else {
       sortOption = { createdAt: -1 };
     }
 
-    // Aggregation pipeline
-    const aggregationPipeline = [
-      { $match: filter },
-      { $unwind: "$variants" },
-      { $match: variantConditions },
-      {
-        $group: {
-          _id: "$_id",
-          productName: { $first: "$productName" },
-          productImage: { $first: "$productImage" },
-          brand: { $first: "$brand" },
-          category: { $first: "$category" },
-          gender: { $first: "$gender" },
-          isDeleted: { $first: "$isDeleted" },
-          isBlocked: { $first: "$isBlocked" },
-          isListed: { $first: "$isListed" },
-          createdAt: { $first: "$createdAt" },
-          variants: { $push: "$variants" },
-          minPrice: { $min: "$variants.salePrice" },
-        },
-      },
-      {
-        $lookup: {
-          from: "categories",
-          localField: "category",
-          foreignField: "_id",
-          as: "categoryInfo",
-        },
-      },
-      {
-        $addFields: {
-          category: { $arrayElemAt: ["$categoryInfo", 0] },
-        },
-      },
-      {
-        $match: {
-          "category.isListed": true,
-          "category.isDeleted": false,
-        },
-      },
-      {
-        $lookup: {
-          from: "offers",
-          let: { productId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$offerType", "Product"] },
-                    { $eq: ["$applicableTo", "$$productId"] },
-                    { $eq: ["$isListed", true] },
-                    { $eq: ["$isDeleted", false] },
-                    { $lte: ["$validFrom", new Date()] },
-                    { $gte: ["$validUpto", new Date()] },
-                  ],
-                },
-              },
-            },
-            { $project: { discountAmount: 1 } },
-          ],
-          as: "productOffer",
-        },
-      },
-      {
-        $addFields: {
-          effectiveOffer: {
-            $ifNull: [{ $arrayElemAt: ["$productOffer.discountAmount", 0] }, 0],
-          },
-        },
-      },
-      {
-        $addFields: {
-          // Update variants with offerPrice
-          variants: {
-            $map: {
-              input: "$variants",
-              as: "variant",
-              in: {
-                $mergeObjects: [
-                  "$$variant",
-                  {
-                    offerPrice: {
-                      $cond: {
-                        if: { $gt: ["$effectiveOffer", 0] },
-                        then: {
-                          $multiply: [
-                            "$$variant.salePrice",
-                            { $subtract: [1, { $divide: ["$effectiveOffer", 100] }] },
-                          ],
-                        },
-                        else: "$$variant.salePrice",
-                      },
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        },
-      },
-      { $project: { categoryInfo: 0, productOffer: 0 } },
-      { $sort: sortOption },
-      { $skip: (page - 1) * perPage },
-      { $limit: perPage },
-    ];
+    // Fetch products
+    let products = await Product.find(filter)
+      .populate({
+        path: "category",
+        match: { isListed: true, isDeleted: false },
+      })
+      .sort(sortOption)
+      .skip((page - 1) * perPage)
+      .limit(perPage)
+      .lean();
 
-    const products = await Product.aggregate(aggregationPipeline);
+    // Filter out products with unlisted/deleted categories
+    products = products.filter((product) => product.category);
 
-    // Count pipeline for pagination
-    const countPipeline = [
-      { $match: filter },
-      { $unwind: "$variants" },
-      { $match: variantConditions },
-      { $group: { _id: "$_id" } },
-      { $count: "total" },
-    ];
+    // Process offers and select highest-priced variant
+    for (let product of products) {
+      // Find the highest-priced variant
+      let highestVariant = product.variants.reduce((max, variant) => {
+        return  variant.salePrice > max.salePrice ? variant : max;
+      }, product.variants[0] || { salePrice: 0, quantity: 0 });
 
-    const countResult = await Product.aggregate(countPipeline);
-    const totalProducts = countResult.length > 0 ? countResult[0].total : 0;
+      // Temporarily set the highest variant as the first variant for getBestOffer
+      const originalVariants = product.variants;
+      product.variants = [highestVariant];
+
+      // Fetch product-specific offer
+      const productOffer = await Offer.findOne({
+        offerType: "Product",
+        applicableTo: product._id,
+        isListed: true,
+        isDeleted: false,
+        validFrom: { $lte: new Date() },
+        validUpto: { $gte: new Date() },
+      }).lean();
+
+      // Fetch category-specific offer
+      const categoryOffer = await Offer.findOne({
+        offerType: "Category",
+        applicableTo: product.category._id,
+        isListed: true,
+        isDeleted: false,
+        validFrom: { $lte: new Date() },
+        validUpto: { $gte: new Date() },
+      }).lean();
+
+      // Collect applicable offers
+      const applicableOffers = [];
+      if (productOffer) applicableOffers.push(productOffer);
+      if (categoryOffer) applicableOffers.push(categoryOffer);
+
+      // Get the best offer using the provided function
+      const bestOffer = getBestOffer(applicableOffers, product);
+
+      // Restore original variants
+      product.variants = originalVariants;
+
+      // Apply the best offer to the highest variant
+      if (bestOffer) {
+        if (bestOffer.discountType === "flat") {
+          highestVariant.offerPrice = highestVariant.salePrice - bestOffer.discountAmount;
+        } else if (bestOffer.discountType === "percentage") {
+          highestVariant.offerPrice = highestVariant.salePrice * (1 - bestOffer.discountAmount / 100);
+          highestVariant.discountPercentage = bestOffer.discountAmount; // Store discount percentage
+        }
+        // Ensure offerPrice is not negative
+        highestVariant.offerPrice = Math.max(0, highestVariant.offerPrice);
+      } else {
+        highestVariant.offerPrice = highestVariant.salePrice;
+        highestVariant.discountPercentage = 0; // No discount
+      }
+
+      // Attach the highest variant to the product
+      product.selectedVariant = highestVariant;
+    }
+
+    // Count total products for pagination
+    const totalProducts = await Product.countDocuments(filter);
     const totalPages = Math.ceil(totalProducts / perPage) || 1;
     const currentPage = Math.max(1, Math.min(page, totalPages));
 
@@ -208,6 +164,8 @@ const loadShopPage = async (req, res) => {
     res.status(500).send("An error occurred while loading the shop page");
   }
 };
+
+
 
 
 
@@ -238,7 +196,6 @@ function getBestOffer(applicableOffers, product) {
       bestOffer = offer;
     }
   }
-
   return bestOffer;
 }
 
@@ -354,7 +311,7 @@ const addToWishlist = async (req, res) => {
     const { productId, sku } = req.params;
     console.log(sku);
     
-    const userId = req.user.id;
+    const userId = req.session.user;
 
     const product = await Product.findOne({ 
       _id: productId, 
@@ -410,12 +367,11 @@ const addToWishlist = async (req, res) => {
 }
 
 
-
 const loadWishlist = async (req, res) => {
   try {
     // Get userId from session
     const userId = req.session.user;
-    const userData = await User.findById(userId)
+    const userData = await User.findById(userId);
     if (!userId) {
       return res.status(400).render('error', {
         message: 'User ID is required',
@@ -425,31 +381,28 @@ const loadWishlist = async (req, res) => {
 
     // Get pagination parameters
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 4; // Set limit to 4 items per page
+    const limit = parseInt(req.query.limit) || 4;
     const skip = (page - 1) * limit;
 
     // Find the user's wishlist and populate product details
-   
     const wishlist = await Wishlist.findOne({ userId })
-    .populate({
-      path: 'items.product',
-      select: 'productName shortDescription productImage variants brand status isListed isDeleted category',
-      match: { isListed: true, isDeleted: false,isBlocked:false },
-      populate: {
-        path: 'category',
-        select: 'name',
-        match: { isListed: true, isDeleted: false }
-      }
-    })
-    .lean();
+      .populate({
+        path: 'items.product',
+        select: 'productName shortDescription productImage variants brand status isListed isDeleted category',
+        match: { isListed: true, isDeleted: false, isBlocked: false },
+        populate: {
+          path: 'category',
+          select: 'name',
+          match: { isListed: true, isDeleted: false },
+        },
+      })
+      .lean();
 
-  
-  if (wishlist) {
-    wishlist.items = wishlist.items.filter(
-      item => item.product && item.product.category
-    );
-  }
-  
+    if (wishlist) {
+      wishlist.items = wishlist.items.filter(
+        (item) => item.product && item.product.category
+      );
+    }
 
     // Prepare data for frontend
     let wishlistData = {
@@ -459,25 +412,64 @@ const loadWishlist = async (req, res) => {
     };
 
     if (wishlist && wishlist.items.length) {
+      // Fetch all active offers (for products and categories)
+      const currentDate = new Date();
+      const offers = await Offer.find({
+        isListed: true,
+        isDeleted: false,
+        validFrom: { $lte: currentDate },
+        validUpto: { $gte: currentDate },
+      }).lean();
+
       // Filter and map items
-      const items = wishlist.items
-        .filter(item => item.product) // Remove items with invalid/unlisted products
-        .map(item => {
-          const variant = item.product.variants.find(v => v.sku === item.sku);
-          return {
-            productId: item.product._id,
-            productName: item.product.productName,
-            shortDescription: item.product.shortDescription,
-            brand: item.product.brand,
-            productImage: item.product.productImage[0] || '/images/placeholder.jpg',
-            sku: item.sku,
-            size: variant ? variant.size : 'N/A',
-            regularPrice: variant ? variant.regularPrice : null,
-            salePrice: variant ? variant.salePrice : null,
-            quantity: variant ? variant.quantity : null,
-            status: item.product.status,
-          };
-        });
+      const items = await Promise.all(
+        wishlist.items
+          .filter((item) => item.product) // Remove items with invalid/unlisted products
+          .map(async (item) => {
+            const variant = item.product.variants.find((v) => v.sku === item.sku);
+
+            // Get applicable offers for this product (product-specific or category-specific)
+            const applicableOffers = offers.filter(
+              (offer) =>
+                (offer.offerType === 'Product' &&
+                  offer.applicableTo.toString() === item.product._id.toString()) ||
+                (offer.offerType === 'Category' &&
+                  offer.applicableTo.toString() === item.product.category._id.toString())
+            );
+
+            // Get the best offer
+            const bestOffer = getBestOffer(applicableOffers, item.product);
+
+            // Calculate offered price
+            let offeredPrice = null;
+            let discountAmount = 0;
+            if (bestOffer) {
+              if (bestOffer.discountType === 'percentage') {
+                discountAmount = (variant.salePrice * bestOffer.discountAmount) / 100;
+                offeredPrice = variant.salePrice - discountAmount;
+              } else if (bestOffer.discountType === 'flat') {
+                discountAmount = bestOffer.discountAmount;
+                offeredPrice = variant.salePrice - discountAmount;
+              }
+            }
+
+            return {
+              productId: item.product._id,
+              productName: item.product.productName,
+              shortDescription: item.product.shortDescription,
+              brand: item.product.brand,
+              productImage: item.product.productImage[0] || '/images/placeholder.jpg',
+              sku: item.sku,
+              size: variant ? variant.size : 'N/A',
+              regularPrice: variant ? variant.regularPrice : null,
+              salePrice: variant ? variant.salePrice : null,
+              quantity: variant ? variant.quantity : null,
+              status: item.product.status,
+              offeredPrice: offeredPrice , // Round for clean display
+              hasOffer: !!bestOffer, // Boolean to indicate if an offer exists
+            };
+          })
+      );
 
       // Apply pagination
       const totalItems = items.length;
@@ -490,23 +482,23 @@ const loadWishlist = async (req, res) => {
         addedAt: wishlist.addedAt,
       };
 
-     // Render wishlist with pagination data
-     res.render('wishlist', {
-      wishlist: { data: wishlistData },
-      user:userData,
-      totalPages,
-      currentPage: page,
-      limit,
-    });
-  } else {
-    // Render empty wishlist
-    res.render('wishlist', {
-      wishlist: { data: wishlistData },
-      user:userData,
-      totalPages: 1,
-      currentPage: 1,
-      limit,
-    });
+      // Render wishlist with pagination data
+      res.render('wishlist', {
+        wishlist: { data: wishlistData },
+        user: userData,
+        totalPages,
+        currentPage: page,
+        limit,
+      });
+    } else {
+      // Render empty wishlist
+      res.render('wishlist', {
+        wishlist: { data: wishlistData },
+        user: userData,
+        totalPages: 1,
+        currentPage: 1,
+        limit,
+      });
     }
   } catch (error) {
     console.error('Error fetching wishlist:', error);
@@ -516,7 +508,6 @@ const loadWishlist = async (req, res) => {
     });
   }
 };
-
 
 
 const removeTOWishlist = async (req, res) => {

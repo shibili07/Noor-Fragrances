@@ -86,13 +86,15 @@ router.get('/orderSuccess', userAuth, cartController.orderSuccess);
 router.get('/orderFailed', userAuth, cartController.orderFailed);
 router.post('/retryRazorpayPayment',userAuth,cartController.retryRazorpayPayment)
 router.post('/verifyRetryPayment', userAuth, cartController.verifyRetryPayment);
+router.post('/updateFailedPayment',userAuth,cartController.updateFailedPayment);
 router.post('/checkoutQuantity',userAuth,cartController.checkStockAvailability);
 //profle
 router.get("/profile",userAuth,profileController.userInfo)
-
+router.put("/removeProfile",userAuth,profileController.deleteProfile)
 router.get("/editProfile", userAuth,profileController.loadEditProfile);
 
 router.patch("/editProfile", userAuth,uploadMemory.single("profilePicture"),profileController.editProfile);
+
 router.patch("/changePassword/:id",userAuth,profileController.editPassword)//password change userProfile
 
 //addresses 
@@ -133,4 +135,6 @@ router.post("/removeToWishlist",userAuth,productController.removeTOWishlist)
 
 //referAndEarn 
 router.get("/referAndEarn",userAuth,userController.referAndEarn)
+
+
 module.exports=router
