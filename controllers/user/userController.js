@@ -22,13 +22,10 @@ const pageNotFound = async (req,res) =>{
 
 const logout = (req,res)=>{
     try {
-        req.session.destroy((err) => {
-            if (err) {
-                console.log(err)
-                return res.status(500).send("Error logging out");
-            }
-            res.redirect('/'); 
-        });
+      if (req.session.user) {
+        delete req.session.user; // Remove only the user session data
+      }
+      res.redirect('/');
     } catch (error) {
         res.redirect("/pageError")
     }

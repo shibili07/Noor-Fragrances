@@ -1,0 +1,585 @@
+
+    body {
+      font-family: "Akshar", sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+   
+    .retry-btn {
+      background-color: #fd334e;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .button-right-align {
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .user-dashboard {
+      padding: 30px 15px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .info-container {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      padding: 18px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    und */ .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      max-width: 400px;
+      width: 90%;
+      padding: 20px;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    /* Modal Header */
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .modal-header h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    /* Close Button */
+    .modal-close {
+      font-size: 1.8rem;
+      color: #666;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .modal-close:hover {
+      color: #ff4a4a;
+    }
+
+    /* Modal Body Text */
+    .modal-content p {
+      font-size: 1rem;
+      color: #555;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    /* Button */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #fff;
+      background-color: #ff4a4a;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.1s;
+    }
+
+    .btn:hover {
+      background-color: #e43e3e;
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    display: flex; /* Use flexbox to center content */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 90%;
+    padding: 20px;
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Modal Header */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Close Button */
+.modal-close {
+    font-size: 1.8rem;
+    color: #666;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #ff4a4a;
+}
+
+/* Modal Body Text */
+.modal-content p {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* Button */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #fff;
+    background-color: #ff4a4a;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn:hover {
+    background-color: #e43e3e;
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.3rem;
+    }
+
+    .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}
+    /* Responsive Design */
+    @media (max-width: 480px) {
+      .modal-content {
+        width: 95%;
+        padding: 15px;
+      }
+
+      .modal-header h2 {
+        font-size: 1.3rem;
+      }
+
+      .btn {
+        padding: 10px;
+        font-size: 0.9rem;
+      }
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: #333;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eaeaea;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cancel-btn {
+      background-color: #6c757d;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .invoice-btn {
+      background-color: #fd334e;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cancel-btn:hover {
+      background-color: #5a6268;
+    }
+
+    .invoice-btn:hover {
+      background-color: #e62b42;
+    }
+
+    /* Order Tracking */
+    .order-track-wrapper {
+      padding: 10px 0 30px;
+    }
+
+    .order-track {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .order-track-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+      z-index: 10;
+    }
+
+    .order-track-step-dot {
+      height: 30px;
+      width: 30px;
+      border-radius: 50%;
+      background-color: #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+    }
+
+    .order-track-text {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #666;
+    }
+
+    .order-track-progress {
+      position: absolute;
+      width: 100%;
+      height: 3px;
+      background-color: #ccc;
+      top: 15px;
+      z-index: 1;
+    }
+
+    .order-track-progress-bar {
+      position: absolute;
+      height: 100%;
+      background-color: #fd334e;
+      transition: width 0.3s ease;
+    }
+
+    .order-track-step.active .order-track-step-dot {
+      background-color: #fd334e;
+    }
+
+    .order-track-step.active .order-track-text {
+      color: #fd334e;
+    }
+
+    .order-track-step.completed .order-track-step-dot {
+      background-color: #fd334e;
+      /* Changed from green to red */
+    }
+
+    /* Product details */
+    .product-card {
+      display: flex;
+      border-bottom: 1px solid #eaeaea;
+      padding: 15px 0;
+    }
+
+    .product-image {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #eaeaea;
+    }
+
+    .product-details {
+      flex-grow: 1;
+      margin-left: 20px;
+    }
+
+    .product-name {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .product-meta {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .product-price {
+      font-weight: 600;
+    }
+
+    .product-quantity {
+      color: #666;
+    }
+
+    .product-status {
+      margin-top: 10px;
+    }
+
+    /* Address Box */
+    .address-box {
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .address-title {
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .address-content {
+      color: #666;
+      line-height: 1.5;
+    }
+
+    /* Order Summary */
+    .order-summary {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 15px;
+    }
+
+    .summary-title {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #666;
+    }
+
+    .summary-row.total {
+      font-weight: 600;
+      color: #333;
+      font-size: 18px;
+      padding-top: 10px;
+      margin-top: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    /* Invoice Styles */
+    #invoice-template {
+      display: none;
+    }
+
+    /* Status badge styles */
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background-color: #ffc107;
+      color: #212529;
+    }
+
+    .status-processing {
+      background-color: #fd334e;
+      color: white;
+    }
+
+    .status-cancelrequested {
+      background-color: #7a2810;
+      color: white;
+    }
+
+
+    .status-shipped {
+      background-color: #17a2b8;
+      color: white;
+    }
+
+    .status-delivered {
+      background-color: #33fd73;
+      color: white;
+    }
+
+    .status-return-request {
+      background-color: rgb(205, 103, 7);
+      color: white;
+    }
+
+
+    .status-cancelled {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .status-return {
+      background-color: #6f42c1;
+      color: white;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 767px) {
+      .info-container {
+        padding: 20px 15px;
+      }
+
+      .section-title {
+        font-size: 20px;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .action-buttons {
+        align-self: flex-end;
+      }
+
+      .order-track {
+        overflow-x: auto;
+        padding-bottom: 15px;
+      }
+
+      .order-track-text {
+        font-size: 12px;
+      }
+
+      .product-card {
+        flex-direction: column;
+      }
+
+      .product-image {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 15px;
+      }
+
+      .product-details {
+        margin-left: 0;
+      }
+    }
