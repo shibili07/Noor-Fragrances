@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const inputs = form.querySelectorAll('input, select');
   const progress = document.querySelector('.progress');
-
+ 
   function updateProgress() {
     const totalFields = inputs.length;
     let filledFields = 0;
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const originalBtnText = submitBtn.innerHTML;
       submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
       submitBtn.disabled = true;
-
+      
       const formData = new FormData(form);
       const addressData = {
         addressType: formData.get('addressType'),
@@ -135,7 +135,8 @@ document.addEventListener('DOMContentLoaded', function () {
         state: formData.get('state'),
         landMark: formData.get('landMark'),
         pincode: formData.get('pincode'),
-        isDefault: formData.has('isDefault')
+        isDefault: formData.has('isDefault'),
+       
       };
 
       Swal.fire({
@@ -169,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
               timer: 3000,
               timerProgressBar: true
             }).then(() => {
-              window.location.href = '/address';
+              window.location.href = "/address";
             });
           } else {
             Swal.fire({

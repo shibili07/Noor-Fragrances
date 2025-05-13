@@ -87,27 +87,8 @@ const orderSchema = new Schema({
   couponCode: { type: String },
   razorpayOrderId: { type: String },
 
-  //  New field for TTL deletion
-  expireAt: {
-    type: Date,
-    default: null
-  }
+  
 });
-
-// TTL index — MongoDB will delete documents after `expireAt` time passes
-
-orderSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
-
-/**
- * Utility method to set expireAt field when status is "Payment failed"
- */
-orderSchema.methods.setExpireIfFailed = function () {
-  if (this.status === "Payment failed") {
-    this.expireAt = new Date(Date.now() + 30 * 60 * 1000); // 30 mins later
-  } else {
-    this.expireAt = null;
-  }
-};
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

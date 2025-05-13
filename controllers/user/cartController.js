@@ -1154,7 +1154,7 @@ const placeOrder = async (req, res, orderStatus = 'Pending') => {
       offerDiscount += maxDiscount * item.quantity;
 
       // Decrease stock only for successful orders
-      if (orderStatus === 'Pending') {
+      if (orderStatus) {
         variant.quantity -= item.quantity;
         await product.save();
       }
@@ -1234,7 +1234,7 @@ const placeOrder = async (req, res, orderStatus = 'Pending') => {
     });
 
     // Update User.OrderHistory and clear cart
-    if (orderStatus === 'Pending') {
+    if (orderStatus) {
       await User.findByIdAndUpdate(userId, {
         $push: { OrderHistory: order._id },
       });

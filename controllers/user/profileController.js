@@ -337,10 +337,18 @@ const loadAddressPage = async (req, res) => {
 
 const getAddaddress = async (req, res) => {
   try {
+    const {checkoutFlag} = req.query
+    console.log(checkoutFlag);
+    
     const userId = req.session.user;
     const userData = await User.findById(userId);
+    if(checkoutFlag){
+      return res.render("addAddress", { user: userData ,flag:checkoutFlag});
+    }else{
+       return res.render("addAddress", { user: userData ,flag:false});
 
-    return res.render("addAddress", { user: userData });
+    }
+   
   } catch (error) {
     console.log(error);
   }
@@ -359,6 +367,7 @@ const AddAddress = async (req, res) => {
       landMark,
       pincode,
       isDefault,
+     
     } = req.body;
 
     // Utility: Count unique digits
@@ -493,11 +502,14 @@ const AddAddress = async (req, res) => {
     }
 
     await addressDoc.save();
+   
+    
 
     res.status(201).json({
       success: true,
       message: "Address added successfully",
       addresses: addressDoc.address,
+      
     });
   } catch (error) {
     console.error("Error adding address:", error);
