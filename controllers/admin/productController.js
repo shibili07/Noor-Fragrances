@@ -80,12 +80,16 @@ const addProductPage = async (req, res) => {
     res.redirect("/pageError");
   }
 };
+
+
 const addProducts = async (req, res) => {
   try {
     const products = req.body;
 
     // Validate productName
     const productName = products.productName ? products.productName.trim() : "";
+
+    
     if (!productName) {
       return res.status(400).json({
         success: false,
@@ -109,7 +113,6 @@ const addProducts = async (req, res) => {
     const productExists = await Product.findOne({
       productName: { $regex: `^${productName}$`, $options: 'i' },
       isDeleted: false,
-      isBlocked: true,
     });
     
     if (productExists) {
@@ -178,7 +181,7 @@ const addProducts = async (req, res) => {
                 { width: 440, height: 440, crop: "fill" },
                 { quality: 90, fetch_format: "auto" }, // Let Cloudinary choose the best format
               ],
-              progressive: "semi", // Use semi-progressive rendering for better quality
+              progressive: "semi", 
             },
             (error, result) => {
               if (error) reject(error);

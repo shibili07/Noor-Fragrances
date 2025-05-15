@@ -34,7 +34,7 @@ const mongoose = require('mongoose');
         enum: ['Category', 'Product'],
         required: true
     },
-    applicableTo: {
+    applicableTo: { 
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         refPath: 'offerTypeRef'
@@ -62,3 +62,10 @@ const mongoose = require('mongoose');
     const Offer = mongoose.model('Offer', offerSchema);
 
     module.exports = Offer;
+
+
+
+
+
+
+    

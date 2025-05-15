@@ -644,6 +644,16 @@ const referAndEarn = async (req, res) => {
   }
 };
 
+const aboutUs = async(req,res)=>{
+  try{
+    const userID = req.session.user
+    const userData = await User.findById(userID)
+    return res.render("about",{user:userData})
+  }catch(error){
+    console.log(error);
+    
+  }
+}
 
 module.exports={
     pageNotFound,
@@ -664,5 +674,6 @@ module.exports={
     referAndEarn,
     loadForgotPasswordOtpVerify,
     forgotPasswordOtpVerify,
-    resendOtpForgotPass
+    resendOtpForgotPass,
+    aboutUs
 }

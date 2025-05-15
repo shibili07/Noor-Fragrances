@@ -387,6 +387,7 @@ const cart = async (req, res) => {
           cartTotalPrice: parseFloat(item.totalPrice.toFixed(2)),
           status: isOutOfStock ? 'out of stock' : product.status,
           variantQuantity: variant.quantity,
+          
           bestOffer,
           discountAmount: parseFloat(discountAmount.toFixed(2)) * item.quantity,
           offerPercentage,
@@ -437,7 +438,6 @@ const cart = async (req, res) => {
   }
 };
 
-// Check and update cart item quantity
 const cartQuantityCheck = async (req, res) => {
   try {
     const { productId, size, quantity, action } = req.body;
@@ -452,15 +452,7 @@ const cartQuantityCheck = async (req, res) => {
     }
 
     const newQuantity = parseInt(quantity);
-     
 
-    
-    if (newQuantity > 5) {
-      return res.status(400).json({
-        success: false,
-        message: 'Quantity cannot exceed 5',
-      });
-    }
     
 
     // Fetch product
@@ -475,7 +467,7 @@ const cartQuantityCheck = async (req, res) => {
     if (product.status === 'out of stock' || product.isBlocked || !product.isListed || product.isDeleted) {
       return res.status(400).json({
         success: false,
-        message: 'Product is out of stock or unavailable',
+        message: `The product ${product.productName} is out of stock or unavailable`,
       });
     }
 
@@ -484,7 +476,7 @@ const cartQuantityCheck = async (req, res) => {
     if (!variant) {
       return res.status(404).json({
         success: false,
-        message: 'Selected size not found',
+        message: `Selected size ${size} not found for ${product.productName}`,
       });
     }
 
@@ -504,7 +496,7 @@ const cartQuantityCheck = async (req, res) => {
     if (!cartItem) {
       return res.status(404).json({
         success: false,
-        message: 'Item not found in cart',
+        message: `Item not found in cart for ${product.productName} (${size})`,
       });
     }
 
@@ -516,10 +508,18 @@ const cartQuantityCheck = async (req, res) => {
           message: `No stock available for ${product.productName} (${size})`,
         });
       }
+      
+      if (newQuantity > 5) {
+  return res.status(400).json({
+    success: false,
+    message: 'Quantity cannot exceed 5',
+  });
+}
+      
       if (newQuantity > variant.quantity) {
         return res.status(400).json({
           success: false,
-          message: `Quantity cannot exceed ${variant.quantity} for ${product.productName} (${size})`,
+          message: `Only ${variant.quantity} stock is available for ${product.productName} (${size})`,
         });
       }
     } else if (action === 'decrease') {
@@ -604,7 +604,6 @@ const cartQuantityCheck = async (req, res) => {
     });
   }
 };
-
 
 
 

@@ -135,6 +135,6 @@ router.post("/removeToWishlist",userAuth,productController.removeTOWishlist)
 
 //referAndEarn 
 router.get("/referAndEarn",userAuth,userController.referAndEarn)
-
+router.get("/about",userController.aboutUs)
 
 module.exports=router

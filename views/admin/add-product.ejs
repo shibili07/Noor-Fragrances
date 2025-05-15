@@ -727,7 +727,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    // Variant Management
+   // Variant Management
     let variantCount = 1;
     const MAX_VARIANTS = 5;
 
@@ -769,7 +769,7 @@
                                 <option value="100">100 ml</option>
                                 <option value="150">150 ml</option>
                                 <option value="200">200 ml</option>
-                                <option value="250">250 ml</option>
+                                <option value="250">250 ml</(initiatives.md)option>
                             </select>
                             <div class="error-message size-error"></div>
                         </div>
@@ -878,88 +878,99 @@
       });
     }
 
+    function validateField(element, fieldConfig = null) {
+      const errorElement = document.querySelector(`#${element.id}-error`) || element.parentElement.querySelector('.error-message');
+      let isValid = true;
+      let errorMessage = '';
+
+      if (element.classList.contains('variant-size')) {
+        // Variant size validation
+        if (!element.value) {
+          isValid = false;
+          errorMessage = 'Please select a size.';
+        }
+      } else if (element.classList.contains('variant-sku')) {
+        // SKU validation
+        const sku = element.value.trim();
+        if (!sku) {
+          isValid = false;
+          errorMessage = 'SKU is required.';
+        } else if (!/^[a-zA-Z0-9-_]+$/.test(sku)) {
+          isValid = false;
+          errorMessage = 'SKU should contain only alphanumeric characters, hyphens, and underscores.';
+        }
+      } else if (element.classList.contains('variant-quantity')) {
+        // Quantity validation
+        const quantity = parseInt(element.value);
+        if (isNaN(quantity) || quantity < 0) {
+          isValid = false;
+          errorMessage = 'Please enter a valid non-negative quantity.';
+        }
+      } else if (element.classList.contains('variant-sale-price')) {
+        // Sale price validation
+        const salePriceValue = element.value.trim();
+        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || parseFloat(salePriceValue) <= 0) {
+          isValid = false;
+          errorMessage = 'Sale price must be a valid number greater than 0, without leading zeros.';
+        }
+      } else if (fieldConfig) {
+        // Basic field validation (e.g., productName, category, etc.)
+        if (fieldConfig.required && (!element.value || element.value.trim() === '')) {
+          isValid = false;
+          errorMessage = `${fieldConfig.name} is required.`;
+        } else if (element.id === 'productName') {
+          const productName = element.value.trim();
+          if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
+            isValid = false;
+            errorMessage = 'Product name must contain only letters, spaces, or hyphens, and include at least one letter.';
+          } else if (!/^.{3,100}$/.test(productName)) {
+            isValid = false;
+            errorMessage = 'Product name must be between 3 and 100 characters.';
+          }
+        } else if (element.id === 'shortDescription') {
+          const shortDescription = element.value.trim();
+          if (!/^.{10,200}$/.test(shortDescription)) {
+            isValid = false;
+            errorMessage = 'Short description must be between 10 and 200 characters.';
+          }
+        }
+      }
+
+      // Display or clear error message
+      if (!isValid) {
+        displayErrorMessage(errorElement, errorMessage);
+      } else {
+        errorElement.innerText = '';
+        errorElement.style.display = 'none';
+      }
+
+      return isValid;
+    }
+
     function validateForm() {
       clearErrorMessages();
       let isValid = true;
 
       // Basic Information
-      const fields = [{
-          id: 'productName',
-          name: 'Product Name',
-          required: true
-        },
-        {
-          id: 'category',
-          name: 'Category',
-          required: true
-        },
-        {
-          id: 'gender',
-          name: 'Gender',
-          required: true
-        },
-        {
-          id: 'productType',
-          name: 'Fragrance Type',
-          required: true
-        },
-        {
-          id: 'fragranceFamily',
-          name: 'Fragrance Family',
-          required: true
-        },
-        {
-          id: 'longevity',
-          name: 'Fragrance Longevity',
-          required: true
-        },
-        {
-          id: 'brand',
-          name: 'Brand',
-          required: true
-        },
-        {
-          id: 'usage',
-          name: 'Usage',
-          required: true
-        },
-        {
-          id: 'shortDescription',
-          name: 'Short Description',
-          required: true
-        },
-        {
-          id: 'productDescription',
-          name: 'Description',
-          required: true
-        }
+      const fields = [
+        { id: 'productName', name: 'Product Name', required: true },
+        { id: 'category', name: 'Category', required: true },
+        { id: 'gender', name: 'Gender', required: true },
+        { id: 'productType', name: 'Fragrance Type', required: true },
+        { id: 'fragranceFamily', name: 'Fragrance Family', required: true },
+        { id: 'longevity', name: 'Fragrance Longevity', required: true },
+        { id: 'brand', name: 'Brand', required: true },
+        { id: 'usage', name: 'Usage', required: true },
+        { id: 'shortDescription', name: 'Short Description', required: true },
+        { id: 'productDescription', name: 'Description', required: true }
       ];
 
       fields.forEach(field => {
         const input = document.getElementById(field.id);
-        if (field.required && (!input.value || input.value.trim() === '')) {
-          displayErrorMessage(document.getElementById(`${field.id}-error`), `${field.name} is required.`);
+        if (!validateField(input, field)) {
           isValid = false;
         }
       });
-
-      // Product Name validation
-      // Product Name validation
-      const productName = document.getElementById('productName').value.trim();
-      if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
-        displayErrorMessage(document.getElementById('productName-error'), 'Product name must contain only letters, spaces, or hyphens, and include at least one letter.');
-        isValid = false;
-      } else if (!/^.{3,100}$/.test(productName)) {
-        displayErrorMessage(document.getElementById('productName-error'), 'Product name must be between 3 and 100 characters.');
-        isValid = false;
-      }
-
-      // Short Description validation
-      const shortDescription = document.getElementById('shortDescription').value.trim();
-      if (!/^.{10,200}$/.test(shortDescription)) {
-        displayErrorMessage(document.getElementById('shortDescription-error'), 'Short description must be between 10 and 200 characters.');
-        isValid = false;
-      }
 
       // Variant Validation
       const variantSections = document.querySelectorAll('.variant-section');
@@ -976,34 +987,24 @@
         const salePriceInput = section.querySelector('.variant-sale-price');
 
         // Size
-        if (!sizeSelect.value) {
-          displayErrorMessage(section.querySelector('.size-error'), 'Please select a size.');
+        if (!validateField(sizeSelect)) {
           isValid = false;
         } else {
           sizes.push(sizeSelect.value);
         }
 
         // SKU
-        const sku = skuInput.value.trim();
-        if (!sku) {
-          displayErrorMessage(section.querySelector('.sku-error'), 'SKU is required.');
-          isValid = false;
-        } else if (!/^[a-zA-Z0-9-_]+$/.test(sku)) {
-          displayErrorMessage(section.querySelector('.sku-error'), 'SKU should contain only alphanumeric characters, hyphens, and underscores.');
+        if (!validateField(skuInput)) {
           isValid = false;
         }
 
         // Quantity
-        const quantity = parseInt(quantityInput.value);
-        if (isNaN(quantity) || quantity < 0) {
-          displayErrorMessage(section.querySelector('.quantity-error'), 'Please enter a valid non-negative quantity.');
+        if (!validateField(quantityInput)) {
           isValid = false;
         }
 
-        // Sale Price (must be > 0 and no leading zeros)
-        const salePriceValue = salePriceInput.value.trim();
-        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || parseFloat(salePriceValue) <= 0) {
-          displayErrorMessage(section.querySelector('.sale-price-error'), 'Sale price must be a valid number greater than 0, without leading zeros.');
+        // Sale Price
+        if (!validateField(salePriceInput)) {
           isValid = false;
         }
       });
@@ -1025,6 +1026,49 @@
       return isValid;
     }
 
+    // Real-Time Validation Setup
+    function setupRealTimeValidation() {
+      const fields = [
+        { id: 'productName', name: 'Product Name', required: true },
+        { id: 'category', name: 'Category', required: true },
+        { id: 'gender', name: 'Gender', required: true },
+        { id: 'productType', name: 'Fragrance Type', required: true },
+        { id: 'fragranceFamily', name: 'Fragrance Family', required: true },
+        { id: 'longevity', name: 'Fragrance Longevity', required: true },
+        { id: 'brand', name: 'Brand', required: true },
+        { id: 'usage', name: 'Usage', required: true },
+        { id: 'shortDescription', name: 'Short Description', required: true },
+        { id: 'productDescription', name: 'Description', required: true },
+      ];
+
+      // Basic fields
+      fields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (element) {
+          element.addEventListener('input', () => validateField(element, field));
+          element.addEventListener('change', () => validateField(element, field));
+        }
+      });
+
+      // Variant fields (dynamically added, so use event delegation)
+      document.getElementById('variants-container').addEventListener('input', (e) => {
+        if (
+          e.target.classList.contains('variant-size') ||
+          e.target.classList.contains('variant-sku') ||
+          e.target.classList.contains('variant-quantity') ||
+          e.target.classList.contains('variant-sale-price')
+        ) {
+          validateField(e.target);
+        }
+      });
+
+      document.getElementById('variants-container').addEventListener('change', (e) => {
+        if (e.target.classList.contains('variant-size')) {
+          validateField(e.target);
+          updateSizeOptions(); // Ensure size options are updated
+        }
+      });
+    }
 
     // Form Submission with Fetch
     function validateAndSubmit(event) {
@@ -1256,6 +1300,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       updateSizeOptions();
       updateAddVariantButtonVisibility();
+      setupRealTimeValidation();
       $('select[name="category"]').select2();
     });
   </script>

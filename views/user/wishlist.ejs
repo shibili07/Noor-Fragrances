@@ -326,7 +326,7 @@
   </style>
 </head>
 <body>
-  <header>
+  <header class="mb-5">
     <%- include("../../views/partials/user/header") %>
   </header>
 
@@ -376,7 +376,7 @@
                 <div class="item-price-container">
                   <%if(item.hasOffer && item.offeredPrice){ %>
                     <span class="item-sale-price">₹<%= item.salePrice %></span>
-                    <span class="item-offered-price">₹<%= item.offeredPrice %></span>
+                    <span class="item-offered-price">₹<%= item.offeredPrice.toFixed(1) %></span>
                   <% }else{%>
                     <span class="item-offered-price">₹<%= item.salePrice%></span>
                     <%}%>

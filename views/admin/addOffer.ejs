@@ -188,7 +188,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-    // Store categories and products data from server
+   // Store categories and products data from server
     const categories = <%- JSON.stringify(category) %>;
     const products = <%- JSON.stringify(product) %>;
 
@@ -210,6 +210,7 @@
           const minUptoDate = new Date(selectedDates[0]);
           minUptoDate.setDate(minUptoDate.getDate() + 1);
           validUptoPicker.set("minDate", minUptoDate);
+          validateField("validFrom"); // Validate on change
         },
       });
 
@@ -217,10 +218,24 @@
       flatpickr("#validUpto", {
         dateFormat: "d-m-Y",
         minDate: tomorrowStr,
+        onChange: function() {
+          validateField("validUpto"); // Validate on change
+        },
       });
 
       // Initialize the applicableTo dropdown
       updateApplicableOptions();
+
+      // Add event listeners for real-time validation
+      document.getElementById("offerName").addEventListener("input", () => validateField("offerName"));
+      document.getElementById("description").addEventListener("input", () => validateField("description"));
+      document.getElementById("discountType").addEventListener("change", () => validateField("discountType"));
+      document.getElementById("discountAmount").addEventListener("input", () => validateField("discountAmount"));
+      document.getElementById("offerType").addEventListener("change", () => {
+        validateField("offerType");
+        updateApplicableOptions(); // Update applicableTo options
+      });
+      document.getElementById("applicableTo").addEventListener("change", () => validateField("applicableTo"));
     });
 
     function updateApplicableOptions() {
@@ -386,24 +401,21 @@
 
       // Validate discount amount
       if (discountAmount === "") {
-  displayErrorMessage("discountAmount-error", "Please enter discount amount");
-  isValid = false;
-} else if (!/^([1-9]\d*(\.\d{1,2})?|0(\.\d{1,2})?)$/.test(discountAmount)) {
-  displayErrorMessage("discountAmount-error", "Enter a valid amount (no leading zeros)");
-  isValid = false;
-} else {
-  const amount = parseFloat(discountAmount);
-  if (amount <= 0) {
-    displayErrorMessage("discountAmount-error", "Discount amount must be greater than zero");
-    isValid = false;
-  } else if (discountType === "percentage" && amount > 50) {
-    displayErrorMessage("discountAmount-error", "Discount percentage cannot exceed 50%");
-    isValid = false;
-  }
-}
-
-
-
+        displayErrorMessage("discountAmount-error", "Please enter discount amount");
+        isValid = false;
+      } else if (!/^([1-9]\d*(\.\d{1,2})?|0(\.\d{1,2})?)$/.test(discountAmount)) {
+        displayErrorMessage("discountAmount-error", "Enter a valid amount (no leading zeros)");
+        isValid = false;
+      } else {
+        const amount = parseFloat(discountAmount);
+        if (amount <= 0) {
+          displayErrorMessage("discountAmount-error", "Discount amount must be greater than zero");
+          isValid = false;
+        } else if (discountType === "percentage" && amount > 50) {
+          displayErrorMessage("discountAmount-error", "Discount percentage cannot exceed 50%");
+          isValid = false;
+        }
+      }
 
       // Validate valid from date
       if (validFrom === "") {
@@ -456,10 +468,137 @@
       return isValid;
     }
 
+    // Function to validate a single field and clear error if valid
+    function validateField(fieldId) {
+      const field = document.getElementById(fieldId);
+      const value = field.value.trim();
+      const errorElement = document.getElementById(`${fieldId}-error`);
+      let isValid = true;
+      let errorMessage = "";
+
+      switch (fieldId) {
+        case "offerName":
+          if (value === "") {
+            errorMessage = "Please enter an offer name";
+            isValid = false;
+          } else if (value.length < 3) {
+            errorMessage = "Offer name must be at least 3 characters long";
+            isValid = false;
+          } else if (!/^[A-Za-z\s]+$/.test(value)) {
+            errorMessage = "Offer name must contain only letters and spaces";
+            isValid = false;
+          }
+          break;
+
+        case "description":
+          if (value === "") {
+            errorMessage = "Please enter a description";
+            isValid = false;
+          } else if (value.length < 10) {
+            errorMessage = "Description must be at least 10 characters long";
+            isValid = false;
+          }
+          break;
+
+        case "discountType":
+          if (value === "") {
+            errorMessage = "Please select a discount type";
+            isValid = false;
+          }
+          break;
+
+        case "discountAmount":
+          if (value === "") {
+            errorMessage = "Please enter discount amount";
+            isValid = false;
+          } else if (!/^([1-9]\d*(\.\d{1,2})?|0(\.\d{1,2})?)$/.test(value)) {
+            errorMessage = "Enter a valid amount (no leading zeros)";
+            isValid = false;
+          } else {
+            const amount = parseFloat(value);
+            const discountType = document.getElementById("discountType").value;
+            if (amount <= 0) {
+              errorMessage = "Discount amount must be greater than zero";
+              isValid = false;
+            } else if (discountType === "percentage" && amount > 50) {
+              errorMessage = "Discount percentage cannot exceed 50%";
+              isValid = false;
+            }
+          }
+          break;
+
+        case "validFrom":
+          if (value === "") {
+            errorMessage = "Please select valid from date";
+            isValid = false;
+          } else {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const validFromDate = new Date(convertToISODate(value));
+            if (isNaN(validFromDate.getTime())) {
+              errorMessage = "Invalid date format";
+              isValid = false;
+            } else if (validFromDate < today) {
+              errorMessage = "Valid from date cannot be in the past";
+              isValid = false;
+            }
+          }
+          break;
+
+        case "validUpto":
+          if (value === "") {
+            errorMessage = "Please select valid until date";
+            isValid = false;
+          } else {
+            const validFrom = document.getElementById("validFrom").value;
+            if (validFrom !== "") {
+              const validFromDate = new Date(convertToISODate(validFrom));
+              const validUptoDate = new Date(convertToISODate(value));
+              if (isNaN(validUptoDate.getTime())) {
+                errorMessage = "Invalid date format";
+                isValid = false;
+              } else if (validUptoDate <= validFromDate) {
+                errorMessage = "Valid until date must be after valid from date";
+                isValid = false;
+              }
+            }
+          }
+          break;
+
+        case "offerType":
+          if (value === "") {
+            errorMessage = "Please select an offer type";
+            isValid = false;
+          } else if (!["Category", "Product"].includes(value)) {
+            errorMessage = "Invalid offer type";
+            isValid = false;
+          }
+          break;
+
+        case "applicableTo":
+          if (value === "") {
+            errorMessage = "Please select an item to apply the offer to";
+            isValid = false;
+          }
+          break;
+
+        default:
+          isValid = true;
+      }
+
+      // Display or clear error message
+      if (!isValid) {
+        displayErrorMessage(`${fieldId}-error`, errorMessage);
+      } else {
+        displayErrorMessage(`${fieldId}-error`, ""); // Clear error
+        errorElement.style.display = "none"; // Hide error element
+      }
+    }
+
     function displayErrorMessage(elementId, message) {
       const errorElement = document.getElementById(elementId);
       errorElement.innerText = message;
-      errorElement.style.display = "block";
+      errorElement.style.display = message ? "block" : "none";
     }
 
     function clearErrorMessages() {

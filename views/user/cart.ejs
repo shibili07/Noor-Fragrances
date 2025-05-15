@@ -1,31 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" href="/styles/user/cart.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shopping Cart</title>
-  <link rel="stylesheet" href="/styles/user/cart.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.js"></script>
-
-</head>
-
-<body>
-  <div class="header-partial">
-    <%- include("../../views/partials/user/header") %>
-  </div>
-
-  <div class="container mt-4">
-    <div class="breadcrumb">
-      <a href="/">Home</a>
-      <span>›</span>
-      <strong>Cart</strong>
+  <body>
+    <div class="header-partial">
+      <%- include("../../views/partials/user/header") %>
     </div>
 
-   
+    <div class="container mt-4">
+      <div class="breadcrumb">
+        <a href="/">Home</a>
+        <span>›</span>
+        <strong>Cart</strong>
+      </div>
+
       <div class="form-instructions">
-        <p>Please fill in the fields below and click place order to complete your purchase!</p>
+        <p>
+          Please fill in the fields below and click place order to complete your
+          purchase!
+        </p>
       </div>
 
       <table class="cart-table">
@@ -41,44 +44,109 @@
           </tr>
         </thead>
         <tbody class="cart-table-body">
-          <% if (products && products.length > 0) { %>
-          <% for(let i = 0; i < products.length; i++) { %>
+          <% if (products && products.length > 0) { %> <% for(let i = 0; i <
+          products.length; i++) { %>
           <tr data-variant-quantity="<%= products[i].variantQuantity %>">
             <td data-label="PRODUCT DETAILS">
               <div class="product">
                 <div class="product-image">
-                  <img src="<%= products[i].productImage[0] %>" alt="<%= products[i].productName %>">
+                  <img
+                    src="<%= products[i].productImage[0] %>"
+                    alt="<%= products[i].productName %>"
+                  />
                 </div>
                 <div class="product-info">
                   <div class="title">
                     <%= products[i].productName %>
-                    <input type="hidden" name="productName" value="<%= products[i].productName %>">
-                    <input type="hidden" name="productId" value="<%= products[i]._id %>">
+                    <input
+                      type="hidden"
+                      name="productName"
+                      value="<%= products[i].productName %>"
+                    />
+                    <input
+                      type="hidden"
+                      name="productId"
+                      value="<%= products[i]._id %>"
+                    />
                   </div>
                   <div class="size">
                     <%= products[i].selectedSize %>ml
-                    <input type="hidden" name="size" value="<%= products[i].selectedSize %>">
+                    <input
+                      type="hidden"
+                      name="size"
+                      value="<%= products[i].selectedSize %>"
+                    />
                   </div>
+
+                  <% if (products[i].variantQuantity < 5) { %>
+
+                  <span
+                    style="
+                      display: inline-block;
+                      margin-right: 0.5rem;
+                      color: #ff586e;
+                      font-weight: 600;
+                      font-family: 'Helvetica Neue', Helvetica, Arial,
+                        sans-serif;
+                    "
+                  >
+                    Order fast — only <%= products[i].variantQuantity %> left!
+                  </span>
+
+                  <% } %>
                 </div>
               </div>
             </td>
             <td data-label="PRICE" class="price">
               <% if (products[i].bestOffer) { %>
-              <span class="original-price">₹<%= products[i].originalPrice.toFixed(2) %></span>
-              <span class="discounted-price">₹<%= products[i].discountedPrice.toFixed(2) %></span>
+              <span class="original-price"
+                >₹<%= products[i].originalPrice.toFixed(2) %></span
+              >
+              <span class="discounted-price"
+                >₹<%= products[i].discountedPrice.toFixed(2) %></span
+              >
               <% } else { %>
-              <span class="discounted-price">₹<%= products[i].cartPrice.toFixed(2) %></span>
+              <span class="discounted-price"
+                >₹<%= products[i].cartPrice.toFixed(2) %></span
+              >
               <% } %>
-              <input type="hidden" name="price" value="<%= products[i].discountedPrice %>">
+              <input
+                type="hidden"
+                name="price"
+                value="<%= products[i].discountedPrice %>"
+              />
             </td>
             <td data-label="QUANTITY">
-              <% if (products[i].status === 'out of stock' || products[i].variantQuantity === 0) { %>
-              <span style="color: #e74c3c; font-weight: 600;">Out of Stock</span>
+              <% if (products[i].status === 'out of stock' ||
+              products[i].variantQuantity === 0) { %>
+              <span style="color: #e74c3c; font-weight: 600">Out of Stock</span>
               <% } else { %>
               <div class="quantity">
-                <button type="button" class="quantity-btn" data-action="decrease">-</button>
-                <input type="number" class="quantity-input" value="<%= products[i].cartQuantity %>" min="1" max="5" name="quantity" data-product-id="<%= products[i]._id %>" data-size="<%= products[i].selectedSize %>" readonly />
-                <button type="button" class="quantity-btn" data-action="increase">+</button>
+                <button
+                  type="button"
+                  class="quantity-btn"
+                  data-action="decrease"
+                >
+                  -
+                </button>
+                <input
+                  type="number"
+                  class="quantity-input"
+                  value="<%= products[i].cartQuantity %>"
+                  min="1"
+                  max="5"
+                  name="quantity"
+                  data-product-id="<%= products[i]._id %>"
+                  data-size="<%= products[i].selectedSize %>"
+                  readonly
+                />
+                <button
+                  type="button"
+                  class="quantity-btn"
+                  data-action="increase"
+                >
+                  +
+                </button>
               </div>
               <% } %>
             </td>
@@ -92,24 +160,32 @@
             </td>
             <td data-label="SUBTOTAL" class="subtotal">
               ₹<span class="subtotal-value">
-                <% if (products[i].bestOffer) { %>
-                <%= (products[i].discountedPrice * products[i].cartQuantity).toFixed(2) %>
-                <% } else { %>
-                <%= products[i].cartTotalPrice.toFixed(2) %>
-                <% } %>
+                <% if (products[i].bestOffer) { %> <%=
+                (products[i].discountedPrice *
+                products[i].cartQuantity).toFixed(2) %> <% } else { %> <%=
+                products[i].cartTotalPrice.toFixed(2) %> <% } %>
               </span>
-              <input type="hidden" name="subtotal" class="subtotal-input" value="<% if (products[i].bestOffer) { %><%= (products[i].discountedPrice * products[i].cartQuantity).toFixed(2) %><% } else { %><%= products[i].cartTotalPrice.toFixed(2) %><% } %>">
+              <input
+                type="hidden"
+                name="subtotal"
+                class="subtotal-input"
+                value="<% if (products[i].bestOffer) { %><%= (products[i].discountedPrice * products[i].cartQuantity).toFixed(2) %><% } else { %><%= products[i].cartTotalPrice.toFixed(2) %><% } %>"
+              />
             </td>
             <td data-label="ACTION" class="action">
-              <button class="btn delete-btn" data-id="<%= products[i]._id %>" data-size="<%= products[i].selectedSize %>" type="button">
+              <button
+                class="btn delete-btn"
+                data-id="<%= products[i]._id %>"
+                data-size="<%= products[i].selectedSize %>"
+                type="button"
+              >
                 <h4><i class="fa-solid fa-xmark"></i></h4>
               </button>
             </td>
           </tr>
-          <% } %>
-          <% } else { %>
+          <% } %> <% } else { %>
           <tr>
-            <td colspan="7" style="text-align: center; padding: 30px;">
+            <td colspan="7" style="text-align: center; padding: 30px">
               Your cart is empty. <a href="/shop">Continue shopping</a>
             </td>
           </tr>
@@ -117,7 +193,7 @@
         </tbody>
       </table>
 
-      <div class="cart-actions-container ">
+      <div class="cart-actions-container">
         <div class="order-summary">
           <h3 class="summary-title">Order Summary</h3>
           <div class="summary-row">
@@ -131,25 +207,28 @@
           <div class="summary-row">
             <div>Discount</div>
             <div class="discount-amount">-₹<%= orderSummary.discount %></div>
-            <input type="hidden" name="totalDiscount" value="<%= orderSummary.discount %>">
+            <input
+              type="hidden"
+              name="totalDiscount"
+              value="<%= orderSummary.discount %>"
+            />
           </div>
           <div class="summary-row total">
             <div>Grand Total</div>
             <div class="grand-total">₹<%= orderSummary.grandTotal %></div>
           </div>
-          <button class="checkout-btn" onclick="checkout('/checkOut')">Proceed To Checkout</button>
+          <button class="checkout-btn" onclick="checkout('/checkOut')">
+            Proceed To Checkout
+          </button>
         </div>
       </div>
-   
-  </div>
+    </div>
 
-  <div class="footer-partial">
-    <%- include("../../views/partials/user/footer") %>
-  </div>
+    <div class="footer-partial">
+      <%- include("../../views/partials/user/footer") %>
+    </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="/js/user/cart.js"></script>
-
-</body>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/user/cart.js"></script>
+  </body>
 </html>

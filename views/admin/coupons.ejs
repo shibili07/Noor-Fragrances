@@ -526,14 +526,31 @@
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-        // Initialize Flatpickr on date inputs
-        flatpickr(".datepicker", {
-            dateFormat: "d/m/Y", // dd/mm/yyyy format
-            allowInput: true, // Allow manual typing
-            onChange: function(selectedDates, dateStr, instance) {
-                // Optional: Add validation or formatting on change
-            }
-        });
+
+        
+        const fromDateInput = document.querySelector("input[name='dateFrom']");
+const toDateInput = document.querySelector("input[name='dateTo']");
+
+const fromDatePicker = flatpickr(fromDateInput, {
+    dateFormat: "d/m/Y",
+    allowInput: true,
+    onChange: function(selectedDates, dateStr, instance) {
+        if (selectedDates[0]) {
+            toDatePicker.set("minDate", selectedDates[0]);
+        }
+    }
+});
+
+const toDatePicker = flatpickr(toDateInput, {
+    dateFormat: "d/m/Y",
+    allowInput: true,
+    onChange: function(selectedDates, dateStr, instance) {
+        if (selectedDates[0]) {
+            fromDatePicker.set("maxDate", selectedDates[0]);
+        }
+    }
+});
+
 
         async function toggleCoupon(couponId, shouldList) {
             const action = shouldList ? 'List' : 'Unlist';

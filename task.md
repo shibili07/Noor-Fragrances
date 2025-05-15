@@ -61,7 +61,7 @@
 --------------------
 
 - change password not working [✔]
-- in wish list delete a item in second page 
+- in wish list delete a item in second page [✔]
 - admin login fecth swal [✔]
 - user can delete the profile image [✔]
 - give sort also the offer 
@@ -72,3 +72,14 @@
 - Out of stok invisible into the cart [✔]
 
 - retry payment payment failed not done , also give ttl in order failed 
+
+- add product , existing product name add  [✔]
+
+
+
+
+HOSTING  WEEK ERRORS
+---------------------
+
+- the admin side adding validations error messages does not unHide  [ⴵ...]
+- the cart swal quantity increase decrease also 
