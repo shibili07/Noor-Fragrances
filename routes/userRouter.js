@@ -137,4 +137,9 @@ router.post("/removeToWishlist",userAuth,productController.removeTOWishlist)
 router.get("/referAndEarn",userAuth,userController.referAndEarn)
 router.get("/about",userController.aboutUs)
 
+
+//contact us
+
+router.get("/contact",userController.contactUs)
+router.post("/contactUs",userController.mailsent)
 module.exports=router

@@ -68,11 +68,25 @@ const logout = async(req,res)=>{
     }
     
 }
+
+
 const salesReport = async (req, res) => {
     try {
         const { dateRange, startDate, endDate, page = 1, sort = 'desc', sortField = 'createdOn', orderId } = req.query;
         const perPage = 10;
         const skip = (page - 1) * perPage;
+
+        // Validate dates for custom range
+        if (dateRange === 'custom' && startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            if (end < start) {
+                return res.status(400).render('error', {
+                    message: 'End date cannot be earlier than start date',
+                    error: process.env.NODE_ENV === 'development' ? 'Invalid date range' : undefined
+                });
+            }
+        }
 
         // Build query
         let query = {};
@@ -148,7 +162,7 @@ const salesReport = async (req, res) => {
             .populate('userId', 'name email')
             .lean();
 
-        // Calculate total orders count for pagination
+        // Calculate total orders count for Pagination
         const totalOrdersCount = await Order.countDocuments(query);
         const totalPages = Math.ceil(totalOrdersCount / perPage);
 
@@ -213,6 +227,7 @@ const salesReport = async (req, res) => {
         });
     }
 };
+
 const exportToPDF = async (req, res) => {
     try {
         const { dateRange, startDate, endDate, orderId } = req.query;

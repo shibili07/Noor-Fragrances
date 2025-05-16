@@ -655,6 +655,106 @@ const aboutUs = async(req,res)=>{
   }
 }
 
+
+
+
+const contactUs = async(req,res)=>{
+  try{
+    const userId = req.session.user
+    const userData = await User.findById(userId)
+    return res.render("contactUs",{user:userData})
+  }catch(error){
+    console.log(error);
+    
+  }
+}
+
+
+const mailsent = async (req, res) => {
+  try {
+    const { name, email, phone, subject, message } = req.body;
+
+    // Input validation
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Name, email, subject, and message are required fields'
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid email format'
+      });
+    }
+
+    const mailSent = await sendMailToRecipient(name, email, subject, phone, message);
+    
+    if (mailSent) {
+      return res.status(200).json({
+        success: true,
+        message: 'Message sent successfully'
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to send message'
+      });
+    }
+
+  } catch (error) {
+    console.error('Error in sendMail:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+
+async function sendMailToRecipient(name, email, subject, phone, message) {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      port: 587,
+      secure: false,
+      requireTLS: true,
+      auth: {
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.NODEMAILER_PASSWORD
+      }
+    });
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #333;">New Contact Form Submission</h2>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
+        <p><strong>Subject:</strong> ${subject}</p>
+        <p><strong>Message:</strong></p>
+        <p style="background: #f8f8f8; padding: 15px; border-radius: 5px;">${message}</p>
+      </div>
+    `;
+
+    const info = await transporter.sendMail({
+      from: `"${name}" <${email}>`,
+      to: process.env.NODEMAILER_EMAIL,
+      subject: subject,
+      text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\nSubject: ${subject}\nMessage: ${message}`,
+      html: htmlContent
+    });
+
+    return info.accepted.length > 0;
+
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+}
+
 module.exports={
     pageNotFound,
     logout,
@@ -675,5 +775,7 @@ module.exports={
     loadForgotPasswordOtpVerify,
     forgotPasswordOtpVerify,
     resendOtpForgotPass,
-    aboutUs
+    aboutUs,
+    contactUs,
+    mailsent
 }

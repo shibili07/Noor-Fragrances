@@ -1,58 +1,27 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const Product = require("../models/productSchema");
 
 const orderSchema = new Schema({
-  orderId: {
-    type: String,
-    unique: true,
-    required: true
-  },
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true
-  },
+  orderId: { type: String, unique: true, required: true },
+  userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
   orderedItems: [{
-    product: {
-      type: Schema.Types.ObjectId,
-      ref: "Product",
-      required: true
-    },
-    quantity: {
-      type: Number,
-      required: true
-    },
-    price: {
-      type: Number,
-      default: 0
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    sku: {
-      type: String,
-      required: true
-    },
+    product: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+    quantity: { type: Number, required: true },
+    price: { type: Number, default: 0 },
+    name: { type: String, required: true },
+    sku: { type: String, required: true },
     status: {
       type: String,
       required: true,
-      enum: [
-        'Pending', 'Shipped', 'Delivered', 'Cancelled',
-        'Return Request', 'Returned', 'Return Rejected',
-        'Cancel requested', 'Processing', 'Payment failed'
-      ]
+      enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', 'Return Rejected', 'Cancel requested', 'Processing', 'Payment failed']
     },
     cancellationReason: { type: String },
     returnReason: { type: String },
-    returnRejectReason: { type: String } // Fixed typo
+    returnRejectReason: { type: String }
   }],
   totalPrice: { type: Number, required: true },
-  orderType: {
-    type: String,
-    required: true,
-    enum: ['razorPay', 'cod', 'wallet']
-  },
+  orderType: { type: String, required: true, enum: ['razorPay', 'cod', 'wallet'] },
   couponDiscount: { type: Number, default: 0 },
   offerDiscount: { type: Number, default: 0 },
   finalAmount: { type: Number, required: true },
@@ -71,24 +40,21 @@ const orderSchema = new Schema({
   status: {
     type: String,
     required: true,
-    enum: [
-      'Pending', 'Processing', 'Shipped', 'Delivered',
-      'Cancelled', 'Return Request', 'Returned',
-      'Return Rejected', 'Cancel requested', 'Payment failed'
-    ]
+    enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled', 'Return Request', 'Returned', 'Return Rejected', 'Cancel requested', 'Payment failed']
   },
-  createdOn: {
-    type: Date,
-    default: Date.now,
-    required: true
-  },
+  createdOn: { type: Date, default: Date.now, required: true },
   couponApplied: { type: Boolean, default: false },
   cancellationReason: { type: String },
   couponCode: { type: String },
-  razorpayOrderId: { type: String },
-
-  
+  razorpayOrderId: { type: String }
 });
+
+orderSchema.index(
+  { createdOn: 1 },
+  { expireAfterSeconds: 1080, partialFilterExpression: { status: 'Payment failed' } }
+);
+
+
 
 const Order = mongoose.model("Order", orderSchema);
 module.exports = Order;

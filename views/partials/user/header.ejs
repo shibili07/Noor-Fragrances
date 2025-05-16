@@ -766,13 +766,15 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
     <div class="container-fluid">
         <!-- Custom Hamburger Toggle Button -->
-        <label for="menu-toggle" class="hamburger-label navbar-toggler">
-            <input type="checkbox" id="menu-toggle" class="hamburger-input" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
-                   aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span></span>
-            <span></span>
-            <span></span>
-        </label>
+      <label for="menu-toggle" class="hamburger-label navbar-toggler">
+    <input type="checkbox" id="menu-toggle" class="hamburger-input"
+           data-bs-toggle="collapse" data-bs-target="#navbarContent"
+           aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+    <i id="hamburger-icon" class="fa-solid fa-bars text-black fs-2"></i>
+
+</label>
+
+
         
         <!-- Brand (centered) with logo -->
         <a class="navbar-brand mx-auto order-0" href="#">
@@ -841,10 +843,10 @@
                 <% if (user) { %>
                 <div class="dropdown">
                     <a href="" class="user-name-link">
-                        <% if (user.userImage) { %>
+                        <% if (user.userImage[0]) { %>
                             <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
                           <% } else { %>
-                            <img src="/img/default-avatar.png" alt="Default Avatar" class="user-photo">
+                            <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg" alt="Default Avatar" class="user-photo">
                           <% } %>
                         
                     </a>
@@ -934,8 +936,23 @@
             });
         });
     }
-});
 
+    // === Handle Hamburger Icon Toggle ===
+    const menuToggle = document.getElementById("menu-toggle");
+    const icon = document.getElementById("hamburger-icon");
+
+    if (menuToggle && icon) {
+        menuToggle.addEventListener("change", function () {
+            if (menuToggle.checked) {
+                icon.classList.remove("fa-bars");
+                icon.classList.add("fa-xmark");
+            } else {
+                icon.classList.remove("fa-xmark");
+                icon.classList.add("fa-bars");
+            }
+        });
+    }
+});
 
 </script>
 </body>

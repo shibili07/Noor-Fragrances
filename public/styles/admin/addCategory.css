@@ -1,0 +1,82 @@
+
+        .content-wrapper {
+            padding: 20px;
+            margin-top: 70px;
+            margin-left: 280px;
+            transition: all 0.3s ease;
+            background-color: #f5f5f7;
+            min-height: calc(100vh - 70px);
+        }
+
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #1c1c24;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e1e1e1;
+            background-color: white;
+        }
+
+        .form-control:focus {
+            border-color: #5e5ce6;
+            box-shadow: 0 0 0 0.2rem rgba(94, 92, 230, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #5e5ce6;
+            border-color: #5e5ce6;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #4a48d4;
+            border-color: #4a48d4;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            display: none;
+            /* Hide error messages initially */
+        }
+
+        /* Responsive adjustments */
+        @media screen and (max-width: 992px) {
+            .content-wrapper {
+                margin-left: 0;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .responsive-header {
+                flex-direction: column;
+                align-items: start !important;
+            }
+        }

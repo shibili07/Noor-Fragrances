@@ -385,18 +385,19 @@ const handleRejectReturn = async (req, res) => {
       }
   
       const order = await Order.findOneAndUpdate(
-        { 
-          orderId,
-          'orderedItems._id': itemId 
-        },
-        { 
-          $set: { 
-            'orderedItems.$.status': 'Return Rejected',
-            'orderedItems.$.returnRejectReeason': reason
-          } 
-        },
-        { new: true }
-      );
+  { 
+    orderId,
+    'orderedItems._id': itemId 
+  },
+  { 
+    $set: { 
+      'orderedItems.$.status': 'Return Rejected',
+      'orderedItems.$.returnRejectReason': reason   // ← correct spelling
+    } 
+  },
+  { new: true }
+);
+
 
       if (!order) {
         return res.status(404).json({ success: false, message: "Order or item not found." });
