@@ -89,7 +89,11 @@ const loadOrders = async (req, res) => {
 
   } catch (err) {
       console.error('Error fetching orders:', err);
+<<<<<<< HEAD
       res.status(500).send('Server Error');
+=======
+       res.redirect('/admin/pageError');
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -120,7 +124,11 @@ const viewOrder = async (req, res) => {
 
     } catch (err) {
         console.error('Error loading order details:', err);
+<<<<<<< HEAD
         res.status(500).send('Server Error');
+=======
+         res.redirect('/admin/pageError');
+>>>>>>> d96c03c (Recovered from local corruption)
     }
 };
 

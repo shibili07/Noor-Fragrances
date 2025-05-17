@@ -109,10 +109,14 @@ const getCouponsPage = async (req, res) => {
       });
   } catch (error) {
       console.error('Error in getCouponsPage:', error);
+<<<<<<< HEAD
       res.status(500).render('admin/error', {
           message: 'An error occurred while fetching coupons.',
           error
       });
+=======
+       res.redirect('/admin/pageError');
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -124,7 +128,11 @@ const getAddCouponPage = (req,res)=>{
        return res.render("addCoupon")
     }catch(error){
      console.log(error);
+<<<<<<< HEAD
     
+=======
+      res.redirect('/admin/pageError');
+>>>>>>> d96c03c (Recovered from local corruption)
     }
     
 }

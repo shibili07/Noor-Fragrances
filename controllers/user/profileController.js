@@ -3,7 +3,11 @@ const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
 const Cart = require("../../models/cartSchema");
 const nodemailer = require("nodemailer");
+<<<<<<< HEAD
 const bcrypt = require("bcrypt");
+=======
+const bcrypt = require("bcryptjs");
+>>>>>>> d96c03c (Recovered from local corruption)
 const Order = require("../../models/orderSchema");
 const Address = require("../../models/addressSchema");
 const jwt = require("jsonwebtoken");
@@ -25,7 +29,11 @@ const userInfo = async (req, res) => {
     }
   } catch (error) {
     console.log("error occured userInfo" + error);
+<<<<<<< HEAD
     req.redirect("/pageError");
+=======
+     res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -40,6 +48,10 @@ const loadEditProfile = async (req, res) => {
     });
   } catch (error) {
     console.log("profile rendaring error", error);
+<<<<<<< HEAD
+=======
+     return res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -331,7 +343,11 @@ const loadAddressPage = async (req, res) => {
     return res.render("address", { user, addresses });
   } catch (error) {
     console.log(error);
+<<<<<<< HEAD
     res.status(500).send("Something went wrong");
+=======
+    return res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -350,7 +366,11 @@ const getAddaddress = async (req, res) => {
     }
    
   } catch (error) {
+<<<<<<< HEAD
     console.log(error);
+=======
+    return res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -573,7 +593,11 @@ const loadEditAddress = async (req, res) => {
     });
   } catch (err) {
     console.error("Error loading edit address:", err);
+<<<<<<< HEAD
     res.status(500).send("Server error");
+=======
+   return res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -995,10 +1019,14 @@ const loadWallet = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in wallet page:", error);
+<<<<<<< HEAD
     return res.status(500).render("error", {
       message: "An error occurred while loading the wallet",
       user: null,
     });
+=======
+   return res.redirect('/pageNotFound')
+>>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 

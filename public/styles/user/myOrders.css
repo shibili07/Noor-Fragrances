@@ -110,6 +110,19 @@
         background-color: #f2f3f3;
         color: #fda606;
       }
+<<<<<<< HEAD
+=======
+      .status-retryPayment{
+        background-color: #fc0202;
+        color: #fff;
+
+      }
+      .status-returned{
+        background-color: rgb(240, 166, 5);
+        color: white;
+      }
+      
+>>>>>>> d96c03c (Recovered from local corruption)
 
       .product-preview {
         display: flex;

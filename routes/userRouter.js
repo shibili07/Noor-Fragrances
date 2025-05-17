@@ -16,6 +16,10 @@ const { adminAuth, userAuth} = require("../middlewares/auth");
 const User = require("../models/userSchema");
 
 router.get("/pageNotFound",userController.pageNotFound)
+<<<<<<< HEAD
+=======
+router.get("/serverError",userController.serverError)
+>>>>>>> d96c03c (Recovered from local corruption)
 router.get("/signup",userController.loadSignup)
 router.post("/signup",userController.signup)
 router.get("/otp-verify",userController.loadOtpVerify)
