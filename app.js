@@ -10,7 +10,7 @@ const adminRouter = require("./routes/adminRouter")
 db();
 
 app.use(express.json())
-//parse form datas
+
 app.use(express.urlencoded({extended:true}))
 //session
 app.use(session({
