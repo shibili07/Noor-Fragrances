@@ -1,10 +1,6 @@
 const User = require("../../models/userSchema")
 const mongoose = require("mongoose")
-<<<<<<< HEAD
-const bcrypt = require("bcrypt")
-=======
 const bcrypt = require("bcryptjs")
->>>>>>> d96c03c (Recovered from local corruption)
 const Order = require("../../models/orderSchema")
 const Product = require('../../models/productSchema');
 const Category = require('../../models/categorySchema');
@@ -66,11 +62,7 @@ const logout = async(req,res)=>{
         
     } catch (error) {
         console.log("unexpected error during logout",error);
-<<<<<<< HEAD
-        res.redirect("/pageError")
-=======
         res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
         
         
     }
@@ -229,14 +221,7 @@ const salesReport = async (req, res) => {
         });
     } catch (error) {
         console.error('Sales Report Error:', error);
-<<<<<<< HEAD
-        return res.status(500).render('error', {
-            message: 'Error generating sales report',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
-        });
-=======
          res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
     }
 };
 
@@ -513,11 +498,7 @@ const exportToPDF = async (req, res) => {
         pdfDoc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);
-<<<<<<< HEAD
-        res.status(500).send('Error generating PDF report: ' + error.message);
-=======
          res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
     }
 };
 const exportToExcel = async (req, res) => {

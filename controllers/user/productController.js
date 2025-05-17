@@ -161,11 +161,7 @@ const loadShopPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error loading shop page:", error);
-<<<<<<< HEAD
-    res.status(500).send("An error occurred while loading the shop page");
-=======
     return res.redirect('/pageNotFound')
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -299,11 +295,7 @@ const productDetails = async (req, res) => {
     });
   } catch (error) {
     console.error('Error in productDetails:', error);
-<<<<<<< HEAD
-    res.redirect('/pageError');
-=======
    return res.redirect("/serverError")
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 

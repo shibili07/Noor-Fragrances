@@ -7,11 +7,7 @@ passport.use(new GoogleStrategy({
     
     clientID:process.env.GOOGLE_CLIENT_ID,
     clientSecret:process.env.GOOGLE_CLIENT_SECRET,
-<<<<<<< HEAD
-    callbackURL:'/auth/google/callback'
-=======
     callbackURL:`${env.CLIENT_BASE}/auth/google/callback`
->>>>>>> d96c03c (Recovered from local corruption)
 },
 
 async (accessToken,refreshToken,profile,done)=>{

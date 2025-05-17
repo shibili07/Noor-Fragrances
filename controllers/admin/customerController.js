@@ -42,11 +42,7 @@ const customerInfo = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
      res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -71,14 +67,9 @@ const blockCustomer = async (req, res) => {
     }
 
   } catch (error) {
-<<<<<<< HEAD
-    res.redirect("/pageError");
-    return res.status(500).json({success:false,message:"Internal Server Error"})
-=======
     console.log(error);
     
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
 
   }
 };
@@ -234,11 +225,7 @@ const transactionDetails = async (req, res) => {
     return res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching transaction details:", error);
-<<<<<<< HEAD
-    res.status(500).json({ error: "Server error" });
-=======
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -249,24 +236,3 @@ module.exports = {
   walletDetails,
   transactionDetails,
 };
-<<<<<<< HEAD
-
-// const response = {
-//     orderId: order.orderId,
-//     status: order.status,
-//     cancellationReason: order.cancellationReason || 'N/A',
-//     shippingAddress: {
-//       name: order.address.name,
-//       details: `${order.address.addressType}, ${order.address.city}, ${order.address.landMark}, ${order.address.state} - ${order.address.pincode}`,
-//       mobile: order.address.phone
-//     },
-//     items: items,
-//     paymentMethod: paymentMethod,
-//     totalPrice: order.totalPrice,
-//     discount: totalDiscount,
-//     finalAmount: order.finalAmount,
-//     returnedAmount: returnedAmount,
-//     couponApplied: order.couponCode || 'None'
-//   };
-=======
->>>>>>> d96c03c (Recovered from local corruption)

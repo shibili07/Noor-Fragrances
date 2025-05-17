@@ -113,13 +113,7 @@ const getOfferPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching offers:", error);
-<<<<<<< HEAD
-    res
-      .status(500)
-      .render("error", { message: "An error occurred while fetching offers" });
-=======
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 

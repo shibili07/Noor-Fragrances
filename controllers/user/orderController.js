@@ -118,11 +118,7 @@ const myOrders = async (req, res) => {
   
     } catch (err) {
       console.error(err);
-<<<<<<< HEAD
-      res.status(500).send("Internal Server Error");
-=======
       return res.redirect("/serverError")
->>>>>>> d96c03c (Recovered from local corruption)
     }
   };
   

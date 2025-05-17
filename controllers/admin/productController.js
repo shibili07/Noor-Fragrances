@@ -65,11 +65,7 @@ const productInfo = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in productInfo:", error);
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -81,11 +77,7 @@ const addProductPage = async (req, res) => {
       cat: category,
     });
   } catch (error) {
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
      res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -345,11 +337,7 @@ const blockProduct = async(req,res)=>{
       res.redirect("/admin/product")
     } catch (error) {
       
-<<<<<<< HEAD
-      res.redirect("/pageError")
-=======
        res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
    }
 }
 
@@ -368,11 +356,7 @@ const unblockProduct = async(req,res)=>{
    }
   
    }catch(error){
-<<<<<<< HEAD
-      res.redirect("/pageError")
-=======
       res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
    }
    
 }
@@ -393,11 +377,7 @@ const deleteProduct = async (req,res) =>{
    }
    
   }catch(error){
-<<<<<<< HEAD
-    res.redirect("/pageError")
-=======
     
->>>>>>> d96c03c (Recovered from local corruption)
     return res.status(500).json({success:false,message:"Internal server error"})
   }
  
@@ -427,11 +407,7 @@ const editProductPage = async(req,res)=>{
       });
    } catch (error) {
       console.error("Error loading edit product page:", error);
-<<<<<<< HEAD
-      res.redirect("/pageError");
-=======
       res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
    }
 }
 

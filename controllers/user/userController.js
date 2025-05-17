@@ -4,23 +4,13 @@ const Category = require("../../models/categorySchema")
 const Offer = require("../../models/offerSchema")
 const env = require("dotenv").config()
 const nodemailer = require("nodemailer");
-<<<<<<< HEAD
-const bcrypt = require("bcrypt")
-=======
 const bcrypt = require("bcryptjs")
->>>>>>> d96c03c (Recovered from local corruption)
 const express= require("express");
 const Wallet = require("../../models/walletSchema")
 
 
 const pageNotFound = async (req,res) =>{
  try {
-<<<<<<< HEAD
-    res.render("page-404")
-
- } catch (error) {
-    res.redirect("/pageNotFound")
-=======
     const userId = req.session.user 
     const user = await User.findById(userId)
     res.render("page-404",{user})
@@ -28,7 +18,6 @@ const pageNotFound = async (req,res) =>{
  } catch (error) {
   
     return res.redirect("/pageNotFound")
->>>>>>> d96c03c (Recovered from local corruption)
     
  }
 
@@ -41,13 +30,6 @@ const logout = (req,res)=>{
       }
       res.redirect('/');
     } catch (error) {
-<<<<<<< HEAD
-        res.redirect("/pageError")
-    }
-}
-
-
-=======
         return res.redirect("/pageNotFound")
     }
 }
@@ -61,7 +43,6 @@ const serverError = async(req,res)=>{
      return res.redirect("/pageNotFound")
   }
 }
->>>>>>> d96c03c (Recovered from local corruption)
 
 
 const loadHomepage = async (req, res) => {
@@ -126,11 +107,7 @@ const loadHomepage = async (req, res) => {
 
   } catch (error) {
     console.error("Home page is not found", error);
-<<<<<<< HEAD
-    res.status(500).send("Server error");
-=======
     return res.redirect("/pageNotFound")
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -150,11 +127,7 @@ const loadSignup = async (req,res)=>{
         
     } catch (error) {
         console.log("signup is not found");
-<<<<<<< HEAD
-        res.status(500).send("Server error")    
-=======
         return res.redirect("/pageNotFound")
->>>>>>> d96c03c (Recovered from local corruption)
     }
 }
 
@@ -196,11 +169,7 @@ async function sendVerificationEmail(email,otp) {
 
     } catch (error) {
         console.error("Error sending email",error)
-<<<<<<< HEAD
-        return false;
-=======
         return res.redirect("/serverError")
->>>>>>> d96c03c (Recovered from local corruption)
         
     }
     
@@ -255,11 +224,7 @@ const signup = async (req, res) => {
   
     } catch (error) {
       console.error("Signup error:", error);
-<<<<<<< HEAD
-      return res.status(500).redirect("/pageNotFound");
-=======
       return res.status(500).redirect("/serverError");
->>>>>>> d96c03c (Recovered from local corruption)
     }
   };
 
@@ -273,10 +238,7 @@ const securePassword = async (password) => {
     } catch (error) {
         console.error('Error hashing password:', error);
         throw error; 
-<<<<<<< HEAD
-=======
         
->>>>>>> d96c03c (Recovered from local corruption)
     }
 };
 
@@ -516,11 +478,7 @@ const verifyEmail = async(req,res)=>{
 
     } catch (error) {
         console.error("verify email error",error);
-<<<<<<< HEAD
-        res.redirect('/pageNotFound')
-=======
         return res.redirect("/serverError")
->>>>>>> d96c03c (Recovered from local corruption)
         
     }
 }
@@ -530,11 +488,7 @@ const loadForgotPasswordOtpVerify = async (req,res)=>{
         return res.render("forgetPass-verifyOtp")
 
     }catch(error){
-<<<<<<< HEAD
-        console.log(error);
-=======
       
->>>>>>> d96c03c (Recovered from local corruption)
     
     }
 }
@@ -709,10 +663,7 @@ const aboutUs = async(req,res)=>{
     return res.render("about",{user:userData})
   }catch(error){
     console.log(error);
-<<<<<<< HEAD
-=======
      res.redirect('/pageNotFound')
->>>>>>> d96c03c (Recovered from local corruption)
     
   }
 }
@@ -727,10 +678,7 @@ const contactUs = async(req,res)=>{
     return res.render("contactUs",{user:userData})
   }catch(error){
     console.log(error);
-<<<<<<< HEAD
-=======
      res.redirect('/pageNotFound')
->>>>>>> d96c03c (Recovered from local corruption)
     
   }
 }
@@ -843,10 +791,6 @@ module.exports={
     resendOtpForgotPass,
     aboutUs,
     contactUs,
-<<<<<<< HEAD
-    mailsent
-=======
     mailsent,
     serverError
->>>>>>> d96c03c (Recovered from local corruption)
 }

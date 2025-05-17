@@ -33,11 +33,7 @@ const categoryInfo = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
      res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -46,11 +42,7 @@ const loadAddCategoryPage = (req, res) => {
     return res.render("add-category");
   } catch (error) {
     console.log(error);
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -137,11 +129,7 @@ const deleteCategory = async (req, res) => {
     await Category.updateOne({ _id: id }, { $set: { isDeleted: true } });
     res.redirect("/admin/category");
   } catch (error) {
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
      res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 
@@ -152,11 +140,7 @@ const loadEditCategoryPage = async (req, res) => {
     const categoryData = await Category.findOne({ _id: id });
     res.render("edit-category", { cateData: categoryData });
   } catch (error) {
-<<<<<<< HEAD
-    res.redirect("/pageError");
-=======
     res.redirect('/admin/pageError');
->>>>>>> d96c03c (Recovered from local corruption)
   }
 };
 const editCategory = async (req, res) => {
