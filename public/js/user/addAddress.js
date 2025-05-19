@@ -136,6 +136,7 @@ document.addEventListener('DOMContentLoaded', function () {
         landMark: formData.get('landMark'),
         pincode: formData.get('pincode'),
         isDefault: formData.has('isDefault'),
+        flag:formData.get("flag")
        
       };
 
@@ -170,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
               timer: 3000,
               timerProgressBar: true
             }).then(() => {
-              window.location.href = "/address";
+              window.location.href = data.redirectUrl;
             });
           } else {
             Swal.fire({

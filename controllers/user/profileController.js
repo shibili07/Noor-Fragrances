@@ -338,15 +338,15 @@ const loadAddressPage = async (req, res) => {
 
 const getAddaddress = async (req, res) => {
   try {
-    const {checkoutFlag} = req.query
-    console.log(checkoutFlag);
-    
+    console.log(req.query);
+
+    const {flag}=req.query
     const userId = req.session.user;
     const userData = await User.findById(userId);
-    if(checkoutFlag){
-      return res.render("addAddress", { user: userData ,flag:checkoutFlag});
+    if(flag==="1"){
+      return res.render("addAddress", { user: userData ,flag});
     }else{
-       return res.render("addAddress", { user: userData ,flag:false});
+       return res.render("addAddress", { user: userData ,flag:"0"});
 
     }
    
@@ -356,7 +356,7 @@ const getAddaddress = async (req, res) => {
 };
 
 const AddAddress = async (req, res) => {
-  try {
+  try{
     const userId = req.session.user;
     const {
       addressType,
@@ -368,9 +368,12 @@ const AddAddress = async (req, res) => {
       landMark,
       pincode,
       isDefault,
+      flag
      
     } = req.body;
 
+    
+    
     // Utility: Count unique digits
     const countUniqueDigits = (value) => new Set(value.split("")).size;
 
@@ -505,13 +508,23 @@ const AddAddress = async (req, res) => {
     await addressDoc.save();
    
     
-
-    res.status(201).json({
+    if(flag==0){
+       res.status(201).json({
       success: true,
       message: "Address added successfully",
       addresses: addressDoc.address,
-      
+      redirectUrl:"/address"
     });
+
+    }else{
+        res.status(201).json({
+      success: true,
+      message: "Address added successfully",
+      addresses: addressDoc.address,
+       redirectUrl:"/checkOut"
+    })
+  }
+   
   } catch (error) {
     console.error("Error adding address:", error);
     res.status(500).json({
@@ -520,7 +533,8 @@ const AddAddress = async (req, res) => {
       error: error.message,
     });
   }
-};
+}
+
 
 const setDefault = async (req, res) => {
   try {
@@ -556,6 +570,7 @@ const setDefault = async (req, res) => {
 
 const loadEditAddress = async (req, res) => {
   try {
+    
     const addressId = req.params.id;
     const userId = req.session.user;
     const addressDoc = await Address.findOne({ userId });
@@ -567,11 +582,13 @@ const loadEditAddress = async (req, res) => {
     if (!addressToEdit) {
       return res.status(404).send("Address not found.");
     }
-    res.render("edit-address", {
+
+     res.render("edit-address", {
       address: addressToEdit,
       addressId,
       user: userData,
-    });
+     })
+  
   } catch (err) {
     console.error("Error loading edit address:", err);
    return res.redirect('/pageNotFound')
@@ -592,10 +609,11 @@ const editAddress = async (req, res) => {
       landMark,
       pincode,
       isDefault,
+      
     } = req.body;
-
-    console.log(req.body);
-
+   
+  
+   
     // Utility to count unique digits
     const countUniqueDigits = (value) => new Set(value.split("")).size;
 
@@ -719,12 +737,14 @@ const editAddress = async (req, res) => {
     };
 
     await addressDoc.save();
-
-    return res.status(200).json({
+    
+   return res.status(200).json({
       success: true,
       message: "Address updated successfully",
       addresses: addressDoc.address,
-    });
+      redirectUrl:"/address"
+    }); 
+    
   } catch (error) {
     console.error("Edit address error:", error);
     return res.status(500).json({

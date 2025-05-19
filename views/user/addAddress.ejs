@@ -58,6 +58,8 @@
                         <i class="fas fa-briefcase me-1"></i> Work
                       </label>
                     </div>
+                    <input name="flag" type="hidden" value="<%=flag%>" id="flagId" >
+
                     <div class="form-check form-check-inline">
                       <input class="form-check-input" type="radio" id="addressType-other" name="addressType"
                         value="Other">
@@ -149,9 +151,7 @@
       </div>
     </div>
 
-    <% if (flag) { %>
-    <input type="hidden" id="checkOutFlag" value="<%=flag%>">
-   <% } %>
+   
 
 
     <%- include("../../views/partials/user/footer") %>

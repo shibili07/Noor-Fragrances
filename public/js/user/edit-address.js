@@ -132,7 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
         state: formData.get('state'),
         landMark: formData.get('landMark'),
         pincode: formData.get('pincode'),
-        isDefault: formData.has('isDefault')
+        isDefault: formData.has('isDefault'),
+        flag:formData.get("flag")
       };
 
       Swal.fire({
@@ -166,7 +167,7 @@ document.addEventListener('DOMContentLoaded', function () {
               timer: 3000,
               timerProgressBar: true
             }).then(() => {
-              window.location.href = '/address';
+              window.location.href = redirectUrl;
             });
           } else {
             Swal.fire({
