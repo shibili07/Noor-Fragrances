@@ -91,14 +91,10 @@
           <span class="status-badge status-paymentfailed">
             <%= order.status %>
           </span>
-<<<<<<< HEAD
-
-=======
            <%}else if(order.status==="Return Rejected"){%>
           <span class="status-badge status-return-rejected">
             <%= order.status %>
           </span>
->>>>>>> d96c03c (Recovered from local corruption)
           <%}else{%>
           <span class="status-badge status-<%= order.status.toLowerCase() %>">
             <%= order.status %>
@@ -185,16 +181,6 @@
             <strong>Cancelled</strong>
           </div>
           <% }else if(item.status==='Delivered'){%>
-<<<<<<< HEAD
-          <div class="button-right-align">
-            <button class="btn btn-warning" onclick="window.productOrderReturn( '<%= order.orderId %>', '<%= item.product._id %>', '<%= item.sku %>')">
-              <i class="fa-solid fa-rotate-left"></i> Return Order
-            </button>
-          </div>
-
-          <%}else if(item.status==='Return Rejected'){%>
-          <div>Reason:<%=item.returnRejectReason%></div>
-=======
           <% 
   const now = new Date(); 
   const orderDate = new Date(order.createdOn); 
@@ -216,7 +202,6 @@
 Reason: <%=item.returnRejectReason%>
 </div>
 
->>>>>>> d96c03c (Recovered from local corruption)
 
           <%}%>
                 </div>

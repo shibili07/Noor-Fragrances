@@ -827,7 +827,7 @@ const changeEmail = async (req, res) => {
     );
 
     const link = `${
-      process.env.CLIENT_BASE_URL || "http://localhost:7000"
+      process.env.CLIENT_BASE_URL || "https://noorfragrances.shop"
     }/confirm-email?token=${token}`;
 
     try {

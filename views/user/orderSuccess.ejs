@@ -48,12 +48,9 @@
                 </div>
                 <div class="detail-row">
                     <span class="detail-label">Payment Method:</span>
-                    <span class="detail-value" id="paymentMethod"><%= order.paymentMethod %></span>
+                    <span class="detail-value" id="paymentMethod"><%= order.orderType %></span>
                 </div>
-                <div class="detail-row">
-                    <span class="detail-label">Order Type:</span>
-                    <span class="detail-value" id="orderType"><%= order.orderType %></span>
-                </div>
+               
                 
                 <div class="order-status">
                     <h3>Order Status</h3>
@@ -157,6 +154,7 @@
                         <h3>INVOICE</h3>
                         <p>Invoice #: <span id="invoiceNumber"><%= order.orderId %></span></p>
                         <p>Date: <span id="invoiceDate"><%= new Date(order.createdOn).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></span></p>
+                        <p>payment Method:<%=order.orderType%> </p>
                     </div>
                 </div>
                 

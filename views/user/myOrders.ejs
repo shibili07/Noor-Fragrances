@@ -74,13 +74,10 @@
                       <span class="order-status status-shipped">Shipped</span>
                       <% } else if (order.status === 'Pending') { %>
                         <span class="order-status status-pending">Pending</span>
-<<<<<<< HEAD
-=======
                       <% } else if (order.status === 'Payment failed') { %>
                         <span class="order-status status-retryPayment">Payment Failed</span>
                       <% } else if (order.status === 'Returned') { %>
                         <span class="order-status status-returned">Returned</span>
->>>>>>> d96c03c (Recovered from local corruption)
                       <% } else { %>
                       <span class="order-status"><%= order.status %></span>
                       <% } %>
