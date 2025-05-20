@@ -92,7 +92,7 @@ const salesReport = async (req, res) => {
         let query = {};
         
         
-        query.status = { $ne: 'Payment failed' };
+        query.status = { $eq: 'Delivered' };
 
      
         if (dateRange) {
@@ -231,7 +231,7 @@ const exportToPDF = async (req, res) => {
         let query = {};
 
         // Exclude "Payment failed" orders
-        query.status = { $ne: 'Payment failed' };
+       query.status = { $eq: 'Delivered' };
 
         // Apply date filtering
         if (dateRange) {
@@ -507,7 +507,7 @@ const exportToExcel = async (req, res) => {
         let query = {};
 
         // Exclude "Payment failed" orders
-        query.status = { $ne: 'Payment failed' };
+        query.status = { $eq: 'Delivered' };
 
         // Apply date filtering
         if (dateRange) {
