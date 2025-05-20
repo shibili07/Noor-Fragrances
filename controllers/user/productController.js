@@ -398,6 +398,7 @@ const loadWishlist = async (req, res) => {
       })
       .lean();
 
+    
     if (wishlist && Array.isArray(wishlist.items)) {
   wishlist.items = wishlist.items.filter(
     (item) => item.product && item.product.category

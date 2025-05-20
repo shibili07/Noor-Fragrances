@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wishlist</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="/styles/user/wishlist.css">
-  
 </head>
 <body>
   <header class="mb-5">
@@ -16,7 +16,7 @@
     <div class="breadcrumb">
       <a href="/">Home</a>
       <span>›</span>
-      <a href="#" style="font-weight: bold;">Wishlist</a>
+      <a href="#" aria-current="page">Wishlist</a>
     </div>
 
     <div class="container">
@@ -34,6 +34,7 @@
               <th>Details</th>
               <th>Price</th>
               <th>Action</th>
+              
             </tr>
           </thead>
           <tbody>
@@ -41,7 +42,7 @@
             <tr data-item-id="<%= item.productId %>">
               <td data-label="Remove">
                 <div class="item-remove" data-item-id="<%= item.productId %>" onclick="removeItem('<%= item.productId %>', this)">
-                  <i class="fa-solid fa-xmark"></i>
+                  <i class="fa-solid fa-xmark" style="font-size: 25px;"></i>
                 </div>
               </td>
               <td data-label="Product">
@@ -56,22 +57,21 @@
               </td>
               <td data-label="Price" class="item-price">
                 <div class="item-price-container">
-                  <%if(item.hasOffer && item.offeredPrice){ %>
+                  <% if (item.hasOffer && item.offeredPrice) { %>
                     <span class="item-sale-price">₹<%= item.salePrice %></span>
                     <span class="item-offered-price">₹<%= item.offeredPrice.toFixed(1) %></span>
-                  <% }else{%>
-                    <span class="item-offered-price">₹<%= item.salePrice%></span>
-                    <%}%>
+                  <% } else { %>
+                    <span class="item-offered-price">₹<%= item.salePrice %></span>
+                  <% } %>
                 </div>
               </td>
-              <% if(!item.quantity<=0 ){ %>
               <td data-label="Action">
-                <button class="add-to-cart-btn" data-item-id="<%= item.productId %>" data-size="<%= item.size %>" data-item-quantity="<%= item.quantity %>">Add to cart</button>
+                <% if (item.quantity > 0) { %>
+                  <button class="add-to-cart-btn" data-item-id="<%= item.productId %>" data-size="<%= item.size %>" data-item-quantity="<%= item.quantity %>">Add to cart</button>
+                <% } else { %>
+                  <span class="item-outOfStock">Out of Stock</span>
+                <% } %>
               </td>
-            <%}else{%>
-                  <td><span class="item-outOfStock">Out Of Stock</span></td>
-              <%}%>
-              
             </tr>
             <% }); %>
           </tbody>
@@ -93,7 +93,7 @@
               <% for (let i = 1; i <= totalPages; i++) { %>
               <button class="<%= currentPage === i ? 'active' : '' %>" onclick="navigatePage(<%= i %>)"><%= i %></button>
               <% } %>
-        </div>
+            </div>
             <button class="next <%= currentPage === totalPages ? 'disabled' : '' %>" onclick="navigatePage(<%= currentPage + 1 %>)" <%= currentPage === totalPages ? 'disabled' : '' %>>
               <i class="fas fa-chevron-right"></i>
             </button>
@@ -112,7 +112,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-   function navigatePage(page) {
+    function navigatePage(page) {
       const totalPages = <%= totalPages || 1 %>;
       const limit = <%= limit || 4 %>;
       if (page < 1 || page > totalPages) return;
@@ -121,8 +121,7 @@
       url.searchParams.set('limit', limit);
       window.location.href = url.toString();
     }
-    </script>
-     <script src="/js/user/wishlist.js"></script>
- 
+  </script>
+  <script src="/js/user/wishlist.js"></script>
 </body>
 </html>
