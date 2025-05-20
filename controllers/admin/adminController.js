@@ -69,6 +69,7 @@ const logout = async(req,res)=>{
     
 }
 
+
 const salesReport = async (req, res) => {
     try {
         const { dateRange, startDate, endDate, page = 1, sort = 'desc', sortField = 'createdOn', orderId } = req.query;
@@ -87,13 +88,13 @@ const salesReport = async (req, res) => {
             }
         }
 
-        // Build query
+    
         let query = {};
+        
+        
+        query.status = { $ne: 'Payment failed' };
 
-        // Only include orders where all orderedItems have status 'Delivered'
-        query['orderedItems'] = { $not: { $elemMatch: { status: { $ne: 'Delivered' } } } };
-
-        // Date filter
+     
         if (dateRange) {
             const now = new Date();
             switch (dateRange) {
@@ -170,6 +171,7 @@ const salesReport = async (req, res) => {
 
         const summary = {
             grossSales: 0,
+            returns: 0,
             couponsRedeemed: 0,
             discounts: 0,
             netSales: 0,
@@ -185,12 +187,19 @@ const salesReport = async (req, res) => {
             // Gross Sales: Total sales before deductions
             summary.grossSales += order.totalPrice || 0;
 
+            // Returns: Only include 'Returned' orders
+            if (order.status === 'Returned') {
+                summary.returns += order.finalAmount || 0;
+            }
+
             // Coupons and Discounts
             summary.couponsRedeemed += order.couponDiscount || 0;
             summary.discounts += order.offerDiscount || 0;
 
-            // Net Sales: Sum of paymentAmount for Delivered orders (already filtered by query)
-            summary.netSales += order.finalAmount || 0;
+            // Net Sales: Sum of paymentAmount for Delivered orders only
+            if (order.status === 'Delivered') {
+                summary.netSales += order.finalAmount || 0;
+            }
 
             // Order Types count
             if (order.orderType) {
@@ -212,7 +221,7 @@ const salesReport = async (req, res) => {
         });
     } catch (error) {
         console.error('Sales Report Error:', error);
-        res.redirect('/admin/pageError');
+         res.redirect('/admin/pageError');
     }
 };
 
@@ -221,8 +230,8 @@ const exportToPDF = async (req, res) => {
         const { dateRange, startDate, endDate, orderId } = req.query;
         let query = {};
 
-        // Only include orders where all orderedItems have status 'Delivered'
-        query['orderedItems'] = { $not: { $elemMatch: { status: { $ne: 'Delivered' } } } };
+        // Exclude "Payment failed" orders
+        query.status = { $ne: 'Payment failed' };
 
         // Apply date filtering
         if (dateRange) {
@@ -296,14 +305,15 @@ const exportToPDF = async (req, res) => {
             summary.grossSales += order.totalPrice || 0;
             summary.couponsRedeemed += order.couponDiscount || 0;
             summary.discounts += order.offerDiscount || 0;
-            // Net Sales: Sum of paymentAmount for Delivered orders (already filtered by query)
-            summary.netSales += order.finalAmount || 0;
+            if (order.status === 'Delivered') {
+                summary.netSales += order.finalAmount || 0;
+            }
             if (order.orderType) {
                 summary.orderTypes[order.orderType] = (summary.orderTypes[order.orderType] || 0) + 1;
             }
         });
 
-        // Generate PDF
+        // Generate PDF (unchanged from original, included for completeness)
         const fonts = {
             Roboto: {
                 normal: 'Helvetica',
@@ -343,7 +353,7 @@ const exportToPDF = async (req, res) => {
                 {
                     table: {
                         headerRows: 1,
-                        widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
+                        widths: ['auto', 'auto', 'auto', 'auto', 'auto', 'auto', 'auto'],
                         body: [
                             [
                                 { text: 'Order ID', style: 'tableHeader' },
@@ -351,6 +361,7 @@ const exportToPDF = async (req, res) => {
                                 { text: 'Discount', style: 'tableHeader' },
                                 { text: 'Coupon', style: 'tableHeader' },
                                 { text: 'Final Amount', style: 'tableHeader' },
+                                { text: 'Status', style: 'tableHeader' },
                                 { text: 'Order Type', style: 'tableHeader' }
                             ],
                             ...orders.map(order => [
@@ -359,6 +370,7 @@ const exportToPDF = async (req, res) => {
                                 `Rs ${(order.offerDiscount || 0).toLocaleString('en-IN')}`,
                                 `Rs ${(order.couponDiscount || 0).toLocaleString('en-IN')}`,
                                 `Rs ${(order.finalAmount || 0).toLocaleString('en-IN')}`,
+                                order.status,
                                 order.orderType
                             ])
                         ]
@@ -486,17 +498,16 @@ const exportToPDF = async (req, res) => {
         pdfDoc.end();
     } catch (error) {
         console.error('Error generating PDF:', error);
-        res.redirect('/admin/pageError');
+         res.redirect('/admin/pageError');
     }
 };
-
 const exportToExcel = async (req, res) => {
     try {
         const { dateRange, startDate, endDate, orderId } = req.query;
         let query = {};
 
-        // Only include orders where all orderedItems have status 'Delivered'
-        query['orderedItems'] = { $not: { $elemMatch: { status: { $ne: 'Delivered' } } } };
+        // Exclude "Payment failed" orders
+        query.status = { $ne: 'Payment failed' };
 
         // Apply date filtering
         if (dateRange) {
@@ -570,14 +581,15 @@ const exportToExcel = async (req, res) => {
             summary.grossSales += order.totalPrice || 0;
             summary.couponsRedeemed += order.couponDiscount || 0;
             summary.discounts += order.offerDiscount || 0;
-            // Net Sales: Sum of paymentAmount for Delivered orders (already filtered by query)
-            summary.netSales += order.finalAmount || 0;
+            if (order.status === 'Delivered') {
+                summary.netSales += order.finalAmount || 0;
+            }
             if (order.orderType) {
                 summary.orderTypes[order.orderType] = (summary.orderTypes[order.orderType] || 0) + 1;
             }
         });
 
-        // Generate Excel
+        // Generate Excel (unchanged from original, included for completeness)
         const workbook = new ExcelJS.Workbook();
         workbook.creator = 'Noor Fragrance';
         workbook.created = new Date();
@@ -594,11 +606,12 @@ const exportToExcel = async (req, res) => {
             { header: 'Discount', key: 'discount', width: 15, style: { numFmt: '"Rs "#,##0.00' } },
             { header: 'Coupon', key: 'coupon', width: 15, style: { numFmt: '"Rs "#,##0.00' } },
             { header: 'Final Amount', key: 'finalAmount', width: 15, style: { numFmt: '"Rs "#,##0.00' } },
+            { header: 'Status', key: 'status', width: 15 },
             { header: 'Order Type', key: 'orderType', width: 15 },
         ];
 
         // Add title and date range
-        worksheet.mergeCells('A1:F1');
+        worksheet.mergeCells('A1:G1');
         const titleCell = worksheet.getCell('A1');
         titleCell.value = 'Sales Report';
         titleCell.font = { bold: true, size: 16, color: { argb: 'FF000000' } };
@@ -606,7 +619,7 @@ const exportToExcel = async (req, res) => {
         titleCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD3D3D3' } };
 
         if (dateRange || orderId) {
-            worksheet.mergeCells('A2:F2');
+            worksheet.mergeCells('A2:G2');
             const dateRangeCell = worksheet.getCell('A2');
             dateRangeCell.value = `Date Range: ${dateRange || 'All'}${
                 dateRange === 'custom' && startDate && endDate
@@ -632,11 +645,12 @@ const exportToExcel = async (req, res) => {
                 discount: order.offerDiscount || 0,
                 coupon: order.couponDiscount || 0,
                 finalAmount: order.finalAmount || 0,
+                status: order.status,
                 orderType: order.orderType,
             });
             row.alignment = { vertical: 'middle' };
             row.height = 20;
-            for (let i = 1; i <= 6; i++) {
+            for (let i = 1; i <= 7; i++) {
                 const cell = row.getCell(i);
                 cell.border = {
                     top: { style: 'thin' },
@@ -649,7 +663,7 @@ const exportToExcel = async (req, res) => {
 
         // Add summary section
         const lastRow = worksheet.rowCount;
-        worksheet.mergeCells(`A${lastRow + 2}:F${lastRow + 2}`);
+        worksheet.mergeCells(`A${lastRow + 2}:G${lastRow + 2}`);
         const summaryTitleCell = worksheet.getCell(`A${lastRow + 2}`);
         summaryTitleCell.value = 'Summary';
         summaryTitleCell.font = { bold: true, size: 14, color: { argb: 'FF000000' } };
@@ -698,6 +712,9 @@ const exportToExcel = async (req, res) => {
         res.status(500).json({ success: false, error: 'Error generating Excel report: ' + error.message });
     }
 };
+  
+
+
 
 const loadDashboard = async (req, res) => {
     try {
