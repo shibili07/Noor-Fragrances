@@ -43,6 +43,17 @@ app.use("/",userRouter)
 
 app.use("/admin",adminRouter)
 
+
+app.get("/admin/*", (req, res) => {
+    res.redirect("/admin");
+});
+
+app.get("/*", (req, res) => {
+    res.redirect('/');
+});
+
+
+
 //error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack); 
@@ -52,6 +63,8 @@ app.use((err, req, res, next) => {
         }
     })
 });
+
+
 
 
 app.listen(process.env.PORT,()=>{

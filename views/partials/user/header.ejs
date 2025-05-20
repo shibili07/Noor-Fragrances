@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Import Akshar font -->
     <link href="https://fonts.googleapis.com/css2?family=Akshar:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
     <style>
         /* Custom styles */
         .navbar-brand {
@@ -20,47 +23,50 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         nav {
             box-shadow: 0 4px 6px rgba(182, 167, 167, 0.1);
         }
 
-        .dropdown{
+        .dropdown {
             position: relative;
-            display: inline-block; /* Fixed typo from 'i' to 'inline-block' */
+            display: inline-block;
+            /* Fixed typo from 'i' to 'inline-block' */
         }
-        
-        .dropdown-content{
+
+        .dropdown-content {
             display: none;
             position: absolute;
             background-color: white;
             min-width: 160px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Fixed undefined 'black' value */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            /* Fixed undefined 'black' value */
             z-index: 1000;
             right: 0;
         }
-        
-        .dropdown-content a{
+
+        .dropdown-content a {
             color: black;
             padding: 12px 16px;
-            text-decoration: none; /* Fixed 'text-align: none' to 'text-decoration: none' */
+            text-decoration: none;
+            /* Fixed 'text-align: none' to 'text-decoration: none' */
             display: block;
             width: 100%;
         }
-        
-        .dropdown-content a:hover{
+
+        .dropdown-content a:hover {
             background-color: #f1f1f1;
         }
-        
+
         .dropdown.show .dropdown-content {
             display: block;
         }
-        
+
         .navbar-brand img {
             max-height: 40px;
             width: auto;
         }
-        
+
         .nav-link {
             margin: 0 15px;
             font-family: 'Akshar', sans-serif;
@@ -71,19 +77,19 @@
             position: relative;
             padding-bottom: 5px;
         }
-        
+
         .nav-link:hover {
             color: #000;
             text-decoration: none;
         }
-        
+
         /* Style for active items - font size 22px, semi-bold, black */
         .nav-item.active .nav-link {
             font-weight: 600;
             font-size: 22px;
             color: #000;
         }
-        
+
         /* Custom hamburger menu styles */
         .hamburger-label {
             display: flex;
@@ -96,7 +102,7 @@
             outline: none;
             box-shadow: none;
         }
-        
+
         /* Remove navbar-toggler default border and styles */
         .navbar-toggler {
             border: none;
@@ -104,7 +110,7 @@
             outline: none !important;
             box-shadow: none !important;
         }
-        
+
         .hamburger-label span {
             background: #000000;
             border-radius: 10px;
@@ -112,45 +118,45 @@
             margin: 4px 0;
             transition: .4s cubic-bezier(0.68, -0.6, 0.32, 1.6);
         }
-        
+
         .hamburger-label span:nth-of-type(1) {
             width: 50%;
         }
-        
+
         .hamburger-label span:nth-of-type(2) {
             width: 100%;
         }
-        
+
         .hamburger-label span:nth-of-type(3) {
             width: 75%;
         }
-        
+
         .hamburger-input {
             display: none;
         }
-        
-        .hamburger-input:checked ~ span:nth-of-type(1) {
+
+        .hamburger-input:checked~span:nth-of-type(1) {
             transform-origin: bottom;
             transform: rotatez(45deg) translate(5px, 0px);
         }
-        
-        .hamburger-input:checked ~ span:nth-of-type(2) {
+
+        .hamburger-input:checked~span:nth-of-type(2) {
             transform-origin: top;
             transform: rotatez(-45deg);
         }
-        
-        .hamburger-input:checked ~ span:nth-of-type(3) {
+
+        .hamburger-input:checked~span:nth-of-type(3) {
             transform-origin: bottom;
             width: 50%;
             transform: translate(20px, -8px) rotatez(45deg);
         }
-        
-        
+
+
         .navbar-icons {
             display: flex;
             align-items: center;
         }
-        
+
         .navbar-icons a {
             margin: 0 8px;
             color: #555;
@@ -160,18 +166,18 @@
             align-items: center;
             justify-content: center;
         }
-        
+
         .navbar-icons a i {
             font-size: 1.1rem;
             padding: 8px;
         }
-        
+
         .navbar-icons a:hover {
             color: #000;
             transform: scale(1.1);
             text-decoration: none;
         }
-        
+
         /* Added styles for active state with pink background and white icon */
         .navbar-icons a.active {
             background-color: #FD334E;
@@ -179,20 +185,20 @@
             border-radius: 8px;
             text-decoration: none;
         }
-        
+
         /* Login button with small gap */
         .btn-outline-secondary {
             margin-left: 10px;
             padding: 5px 15px;
             font-size: 0.9rem;
         }
-        
+
         /* Desktop layout for navbar-icons (visible at the top right) */
         .navbar-icons-desktop {
             display: flex;
             margin-left: auto;
         }
-        
+
         /* Mobile layout for navbar-icons (inside collapse) */
         .navbar-icons-mobile {
             display: none;
@@ -205,151 +211,155 @@
         .navbar-nav {
             margin: 0 auto;
         }
-        
+
         @media (max-width: 991px) {
             .navbar-brand {
                 text-align: center;
                 margin: 0 auto;
             }
-            
+
             /* Show hamburger menu on smaller screens */
             .hamburger-label {
                 display: flex;
             }
-            
+
             /* Hide desktop icons */
             .navbar-icons-desktop {
                 display: none;
             }
-            
+
             /* Show mobile icons */
             .navbar-icons-mobile {
                 display: flex;
-                flex-wrap: wrap; /* Added to improve how buttons wrap */
+                flex-wrap: wrap;
+                /* Added to improve how buttons wrap */
             }
-            
+
             .search-container {
                 margin: 15px auto;
                 max-width: 90%;
             }
-            
+
             .navbar-icons a {
                 margin: 0 10px;
             }
-            
+
             .navbar-icons a i {
                 font-size: 1.2rem;
                 padding: 8px;
             }
-            
+
             .btn-outline-secondary {
                 padding: 4px 10px;
                 font-size: 0.9rem;
                 margin-left: 15px;
             }
-            
+
             /* Responsive text size adjustments for nav items */
             .nav-link {
                 font-size: 1rem;
                 margin: 0 10px;
             }
-            
+
             .nav-item.active .nav-link {
                 font-size: 1.2rem;
             }
-            
+
             /* Fix for dropdown in mobile view */
             .navbar-icons-mobile .dropdown {
                 position: relative;
                 display: inline-block;
             }
-            
+
             /* Position dropdown content properly on mobile */
             .navbar-icons-mobile .dropdown-content {
                 position: absolute;
                 top: 100%;
                 right: 0;
                 left: auto;
-                z-index: 1050; /* Higher z-index to ensure it appears above other elements */
-                width: 180px; /* Fixed width */
+                z-index: 1050;
+                /* Higher z-index to ensure it appears above other elements */
+                width: 180px;
+                /* Fixed width */
             }
         }
-        
+
         /* Additional media query for very small screens */
         @media (max-width: 576px) {
             .nav-link {
                 font-size: 0.9rem;
                 margin: 0 5px;
             }
-            
+
             .nav-item.active .nav-link {
                 font-size: 1.1rem;
             }
-            
+
             .navbar-icons a {
                 margin: 0 5px;
             }
-            
+
             .navbar-icons a i {
                 font-size: 1rem;
                 padding: 6px;
             }
-            
+
             .btn-outline-secondary {
                 padding: 3px 8px;
                 font-size: 0.8rem;
                 margin-left: 8px;
             }
-            
+
             /* Better spacing for the mobile icons */
             .navbar-icons-mobile {
                 gap: 8px;
                 justify-content: space-around;
                 padding: 0 10px;
             }
-            
+
             /* Remove the erroneous 'x' after login buttons */
             .navbar-icons-mobile:after {
                 content: none !important;
             }
         }
-        
+
         /* Added an extra breakpoint for extra small devices */
         @media (max-width: 375px) {
             .nav-link {
                 font-size: 0.85rem;
                 margin: 0 3px;
             }
-            
+
             .nav-item.active .nav-link {
                 font-size: 1rem;
             }
-            
+
             .navbar-brand img {
                 max-height: 35px;
             }
-            
+
             .navbar-icons a i {
                 font-size: 0.9rem;
                 padding: 5px;
             }
-            
+
             /* Improve layout for very small screens */
             .navbar-icons-mobile {
                 flex-wrap: wrap;
                 gap: 5px;
             }
-            
+
             .navbar-icons-mobile a {
                 margin: 2px;
             }
-            
-            .sign-in-link, .sign-up-link {
+
+            .sign-in-link,
+            .sign-up-link {
                 padding: 5px 10px;
                 font-size: 12px;
             }
         }
-        
+
         /* Professional styling for mobile navigation buttons */
         @media (max-width: 991px) {
             .navbar-icons-mobile {
@@ -361,7 +371,7 @@
                 padding-top: 10px;
                 border-top: 1px solid #eaeaea;
             }
-            
+
             /* Icon buttons - clean, professional style */
             .navbar-icons-mobile .icon-link {
                 display: flex;
@@ -374,20 +384,20 @@
                 border: 1px solid #dee2e6;
                 transition: all 0.2s ease;
             }
-            
+
             .navbar-icons-mobile .icon-link:hover {
                 background-color: #e9ecef;
             }
-            
+
             .navbar-icons-mobile .icon-link:active {
                 background-color: #dee2e6;
             }
-            
+
             .navbar-icons-mobile .icon-link i {
                 font-size: 16px;
                 color: #495057;
             }
-            
+
             /* Login/Sign up buttons - classic professional style */
             .navbar-icons-mobile .btn-outline-secondary,
             .navbar-icons-mobile .sign-in-link,
@@ -404,14 +414,14 @@
                 text-align: center;
                 margin: 0 4px;
             }
-            
+
             .navbar-icons-mobile .btn-outline-secondary:hover,
             .navbar-icons-mobile .sign-in-link:hover,
             .navbar-icons-mobile .sign-up-link:hover {
                 background-color: #f8f9fa;
                 color: #212529;
             }
-            
+
             /* Username button when logged in */
             .navbar-icons-mobile .user-name-link {
                 padding: 8px 16px;
@@ -427,56 +437,56 @@
                 display: flex;
                 align-items: center;
             }
-            
+
             .navbar-icons-mobile .user-name-link:after {
                 content: '\f107';
                 font-family: 'Font Awesome 6 Free';
                 font-weight: 900;
                 margin-left: 5px;
             }
-            
+
             /* Dropdown styling */
             .navbar-icons-mobile .dropdown-menu {
                 border-radius: 4px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
                 border: 1px solid #dee2e6;
                 min-width: 180px;
                 padding: 8px 0;
             }
-            
+
             .navbar-icons-mobile .dropdown-item {
                 padding: 8px 16px;
                 font-size: 14px;
                 color: #495057;
                 transition: all 0.2s ease;
             }
-            
+
             .navbar-icons-mobile .dropdown-item:hover {
                 background-color: #f8f9fa;
                 color: #212529;
             }
-            
+
             .navbar-icons-mobile .dropdown-divider {
                 margin: 4px 0;
                 border-top: 1px solid #e9ecef;
             }
-            
+
             .navbar-icons-mobile .dropdown-item.logout {
                 color: #dc3545;
             }
         }
-        
+
         /* Small mobile adjustments */
         @media (max-width: 576px) {
             .navbar-icons-mobile {
                 gap: 6px;
             }
-            
+
             .navbar-icons-mobile .icon-link {
                 width: 36px;
                 height: 36px;
             }
-            
+
             .navbar-icons-mobile .btn-outline-secondary,
             .navbar-icons-mobile .sign-in-link,
             .navbar-icons-mobile .sign-up-link,
@@ -484,7 +494,7 @@
                 padding: 6px 12px;
                 font-size: 13px;
             }
-            
+
             /* Fix the erroneous 'x' character that appears after login buttons */
             .navbar-icons-mobile:after,
             .navbar-icons-mobile::after {
@@ -492,22 +502,22 @@
                 display: none !important;
             }
         }
-        
+
         /* Extra small screens */
         @media (max-width: 375px) {
             .navbar-icons-mobile {
                 gap: 4px;
             }
-            
+
             .navbar-icons-mobile .icon-link {
                 width: 32px;
                 height: 32px;
             }
-            
+
             .navbar-icons-mobile .icon-link i {
                 font-size: 14px;
             }
-            
+
             .navbar-icons-mobile .btn-outline-secondary,
             .navbar-icons-mobile .sign-in-link,
             .navbar-icons-mobile .sign-up-link,
@@ -516,7 +526,7 @@
                 font-size: 12px;
             }
         }
-        
+
         /* Professional menu highlighting with dark bold styling - only on click/active */
         .nav-item .nav-link {
             position: relative;
@@ -526,25 +536,26 @@
             font-weight: normal;
             transition: all 0.3s ease;
         }
-        
+
         /* Bold dark color for active/clicked menu items only */
         .nav-item.active .nav-link {
             color: #111;
             font-weight: 600;
             font-size: 1.15rem;
         }
-        
+
         /* Remove all hover effects */
         .nav-item .nav-link:hover {
             /* No special styling on hover */
-            color: #555; /* Same as default */
+            color: #555;
+            /* Same as default */
         }
-        
+
         /* Remove the underline effect completely */
         .nav-item .nav-link::after {
             display: none;
         }
-        
+
         /* Mobile menu highlight adjustments - active only */
         @media (max-width: 991px) {
             .nav-item .nav-link {
@@ -553,19 +564,19 @@
                 padding-left: 10px;
                 border-radius: 4px;
             }
-            
+
             .nav-item.active .nav-link {
                 border-left: 3px solid #333;
                 background-color: #f8f9fa;
             }
-            
+
             .nav-item .nav-link:hover {
                 /* No hover styling */
                 background-color: transparent;
                 border-left: 3px solid transparent;
             }
         }
-        
+
         /* Sign in and Login button styles */
         .sign-in-link {
             display: inline-flex;
@@ -580,17 +591,17 @@
             font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-        
+
         .sign-in-link:hover {
             background-color: #e9ecef;
             transform: translateY(-2px);
             color: #000;
             text-decoration: none;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
-        
+
         /* Different styling for Sign up button to make it stand out */
         .sign-up-link {
             display: inline-flex;
@@ -598,24 +609,24 @@
             padding: 8px 16px;
             margin: 0 5px;
             background-color: #ece391;
-            
+
             border-radius: 4px;
             color: white;
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
             transition: all 0.3s ease;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        
+
         .sign-up-link:hover {
             background-color: #d9cb00;
             transform: translateY(-2px);
             color: white;
             text-decoration: none;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
         }
-        
+
         /* Username link with icon */
         .user-name-link {
             display: inline-flex;
@@ -627,10 +638,10 @@
             font-size: 15px;
             font-weight: 600;
             transition: all 0.3s ease;
-          
+
             position: relative;
         }
-        
+
         .user-name-link:after {
             content: '\f107';
             font-family: 'Font Awesome 6 Free';
@@ -638,21 +649,21 @@
             margin-left: 8px;
             font-size: 12px;
         }
-        
+
         .user-name-link:hover {
-         
+
             color: #000;
             text-decoration: none;
-           
+
         }
-        
+
         /* Enhanced dropdown styling */
         .dropdown-content {
             display: none;
             position: absolute;
             background-color: #fff;
             min-width: 180px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             border-radius: 6px;
             top: 100%;
@@ -662,12 +673,19 @@
             margin-top: 5px;
             animation: fadeIn 0.2s ease-out;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        
+
         .dropdown-content a {
             color: #333;
             padding: 12px 16px;
@@ -678,11 +696,11 @@
             border-bottom: 1px solid #f5f5f5;
             transition: all 0.2s ease;
         }
-        
+
         .dropdown-content a:last-child {
             border-bottom: none;
         }
-        
+
         .dropdown-content a:before {
             margin-right: 10px;
             font-family: 'Font Awesome 6 Free';
@@ -690,41 +708,45 @@
             font-size: 14px;
             color: #666;
         }
-        
+
         .dropdown-content a[href="/userProfile"]:before {
-            content: '\f007'; /* user icon */
+            content: '\f007';
+            /* user icon */
         }
-        
+
         .dropdown-content a[href="/logout"]:before {
-            content: '\f2f5'; /* sign-out icon */
+            content: '\f2f5';
+            /* sign-out icon */
             color: #dc3545;
         }
-        
+
         .dropdown-content a:hover {
             background-color: #f8f9fa;
             padding-left: 20px;
         }
-        
+
         .dropdown-content a[href="/logout"] {
             color: #dc3545;
         }
-        
+
         .dropdown-content a[href="/logout"]:hover {
             background-color: #fff8f8;
         }
-        
+
         .dropdown.show .dropdown-content {
-           display: block;
-         }
+            display: block;
+        }
+
         /* Ensure proper spacing */
         .navbar-icons a.sign-in-link,
         .navbar-icons a.sign-up-link,
         .navbar-icons a.user-name-link {
             margin: 0 5px;
         }
-        
+
         /* Make sure responsive styles are maintained */
         @media (max-width: 991px) {
+
             .navbar-icons-mobile .sign-in-link,
             .navbar-icons-mobile .sign-up-link,
             .navbar-icons-mobile .user-name-link {
@@ -732,228 +754,255 @@
                 font-size: 13px;
             }
         }
-        
+
         @media (max-width: 576px) {
+
             .navbar-icons-mobile .sign-in-link,
             .navbar-icons-mobile .sign-up-link,
             .navbar-icons-mobile .user-name-link {
                 padding: 6px 12px;
                 font-size: 12px;
             }
-            
+
             .navbar-icons-mobile .dropdown-content {
                 min-width: 160px;
             }
         }
+
         .user-photo {
             width: 32px;
             height: 32px;
-            border-radius: 50%; /* Makes it circular */
-            object-fit: cover;  /* Ensures the image doesn't stretch */
+            border-radius: 50%;
+            /* Makes it circular */
+            object-fit: cover;
+            /* Ensures the image doesn't stretch */
             margin-right: 8px;
             vertical-align: middle;
-            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Optional: subtle shadow */
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            /* Optional: subtle shadow */
         }
-        
+
         /* Fix for unwanted 'x' character */
         .navbar-icons-mobile::after {
             content: none !important;
         }
     </style>
 </head>
+
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
-    <div class="container-fluid">
-        <!-- Custom Hamburger Toggle Button -->
-      <label for="menu-toggle" class="hamburger-label navbar-toggler">
-    <input type="checkbox" id="menu-toggle" class="hamburger-input"
-           data-bs-toggle="collapse" data-bs-target="#navbarContent"
-           aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-    <i id="hamburger-icon" class="fa-solid fa-bars text-black fs-2"></i>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3">
+        <div class="container-fluid">
+            <!-- Custom Hamburger Toggle Button -->
+            <label for="menu-toggle" class="hamburger-label navbar-toggler">
+                <input type="checkbox" id="menu-toggle" class="hamburger-input" data-bs-toggle="collapse"
+                    data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i id="hamburger-icon" class="fa-solid fa-bars text-black fs-2"></i>
 
-</label>
+            </label>
 
 
-        
-        <!-- Brand (centered) with logo -->
-        <a class="navbar-brand mx-auto order-0" href="#">
-            <img src="/img/logo/image.png" alt="NOOR">
-        </a>
-        
-        <!-- Desktop icons (visible only on desktop) -->
-        <div class="navbar-icons navbar-icons-desktop order-lg-2">
-            <a href="/wishlist" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
-                <i class="far fa-heart"></i>
+
+            <!-- Brand (centered) with logo -->
+            <a class="navbar-brand mx-auto order-0" href="#">
+                <img src="/img/logo/image.png" alt="NOOR">
             </a>
-           
-            <a href="/cart" aria-label="Cart" class="icon-link" data-icon="cart">
-                <i class="fas fa-shopping-cart"></i>
-            </a>
-            
-            <% if (user) { %>
-                <div class="dropdown">
-                    <a href="" class="user-name-link">
-                        <% if (user.userImage[0]) { %>
-                            <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
-                          <% } else { %>
-                            <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg" alt="Default Avatar" class="user-photo">
-                          <% } %>
-                        
+
+            <!-- Desktop icons (visible only on desktop) -->
+
+            <div class="navbar-icons navbar-icons-desktop order-lg-2">
+                 <a href="/myOrders" aria-label="Orders" class="icon-link" data-icon="orders">
+                        <i class="fas fa-briefcase"></i> <!-- or another suitable icon -->
                     </a>
-                    <div class="dropdown-content">
-                        <a href="/profile"><i class="fa-regular fa-circle-user"></i></i>Profile</a>
-                        <a href="/logout">Logout</a>
-                    </div>
-                </div>
-            <% } else { %> 
-                <a href="/login" class="sign-in-link">Log in</a> 
-                <a href="/signUp" class="sign-up-link">Sign up</a>
-            <% } %>
-            
-            
-        </div>
-        
-        <!-- Collapsible Content -->
-        <div class="collapse navbar-collapse order-lg-1" id="navbarContent">
-            <!-- Navigation Links -->
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="/" data-page="home">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/shop" data-page="shop">Shop</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/about" data-page="about">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contact" data-page="contact">Contact</a>
-                </li>
-            </ul>
-            
-            <div class="navbar-icons navbar-icons-mobile">
                 <a href="/wishlist" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
                     <i class="far fa-heart"></i>
                 </a>
+
                 <a href="/cart" aria-label="Cart" class="icon-link" data-icon="cart">
                     <i class="fas fa-shopping-cart"></i>
                 </a>
-                
+
                 <% if (user) { %>
-                <div class="dropdown">
-                    <a href="" class="user-name-link">
-                        <% if (user.userImage[0]) { %>
-                            <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
-                          <% } else { %>
-                            <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg" alt="Default Avatar" class="user-photo">
-                          <% } %>
-                        
-                    </a>
-                    <div class="dropdown-content">
-                        <a href="/profile">Profile</a>
-                        <a href="/logout">Logout</a>
+                    <div class="dropdown">
+                        <a href="" class="user-name-link">
+                            <% if (user.userImage[0]) { %>
+                                <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
+                                <% } else { %>
+                                    <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg"
+                                        alt="Default Avatar" class="user-photo">
+                                    <% } %>
+
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="/profile"><i class="fa-regular fa-circle-user"></i></i>Profile</a>
+                            <a href="/myOrders"><i class="fa-solid fa-bag-shopping"></i></i>Orders</a>
+                            <a href="/address"><i class="fa-solid fa-address-card"></i>Address</a>
+                            <a href="/wallet"><i class="fa-solid fa-wallet"></i>Wallet</a>
+                            <a href="/logout">Logout</a>
+
+                        </div>
                     </div>
-                </div>
-            <% } else { %> 
-                <a href="/login" class="sign-in-link">Log in</a> 
-                <a href="/signUp" class="sign-up-link">Sign up</a>
-            <% } %>
-            <!-- Removed the erroneous 'x' character that was here -->
+                    <% } else { %>
+                        <a href="/login" class="sign-in-link">Log in</a>
+                        <a href="/signUp" class="sign-up-link">Sign up</a>
+                        <% } %>
+
+
             </div>
-        </div> 
-    </div>
-</nav>
 
-<!-- Bootstrap JS Bundle with Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            <!-- Collapsible Content -->
+            <div class="collapse navbar-collapse order-lg-1" id="navbarContent">
+                <!-- Navigation Links -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/" data-page="home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/shop" data-page="shop">Shop</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about" data-page="about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/contact" data-page="contact">Contact</a>
+                    </li>
 
-<!-- Custom JavaScript for navbar active state -->
-<script>
- document.addEventListener('DOMContentLoaded', function () {
-    // === Handle Navigation Active State ===
-    const navLinks = document.querySelectorAll('.nav-link');
 
-    if (navLinks.length) {
-        const currentPath = window.location.pathname;
 
-        navLinks.forEach(link => {
-            const linkPath = link.getAttribute('href');
+                </ul>
 
-            // Match exact path or sub-path
-            if (linkPath === currentPath ||
-                (linkPath !== '/' && currentPath.startsWith(linkPath))) {
-                const parent = link.closest('.nav-item');
-                if (parent) parent.classList.add('active');
+                <div class="navbar-icons navbar-icons-mobile">
+                    <a href="/wishlist" aria-label="Wishlist" class="icon-link" data-icon="wishlist">
+                        <i class="far fa-heart"></i>
+                    </a>
+                    <a href="/cart" aria-label="Cart" class="icon-link" data-icon="cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                    <a href="/myOrders" aria-label="Orders" class="icon-link" data-icon="orders">
+                        <i class="fas fa-briefcase"></i> <!-- or another suitable icon -->
+                    </a>
+
+
+                    <% if (user) { %>
+                        <div class="dropdown">
+                            <a href="" class="user-name-link">
+                                <% if (user.userImage[0]) { %>
+                                    <img src="<%=user.userImage%>" alt="User Photo" class="user-photo">
+                                    <% } else { %>
+                                        <img src="https://res.cloudinary.com/dlf7ygi2x/image/upload/v1746018861/360_F_850472001_eLLSs2ZOAAqJBpJN0r3cTtBZVSdDt3TH_iqme3a.jpg"
+                                            alt="Default Avatar" class="user-photo">
+                                        <% } %>
+
+                            </a>
+                            <div class="dropdown-content">
+                               <a href="/profile"><i class="fa-regular fa-circle-user"></i></i>Profile</a>
+                            <a href="/myOrders"><i class="fa-solid fa-bag-shopping"></i></i>Orders</a>
+                            <a href="/address"><i class="fa-solid fa-address-card"></i>Address</a>
+                            <a href="/wallet"><i class="fa-solid fa-wallet"></i>Wallet</a>
+                            <a href="/logout">Logout</a>
+                            </div>
+                        </div>
+                        <% } else { %>
+                            <a href="/login" class="sign-in-link">Log in</a>
+                            <a href="/signUp" class="sign-up-link">Sign up</a>
+                            <% } %>
+                                <!-- Removed the erroneous 'x' character that was here -->
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript for navbar active state -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // === Handle Navigation Active State ===
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            if (navLinks.length) {
+                const currentPath = window.location.pathname;
+
+                navLinks.forEach(link => {
+                    const linkPath = link.getAttribute('href');
+
+                    // Match exact path or sub-path
+                    if (linkPath === currentPath ||
+                        (linkPath !== '/' && currentPath.startsWith(linkPath))) {
+                        const parent = link.closest('.nav-item');
+                        if (parent) parent.classList.add('active');
+                    }
+
+                    link.addEventListener('click', function () {
+                        document.querySelectorAll('.nav-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+
+                        const parent = this.closest('.nav-item');
+                        if (parent) parent.classList.add('active');
+                    });
+                });
             }
 
-            link.addEventListener('click', function () {
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.remove('active');
+            // === Handle Dropdown Toggle ===
+            const dropdowns = document.querySelectorAll('.dropdown');
+
+            if (dropdowns.length) {
+                dropdowns.forEach(dropdown => {
+                    const button = dropdown.querySelector('.user-name-link');
+                    if (!button) return;
+
+                    button.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+
+                        // Close other dropdowns
+                        dropdowns.forEach(d => {
+                            if (d !== dropdown) {
+                                d.classList.remove('show');
+                            }
+                        });
+
+                        // Toggle this dropdown
+                        dropdown.classList.toggle('show');
+                    });
                 });
 
-                const parent = this.closest('.nav-item');
-                if (parent) parent.classList.add('active');
-            });
-        });
-    }
-
-    // === Handle Dropdown Toggle ===
-    const dropdowns = document.querySelectorAll('.dropdown');
-
-    if (dropdowns.length) {
-        dropdowns.forEach(dropdown => {
-            const button = dropdown.querySelector('.user-name-link');
-            if (!button) return;
-
-            button.addEventListener('click', function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Close other dropdowns
-                dropdowns.forEach(d => {
-                    if (d !== dropdown) {
-                        d.classList.remove('show');
+                // Close dropdowns when clicking outside
+                document.addEventListener('click', function (e) {
+                    if (!e.target.closest('.dropdown')) {
+                        dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
                     }
                 });
 
-                // Toggle this dropdown
-                dropdown.classList.toggle('show');
-            });
-        });
+                // Close dropdown when clicking on dropdown item
+                document.querySelectorAll('.dropdown-content a').forEach(item => {
+                    item.addEventListener('click', function () {
+                        dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+                    });
+                });
+            }
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!e.target.closest('.dropdown')) {
-                dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
+            // === Handle Hamburger Icon Toggle ===
+            const menuToggle = document.getElementById("menu-toggle");
+            const icon = document.getElementById("hamburger-icon");
+
+            if (menuToggle && icon) {
+                menuToggle.addEventListener("change", function () {
+                    if (menuToggle.checked) {
+                        icon.classList.remove("fa-bars");
+                        icon.classList.add("fa-xmark");
+                    } else {
+                        icon.classList.remove("fa-xmark");
+                        icon.classList.add("fa-bars");
+                    }
+                });
             }
         });
 
-        // Close dropdown when clicking on dropdown item
-        document.querySelectorAll('.dropdown-content a').forEach(item => {
-            item.addEventListener('click', function () {
-                dropdowns.forEach(dropdown => dropdown.classList.remove('show'));
-            });
-        });
-    }
-
-    // === Handle Hamburger Icon Toggle ===
-    const menuToggle = document.getElementById("menu-toggle");
-    const icon = document.getElementById("hamburger-icon");
-
-    if (menuToggle && icon) {
-        menuToggle.addEventListener("change", function () {
-            if (menuToggle.checked) {
-                icon.classList.remove("fa-bars");
-                icon.classList.add("fa-xmark");
-            } else {
-                icon.classList.remove("fa-xmark");
-                icon.classList.add("fa-bars");
-            }
-        });
-    }
-});
-
-</script>
+    </script>
 </body>
+
 </html>
