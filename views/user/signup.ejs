@@ -225,46 +225,55 @@
       }
 
       function passwordValidateChecking() {
-        const passval = password.value.trim();
-        const cpassval = confirmPassword.value.trim();
+  const passval = password.value.trim();
+  const cpassval = confirmPassword.value.trim();
 
-        const lowercase = /[a-z]/;
-        const uppercase = /[A-Z]/;
-        const digit = /\d/;
-        const space = /\s/;
-        let isValid = true;
+  const lowercase = /[a-z]/;
+  const uppercase = /[A-Z]/;
+  const digit = /\d/;
+  const space = /\s/;
+  const specialChar = /[^a-zA-Z0-9]/; // Matches any character that is NOT a letter or digit
 
-        // Check for minimum length
-        if (passval.length < 8) {
-          error4.style.display = "block";
-          error4.innerHTML = "Password must be at least 8 characters long";
-          isValid = false;
-        }
-        // Check for lowercase, uppercase, digit, and no spaces
-        else if (
-          !lowercase.test(passval) ||
-          !uppercase.test(passval) ||
-          !digit.test(passval) ||
-          space.test(passval)
-        ) {
-          error4.style.display = "block";
-          error4.innerHTML = "Password must include uppercase, lowercase, a number, and no spaces";
-          isValid = false;
-        } else {
-          error4.style.display = "none";
-        }
+  let isValid = true;
 
-        // Confirm password check
-        if (passval !== cpassval) {
-          error5.style.display = "block";
-          error5.innerHTML = "Passwords do not match";
-          isValid = false;
-        } else {
-          error5.style.display = "none";
-        }
+  // Check for minimum length
+  if (passval.length < 8) {
+    error4.style.display = "block";
+    error4.innerHTML = "Password must be at least 8 characters long";
+    isValid = false;
+  }
+  // Check for lowercase, uppercase, digit, and no spaces
+  else if (
+    !lowercase.test(passval) ||
+    !uppercase.test(passval) ||
+    !digit.test(passval) ||
+    space.test(passval)
+  ) {
+    error4.style.display = "block";
+    error4.innerHTML = "Password must include uppercase, lowercase, a number, and no spaces";
+    isValid = false;
+  }
+  // Check for special characters
+  else if (specialChar.test(passval)) {
+    error4.style.display = "block";
+    error4.innerHTML = "Password must not contain special characters";
+    isValid = false;
+  } else {
+    error4.style.display = "none";
+  }
 
-        return isValid;
-      }
+  // Confirm password check
+  if (passval !== cpassval) {
+    error5.style.display = "block";
+    error5.innerHTML = "Passwords do not match";
+    isValid = false;
+  } else {
+    error5.style.display = "none";
+  }
+
+  return isValid;
+}
+
 
       function referralValidateChecking() {
         const refval = referral.value.trim();

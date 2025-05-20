@@ -84,3 +84,10 @@ HOSTING  WEEK ERRORS
 - the admin side adding validations error messages does not unHide  [ⴵ...]
 - the cart swal quantity increase decrease also [✔]
 - PRODUCT price 0010 
+
+
+
+
+
+
+payment failed deesign\
