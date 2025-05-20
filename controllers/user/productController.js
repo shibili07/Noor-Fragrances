@@ -398,11 +398,12 @@ const loadWishlist = async (req, res) => {
       })
       .lean();
 
-    if (wishlist) {
-      wishlist.items = wishlist.items.filter(
-        (item) => item.product && item.product.category
-      );
-    }
+    if (wishlist && Array.isArray(wishlist.items)) {
+  wishlist.items = wishlist.items.filter(
+    (item) => item.product && item.product.category
+  );
+}
+
 
     // Prepare data for frontend
     let wishlistData = {
