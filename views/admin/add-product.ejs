@@ -2,7 +2,6 @@
 
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +12,6 @@
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/admin/addProduct.css">
 </head>
-
 <body>
   <section class="content-main" id="mainContent">
     <div class="content-wrapper">
@@ -47,7 +45,6 @@
                     <input type="text" placeholder="Enter product name" name="productName" class="form-control" id="productName">
                     <div id="productName-error" class="error-message"></div>
                   </div>
-                  <br>
                   <div class="row">
                     <div class="col-md-6 mb-4">
                       <label class="form-label required-label">Category</label>
@@ -58,7 +55,6 @@
                       </select>
                       <div id="category-error" class="error-message"></div>
                     </div>
-                    <br>
                     <div class="col-md-6 mb-4">
                       <label class="form-label required-label">Gender</label>
                       <select class="form-select" name="gender" id="gender">
@@ -123,7 +119,6 @@
               <div class="card-body">
                 <div id="variants-error" class="error-message"></div>
                 <div id="variants-container">
-                  <!-- Variant 1 -->
                   <div class="variant-section" id="variant-1">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                       <h6 class="form-section-title mb-0">Variant 1</h6>
@@ -222,8 +217,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-    
-   // Variant Management
+    // Variant Management
     let variantCount = 1;
     const MAX_VARIANTS = 5;
 
@@ -243,55 +237,55 @@
       const variantIndex = variantCount - 1;
 
       const variantHTML = `
-                <div class="variant-section" id="${newVariantId}">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="form-section-title mb-0">Variant ${variantCount}</h6>
-                        <div class="variant-actions">
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('${newVariantId}')">
-                                <i class="fas fa-trash"></i> Remove
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: none;">
-                                <i class="fas fa-plus"></i> Add Variant
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">Size</label>
-                            <select class="form-select variant-size" name="variants[${variantIndex}][size]">
-                                <option value="">Select Size</option>
-                                <option value="20">20 ml</option>
-                                <option value="50">50 ml</option>
-                                <option value="100">100 ml</option>
-                                <option value="150">150 ml</option>
-                                <option value="200">200 ml</option>
-                                <option value="250">250 ml</(initiatives.md)option>
-                            </select>
-                            <div class="error-message size-error"></div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">SKU</label>
-                            <input type="text" placeholder="SKU identifier" name="variants[${variantIndex}][sku]" class="form-control variant-sku">
-                            <div class="error-message sku-error"></div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">Quantity</label>
-                            <input placeholder="Stock quantity" name="variants[${variantIndex}][quantity]" type="number" min="0" class="form-control variant-quantity">
-                            <div class="error-message quantity-error"></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label required-label">Price</label>
-                            <div class="price-input-group">
-                                <input placeholder="0.00" name="variants[${variantIndex}][salePrice]" type="number" step="0.01" min="0" class="form-control variant-sale-price">
-                            </div>
-                            <div class="error-message sale-price-error"></div>
-                        </div>
-                    </div>
-                    <hr class="mb-4">
-                </div>
-            `;
+        <div class="variant-section" id="${newVariantId}">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="form-section-title mb-0">Variant ${variantCount}</h6>
+            <div class="variant-actions">
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('${newVariantId}')">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: none;">
+                <i class="fas fa-plus"></i> Add Variant
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">Size</label>
+              <select class="form-select variant-size" name="variants[${variantIndex}][size]">
+                <option value="">Select Size</option>
+                <option value="20">20 ml</option>
+                <option value="50">50 ml</option>
+                <option value="100">100 ml</option>
+                <option value="150">150 ml</option>
+                <option value="200">200 ml</option>
+                <option value="250">250 ml</option>
+              </select>
+              <div class="error-message size-error"></div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">SKU</label>
+              <input type="text" placeholder="SKU identifier" name="variants[${variantIndex}][sku]" class="form-control variant-sku">
+              <div class="error-message sku-error"></div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">Quantity</label>
+              <input placeholder="Stock quantity" name="variants[${variantIndex}][quantity]" type="number" min="0" class="form-control variant-quantity">
+              <div class="error-message quantity-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label class="form-label required-label">Price</label>
+              <div class="price-input-group">
+                <input placeholder="0.00" name="variants[${variantIndex}][salePrice]" type="number" step="0.01" min="0" class="form-control variant-sale-price">
+              </div>
+              <div class="error-message sale-price-error"></div>
+            </div>
+          </div>
+          <hr class="mb-4">
+        </div>
+      `;
 
       document.getElementById('variants-container').insertAdjacentHTML('beforeend', variantHTML);
       updateAddVariantButtonVisibility();
@@ -380,13 +374,11 @@
       let errorMessage = '';
 
       if (element.classList.contains('variant-size')) {
-        // Variant size validation
         if (!element.value) {
           isValid = false;
           errorMessage = 'Please select a size.';
         }
       } else if (element.classList.contains('variant-sku')) {
-        // SKU validation
         const sku = element.value.trim();
         if (!sku) {
           isValid = false;
@@ -396,21 +388,18 @@
           errorMessage = 'SKU should contain only alphanumeric characters, hyphens, and underscores.';
         }
       } else if (element.classList.contains('variant-quantity')) {
-        // Quantity validation
         const quantity = parseInt(element.value);
         if (isNaN(quantity) || quantity < 0) {
           isValid = false;
           errorMessage = 'Please enter a valid non-negative quantity.';
         }
       } else if (element.classList.contains('variant-sale-price')) {
-        // Sale price validation
         const salePriceValue = element.value.trim();
         if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || parseFloat(salePriceValue) <= 0) {
           isValid = false;
           errorMessage = 'Sale price must be a valid number greater than 0, without leading zeros.';
         }
       } else if (fieldConfig) {
-        // Basic field validation (e.g., productName, category, etc.)
         if (fieldConfig.required && (!element.value || element.value.trim() === '')) {
           isValid = false;
           errorMessage = `${fieldConfig.name} is required.`;
@@ -432,7 +421,6 @@
         }
       }
 
-      // Display or clear error message
       if (!isValid) {
         displayErrorMessage(errorElement, errorMessage);
       } else {
@@ -447,7 +435,6 @@
       clearErrorMessages();
       let isValid = true;
 
-      // Basic Information
       const fields = [
         { id: 'productName', name: 'Product Name', required: true },
         { id: 'category', name: 'Category', required: true },
@@ -468,7 +455,6 @@
         }
       });
 
-      // Variant Validation
       const variantSections = document.querySelectorAll('.variant-section');
       if (variantSections.length === 0) {
         displayErrorMessage(document.getElementById('variants-error'), 'At least one product variant is required.');
@@ -482,47 +468,30 @@
         const quantityInput = section.querySelector('.variant-quantity');
         const salePriceInput = section.querySelector('.variant-sale-price');
 
-        // Size
-        if (!validateField(sizeSelect)) {
-          isValid = false;
-        } else {
-          sizes.push(sizeSelect.value);
-        }
+        if (!validateField(sizeSelect)) isValid = false;
+        else sizes.push(sizeSelect.value);
 
-        // SKU
-        if (!validateField(skuInput)) {
-          isValid = false;
-        }
-
-        // Quantity
-        if (!validateField(quantityInput)) {
-          isValid = false;
-        }
-
-        // Sale Price
-        if (!validateField(salePriceInput)) {
-          isValid = false;
-        }
+        if (!validateField(skuInput)) isValid = false;
+        if (!validateField(quantityInput)) isValid = false;
+        if (!validateField(salePriceInput)) isValid = false;
       });
 
-      // Check for duplicate sizes
       const uniqueSizes = [...new Set(sizes)];
       if (sizes.length !== uniqueSizes.length) {
         displayErrorMessage(document.getElementById('variants-error'), 'Each variant must have a unique size.');
         isValid = false;
       }
 
-      // Image Validation
       const thumbnails = document.querySelectorAll('#croppedThumbnails .thumbnail');
       if (thumbnails.length < 3 || thumbnails.length > 5) {
         displayErrorMessage(document.getElementById('images-error'), 'Please upload between 3 and 5 images.');
         isValid = false;
       }
 
+      console.log('Form validation result:', isValid);
       return isValid;
     }
 
-    // Real-Time Validation Setup
     function setupRealTimeValidation() {
       const fields = [
         { id: 'productName', name: 'Product Name', required: true },
@@ -537,7 +506,6 @@
         { id: 'productDescription', name: 'Description', required: true },
       ];
 
-      // Basic fields
       fields.forEach(field => {
         const element = document.getElementById(field.id);
         if (element) {
@@ -546,7 +514,6 @@
         }
       });
 
-      // Variant fields (dynamically added, so use event delegation)
       document.getElementById('variants-container').addEventListener('input', (e) => {
         if (
           e.target.classList.contains('variant-size') ||
@@ -561,16 +528,16 @@
       document.getElementById('variants-container').addEventListener('change', (e) => {
         if (e.target.classList.contains('variant-size')) {
           validateField(e.target);
-          updateSizeOptions(); // Ensure size options are updated
+          updateSizeOptions();
         }
       });
     }
 
-    // Form Submission with Fetch
-    function validateAndSubmit(event) {
+    async function validateAndSubmit(event) {
       event.preventDefault();
+      console.log('Submitting form...');
       if (validateForm()) {
-        submitForm();
+        await submitForm();
       } else {
         Swal.fire({
           icon: 'error',
@@ -585,16 +552,16 @@
       const form = document.getElementById('productForm');
       const formData = new FormData();
 
-      // Append form fields (excluding images)
+      // Append form fields
       const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
       inputs.forEach(input => {
-        formData.append(input.name, input.value);
+        formData.append(input.name, input.value.trim());
       });
 
       // Append cropped image blobs
       const thumbnails = document.querySelectorAll('#croppedThumbnails .thumbnail');
       thumbnails.forEach((thumbnail, index) => {
-        const dataUrl = thumbnail.style.backgroundImage.slice(5, -2); // Remove 'url("")'
+        const dataUrl = thumbnail.style.backgroundImage.slice(5, -2);
         const byteString = atob(dataUrl.split(',')[1]);
         const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
         const ab = new ArrayBuffer(byteString.length);
@@ -602,13 +569,15 @@
         for (let i = 0; i < byteString.length; i++) {
           ia[i] = byteString.charCodeAt(i);
         }
-        const blob = new Blob([ab], {
-          type: mimeString
-        });
+        const blob = new Blob([ab], { type: mimeString });
         formData.append('images', blob, `cropped-image-${index}.jpg`);
       });
 
-      // Show loading Swal
+      
+      for (let [key, value] of formData.entries()) {
+        console.log(`FormData: ${key} =`, value);
+      }
+
       Swal.fire({
         title: 'Uploading Product...',
         html: 'Please wait while we save your product.',
@@ -625,7 +594,9 @@
           body: formData
         });
 
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response body:', result);
 
         if (result.success) {
           Swal.fire({
@@ -640,7 +611,7 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: result.message,
+            text: result.message || 'Failed to add product.',
             confirmButtonText: 'OK'
           });
         }
@@ -655,7 +626,6 @@
       }
     }
 
-    // Image Cropping and Handling
     let cropper;
     let currentImageIndex = 0;
     let imagesToCrop = [];
@@ -702,7 +672,6 @@
 
     function processNextImage() {
       if (currentImageIndex >= imagesToCrop.length) {
-        // All images have been cropped, close the modal
         closeCropModal();
         return;
       }
@@ -740,11 +709,9 @@
 
     document.getElementById('cropBtn').addEventListener('click', function() {
       if (cropper) {
-        const canvas = cropper.getCroppedCanvas({
-          width: 300,
-          height: 300
-        });
+        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
         const dataUrl = canvas.toDataURL('image/jpeg');
+        console.log('Cropped image:', dataUrl);
 
         const thumbnailWrapper = document.createElement('div');
         thumbnailWrapper.className = 'image-wrapper';
@@ -776,10 +743,7 @@
     }
 
     function scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     window.addEventListener('scroll', function() {
@@ -799,8 +763,6 @@
       setupRealTimeValidation();
       $('select[name="category"]').select2();
     });
-  
   </script>
 </body>
-
 </html>

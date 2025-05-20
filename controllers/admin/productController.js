@@ -72,41 +72,35 @@ const productInfo = async (req, res) => {
 
 const addProductPage = async (req, res) => {
   try {
-    const category = await Category.find({isListed: true,isDeleted:false});
-    res.render("add-product", {
-      cat: category,
-    });
+    const category = await Category.find({ isListed: true, isDeleted: false });
+    console.log('Fetched categories:', category);
+    res.render('add-product', { cat: category });
   } catch (error) {
-     res.redirect('/admin/pageError');
+    console.error('Error in addProductPage:', error);
+    res.redirect('/admin/pageError');
   }
 };
 
-
 const addProducts = async (req, res) => {
   try {
+    console.log('Request body:', req.body);
+    console.log('Uploaded files:', req.files);
+
     const products = req.body;
 
     // Validate productName
-    const productName = products.productName ? products.productName.trim() : "";
-
-    
+    const productName = products.productName ? products.productName.trim() : '';
     if (!productName) {
-      return res.status(400).json({
-        success: false,
-        message: "Product name is required",
-      });
+      console.log('Validation failed: Product name is empty');
+      return res.status(400).json({ success: false, message: 'Product name is required' });
     }
     if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
-      return res.status(400).json({
-        success: false,
-        message: "Product name must contain only letters, spaces, or hyphens, and include at least one letter",
-      });
+      console.log('Validation failed: Invalid product name format');
+      return res.status(400).json({ success: false, message: 'Product name must contain only letters, spaces, or hyphens, and include at least one letter' });
     }
     if (productName.length < 3 || productName.length > 100) {
-      return res.status(400).json({
-        success: false,
-        message: "Product name must be between 3 and 100 characters",
-      });
+      console.log('Validation failed: Product name length');
+      return res.status(400).json({ success: false, message: 'Product name must be between 3 and 100 characters' });
     }
 
     // Check if product already exists
@@ -114,213 +108,190 @@ const addProducts = async (req, res) => {
       productName: { $regex: `^${productName}$`, $options: 'i' },
       isDeleted: false,
     });
-    
     if (productExists) {
-      return res.status(400).json({
-        success: false,
-        message: "Product already exists, please try with another name",
-      });
+      console.log('Validation failed: Product already exists');
+      return res.status(400).json({ success: false, message: 'Product already exists, please try with another name' });
     }
 
     // Validate shortDescription
-    const shortDescription = products.shortDescription ? products.shortDescription.trim() : "";
+    const shortDescription = products.shortDescription ? products.shortDescription.trim() : '';
     if (!shortDescription) {
-      return res.status(400).json({
-        success: false,
-        message: "Short description is required",
-      });
+      console.log('Validation failed: Short description is empty');
+      return res.status(400).json({ success: false, message: 'Short description is required' });
     }
     if (shortDescription.length < 10 || shortDescription.length > 200) {
-      return res.status(400).json({
-        success: false,
-        message: "Short description must be between 10 and 200 characters",
-      });
+      console.log('Validation failed: Short description length');
+      return res.status(400).json({ success: false, message: 'Short description must be between 10 and 200 characters' });
     }
 
     // Validate other required fields
     const requiredFields = [
-      { field: products.description, name: "Description" },
-      { field: products.gender, name: "Gender" },
-      { field: products.brand, name: "Brand" },
-      { field: products.productType, name: "Fragrance Type" },
-      { field: products.fragranceFamily, name: "Fragrance Family" },
-      { field: products.usage, name: "Usage" },
-      { field: products.longevity, name: "Fragrance Longevity" },
+      { field: products.description, name: 'Description' },
+      { field: products.gender, name: 'Gender' },
+      { field: products.brand, name: 'Brand' },
+      { field: products.productType, name: 'Fragrance Type' },
+      { field: products.fragranceFamily, name: 'Fragrance Family' },
+      { field: products.usage, name: 'Usage' },
+      { field: products.longevity, name: 'Fragrance Longevity' },
     ];
 
     for (const { field, name } of requiredFields) {
-      if (!field || field.trim() === "") {
-        return res.status(400).json({
-          success: false,
-          message: `${name} is required`,
-        });
+      if (!field || field.trim() === '') {
+        console.log(`Validation failed: ${name} is empty`);
+        return res.status(400).json({ success: false, message: `${name} is required` });
       }
-    }
-
-    // Upload images to Cloudinary with high quality and format support
-    const images = [];
-    if (req.files && req.files.length > 0) {
-      // Validate image formats
-      const allowedFormats = ['image/png', 'image/jpeg', 'image/webp'];
-      for (const file of req.files) {
-        if (!allowedFormats.includes(file.mimetype)) {
-          return res.status(400).json({
-            success: false,
-            message: "Only PNG, JPEG, and WebP image formats are supported",
-          });
-        }
-      }
-
-      // Upload each image
-      for (const file of req.files) {
-        const uploaded = await new Promise((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              folder: "product-images",
-              transformation: [
-                { width: 440, height: 440, crop: "fill" },
-                { quality: 90, fetch_format: "auto" }, // Let Cloudinary choose the best format
-              ],
-              progressive: "semi", 
-            },
-            (error, result) => {
-              if (error) reject(error);
-              else resolve(result);
-            }
-          );
-          stream.end(file.buffer);
-        });
-
-        images.push(uploaded.secure_url);
-      }
-    }
-
-    // Validate image count (3-5 images)
-    if (images.length < 3 || images.length > 5) {
-      return res.status(400).json({
-        success: false,
-        message: "Please upload between 3 and 5 images",
-      });
-    }
-
-    // Parse variants if sent as a string (FormData case)
-    let rawVariants = products.variants;
-    if (typeof rawVariants === "string") {
-      try {
-        rawVariants = JSON.parse(rawVariants);
-      } catch {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid variants format",
-        });
-      }
-    }
-
-    // Process and validate variants
-    const variants = [];
-    const sizes = [];
-    if (rawVariants && Array.isArray(rawVariants)) {
-      rawVariants.forEach((variant, index) => {
-        const { size, salePrice, quantity, sku } = variant;
-
-        // Validate required fields
-        if (!size || !quantity || !sku || salePrice === undefined) {
-          throw new Error(`Missing required fields in variant ${index + 1}`);
-        }
-
-        // Validate size
-        if (!size.trim()) {
-          throw new Error(`Size is required in variant ${index + 1}`);
-        }
-        sizes.push(size.trim());
-
-        // Validate SKU
-        const skuTrimmed = sku.trim();
-        if (!skuTrimmed) {
-          throw new Error(`SKU is required in variant ${index + 1}`);
-        }
-        if (!/^[a-zA-Z0-9-_]+$/.test(skuTrimmed)) {
-          throw new Error(`SKU should contain only alphanumeric characters, hyphens, and underscores in variant ${index + 1}`);
-        }
-
-        // Validate quantity
-        const quantityNum = parseInt(quantity);
-        if (isNaN(quantityNum) || quantityNum < 0) {
-          throw new Error(`Quantity must be a valid non-negative number in variant ${index + 1}`);
-        }
-
-        // Validate salePrice
-        const salePriceStr = salePrice.toString().trim();
-        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceStr) || parseFloat(salePriceStr) <= 0) {
-          throw new Error(`Sale price must be a valid number greater than 0, without leading zeros in variant ${index + 1}`);
-        }
-        const salePriceNum = parseFloat(salePriceStr);
-
-        // Since regularPrice is removed from the frontend, we map salePrice to both fields
-        variants.push({
-          size: size.trim(),
-          regularPrice: salePriceNum, // Map salePrice to regularPrice in the schema
-          salePrice: salePriceNum,
-          quantity: quantityNum,
-          sku: skuTrimmed,
-        });
-      });
-    }
-
-    // Validate variants count
-    if (variants.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: "At least one product variant is required",
-      });
-    }
-
-    // Check for duplicate sizes
-    const uniqueSizes = [...new Set(sizes)];
-    if (sizes.length !== uniqueSizes.length) {
-      return res.status(400).json({
-        success: false,
-        message: "Each variant must have a unique size",
-      });
     }
 
     // Validate category ID
     if (!mongoose.Types.ObjectId.isValid(products.category)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid category ID",
-      });
+      console.log('Validation failed: Invalid category ID');
+      return res.status(400).json({ success: false, message: 'Invalid category ID' });
+    }
+    const categoryExists = await Category.findOne({ _id: products.category, isListed: true, isDeleted: false });
+    if (!categoryExists) {
+      console.log('Validation failed: Category does not exist or is not listed');
+      return res.status(400).json({ success: false, message: 'Selected category does not exist or is not listed' });
+    }
+
+    // Upload images to Cloudinary
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      const allowedFormats = ['image/png', 'image/jpeg', 'image/webp'];
+      for (const file of req.files) {
+        if (!allowedFormats.includes(file.mimetype)) {
+          console.log('Validation failed: Invalid image format', file.mimetype);
+          return res.status(400).json({ success: false, message: 'Only PNG, JPEG, and WebP image formats are supported' });
+        }
+      }
+
+      for (const file of req.files) {
+        const uploaded = await new Promise((resolve, reject) => {
+          const stream = cloudinary.uploader.upload_stream(
+            {
+              folder: 'product-images',
+              transformation: [
+                { width: 440, height: 440, crop: 'fill' },
+                { quality: 90, fetch_format: 'auto' },
+              ],
+            },
+            (error, result) => {
+              if (error) {
+                console.error('Cloudinary upload error:', error);
+                reject(error);
+              } else {
+                console.log('Cloudinary upload success:', result.secure_url);
+                resolve(result);
+              }
+            }
+          );
+          stream.end(file.buffer);
+        });
+        images.push(uploaded.secure_url);
+      }
+    }
+
+    if (images.length < 3 || images.length > 5) {
+      console.log('Validation failed: Invalid image count', images.length);
+      return res.status(400).json({ success: false, message: 'Please upload between 3 and 5 images' });
+    }
+
+    // Process and validate variants
+    let rawVariants = products.variants;
+    if (typeof rawVariants === 'string') {
+      try {
+        rawVariants = JSON.parse(rawVariants);
+      } catch (error) {
+        console.log('Validation failed: Invalid variants format', error);
+        return res.status(400).json({ success: false, message: 'Invalid variants format' });
+      }
+    }
+
+    const variants = [];
+    const sizes = [];
+    if (rawVariants && Array.isArray(rawVariants)) {
+      for (let i = 0; i < rawVariants.length; i++) {
+        const { size, salePrice, quantity, sku } = rawVariants[i];
+
+        if (!size || !quantity || !sku || salePrice === undefined) {
+          console.log(`Validation failed: Missing fields in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `Missing required fields in variant ${i + 1}` });
+        }
+
+        const sizeTrimmed = size.trim();
+        if (!sizeTrimmed) {
+          console.log(`Validation failed: Size is empty in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `Size is required in variant ${i + 1}` });
+        }
+        sizes.push(sizeTrimmed);
+
+        const skuTrimmed = sku.trim();
+        if (!skuTrimmed) {
+          console.log(`Validation failed: SKU is empty in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `SKU is required in variant ${i + 1}` });
+        }
+        if (!/^[a-zA-Z0-9-_]+$/.test(skuTrimmed)) {
+          console.log(`Validation failed: Invalid SKU format in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `SKU should contain only alphanumeric characters, hyphens, and underscores in variant ${i + 1}` });
+        }
+
+        const quantityNum = parseInt(quantity);
+        if (isNaN(quantityNum) || quantityNum < 0) {
+          console.log(`Validation failed: Invalid quantity in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `Quantity must be a valid non-negative number in variant ${i + 1}` });
+        }
+
+        const salePriceStr = salePrice.toString().trim();
+        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceStr) || parseFloat(salePriceStr) <= 0) {
+          console.log(`Validation failed: Invalid sale price in variant ${i + 1}`);
+          return res.status(400).json({ success: false, message: `Sale price must be a valid number greater than 0, without leading zeros in variant ${i + 1}` });
+        }
+        const salePriceNum = parseFloat(salePriceStr);
+
+        variants.push({
+          size: sizeTrimmed,
+          regularPrice: salePriceNum,
+          salePrice: salePriceNum,
+          quantity: quantityNum,
+          sku: skuTrimmed,
+        });
+      }
+    }
+
+    if (variants.length === 0) {
+      console.log('Validation failed: No variants provided');
+      return res.status(400).json({ success: false, message: 'At least one product variant is required' });
+    }
+
+    const uniqueSizes = [...new Set(sizes)];
+    if (sizes.length !== uniqueSizes.length) {
+      console.log('Validation failed: Duplicate sizes detected');
+      return res.status(400).json({ success: false, message: 'Each variant must have a unique size' });
     }
 
     // Create new product
     const newProduct = new Product({
       productName,
       shortDescription,
-      description: products.description,
-      gender: products.gender,
-      brand: products.brand,
-      productType: products.productType,
-      fragranceFamily: products.fragranceFamily,
-      usage: products.usage,
+      description: products.description.trim(),
+      gender: products.gender.trim(),
+      brand: products.brand.trim(),
+      productType: products.productType.trim(),
+      fragranceFamily: products.fragranceFamily.trim(),
+      usage: products.usage.trim(),
       category: products.category,
-      longevity: products.longevity,
+      longevity: products.longevity.trim(),
       productImage: images,
       variants,
-      status: "Available",
+      status: 'Available',
     });
 
     await newProduct.save();
+    console.log('Product saved:', newProduct);
 
-    return res.status(200).json({
-      success: true,
-      message: "Product added successfully",
-    });
+    return res.status(200).json({ success: true, message: 'Product added successfully' });
   } catch (error) {
-    console.error("Error saving product:", error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Internal Server Error",
-    });
+    console.error('Error saving product:', error);
+    return res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
   }
 };
 
