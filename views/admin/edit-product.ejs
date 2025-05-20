@@ -241,8 +241,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <script>
-
-    let variantCount = <%= product.variants.length %>;
+let variantCount = <%= product.variants.length %>;
     const MAX_VARIANTS = 5;
 
     window.addVariant = function() {
@@ -261,55 +260,55 @@
       const variantIndex = variantCount - 1;
 
       const variantHTML = `
-                <div class="variant-section" id="${newVariantId}">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h6 class="form-section-title mb-0">Variant ${variantCount}</h6>
-                        <div class="variant-actions">
-                            <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('${newVariantId}')">
-                                <i class="fas fa-trash"></i> Remove
-                            </button>
-                            <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: none;">
-                                <i class="fas fa-plus"></i> Add Variant
-                            </button>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">Size</label>
-                            <select class="form-select variant-size" name="variants[${variantIndex}][size]">
-                                <option value="">Select Size</option>
-                                <option value="20">20 ml</option>
-                                <option value="50">50 ml</option>
-                                <option value="100">100 ml</option>
-                                <option value="150">150 ml</option>
-                                <option value="200">200 ml</option>
-                                <option value="250">250 ml</option>
-                            </select>
-                            <div class="error-message size-error"></div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">SKU</label>
-                            <input type="text" placeholder="SKU identifier" name="variants[${variantIndex}][sku]" class="form-control variant-sku">
-                            <div class="error-message sku-error"></div>
-                        </div>
-                        <div class="col-md-4 mb-4">
-                            <label class="form-label required-label">Quantity</label>
-                            <input placeholder="Stock quantity" name="variants[${variantIndex}][quantity]" type="number" min="0" class="form-control variant-quantity">
-                            <div class="error-message quantity-error"></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <label class="form-label required-label">Price</label>
-                            <div class="price-input-group">
-                                <input placeholder="0.00" name="variants[${variantIndex}][salePrice]" type="number" step="0.01" min="0" class="form-control variant-sale-price">
-                            </div>
-                            <div class="error-message sale-price-error"></div>
-                        </div>
-                    </div>
-                    <hr class="mb-4">
-                </div>
-            `;
+        <div class="variant-section" id="${newVariantId}">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="form-section-title mb-0">Variant ${variantCount}</h6>
+            <div class="variant-actions">
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeVariant('${newVariantId}')">
+                <i class="fas fa-trash"></i> Remove
+              </button>
+              <button type="button" class="btn btn-sm btn-primary" id="add-variant-btn" onclick="addVariant()" style="display: none;">
+                <i class="fas fa-plus"></i> Add Variant
+              </button>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">Size</label>
+              <select class="form-select variant-size" name="variants[${variantIndex}][size]">
+                <option value="">Select Size</option>
+                <option value="20">20 ml</option>
+                <option value="50">50 ml</option>
+                <option value="100">100 ml</option>
+                <option value="150">150 ml</option>
+                <option value="200">200 ml</option>
+                <option value="250">250 ml</option>
+              </select>
+              <div class="error-message size-error"></div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">SKU</label>
+              <input type="text" placeholder="SKU identifier" name="variants[${variantIndex}][sku]" class="form-control variant-sku">
+              <div class="error-message sku-error"></div>
+            </div>
+            <div class="col-md-4 mb-4">
+              <label class="form-label required-label">Quantity</label>
+              <input placeholder="Stock quantity" name="variants[${variantIndex}][quantity]" type="number" min="0" class="form-control variant-quantity">
+              <div class="error-message quantity-error"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-4">
+              <label class="form-label required-label">Price</label>
+              <div class="price-input-group">
+                <input placeholder="0.00" name="variants[${variantIndex}][salePrice]" type="text" pattern="^(?!0\\d)\\d+(\\.\\d{1,2})?$" class="form-control variant-sale-price">
+              </div>
+              <div class="error-message sale-price-error"></div>
+            </div>
+          </div>
+          <hr class="mb-4">
+        </div>
+      `;
 
       document.getElementById('variants-container').insertAdjacentHTML('beforeend', variantHTML);
       updateAddVariantButtonVisibility();
@@ -387,14 +386,28 @@
 
     // Form Validation
     function displayErrorMessage(element, message) {
+      console.log('Attempting to display error:', message, 'on element:', element);
       if (element) {
         element.innerText = message;
         element.style.display = 'block';
+      } else {
+        console.error('Error element not found for displaying message:', message);
+      }
+    }
+
+    function clearErrorMessage(element) {
+      console.log('Clearing error on element:', element);
+      if (element) {
+        element.innerText = '';
+        element.style.display = 'none';
+      } else {
+        console.error('Error element not found for clearing');
       }
     }
 
     function clearErrorMessages() {
       document.querySelectorAll('.error-message').forEach(el => {
+        console.log('Clearing error message on:', el);
         el.innerText = '';
         el.style.display = 'none';
       });
@@ -405,56 +418,17 @@
       let isValid = true;
 
       // Basic Information
-      const fields = [{
-          id: 'productName',
-          name: 'Product Name',
-          required: true
-        },
-        {
-          id: 'category',
-          name: 'Category',
-          required: true
-        },
-        {
-          id: 'gender',
-          name: 'Gender',
-          required: true
-        },
-        {
-          id: 'productType',
-          name: 'Fragrance Type',
-          required: true
-        },
-        {
-          id: 'fragranceFamily',
-          name: 'Fragrance Family',
-          required: true
-        },
-        {
-          id: 'longevity',
-          name: 'Fragrance Longevity',
-          required: true
-        },
-        {
-          id: 'brand',
-          name: 'Brand',
-          required: true
-        },
-        {
-          id: 'usage',
-          name: 'Usage',
-          required: true
-        },
-        {
-          id: 'shortDescription',
-          name: 'Short Description',
-          required: true
-        },
-        {
-          id: 'productDescription',
-          name: 'Description',
-          required: true
-        }
+      const fields = [
+        { id: 'productName', name: 'Product Name', required: true },
+        { id: 'category', name: 'Category', required: true },
+        { id: 'gender', name: 'Gender', required: true },
+        { id: 'productType', name: 'Fragrance Type', required: true },
+        { id: 'fragranceFamily', name: 'Fragrance Family', required: true },
+        { id: 'longevity', name: 'Fragrance Longevity', required: true },
+        { id: 'brand', name: 'Brand', required: true },
+        { id: 'usage', name: 'Usage', required: true },
+        { id: 'shortDescription', name: 'Short Description', required: true },
+        { id: 'productDescription', name: 'Description', required: true }
       ];
 
       fields.forEach(field => {
@@ -516,23 +490,20 @@
 
         // Quantity
         const quantityStr = quantityInput.value.trim();
-
-        // Check for a non-negative integer without leading zeros (except for "0")
         const isValidQuantityFormat = /^([1-9]\d*|0)$/.test(quantityStr);
-
         if (!isValidQuantityFormat) {
           displayErrorMessage(section.querySelector('.quantity-error'), 'Please enter a valid non-negative quantity without leading zeros.');
           isValid = false;
-        } else {
-          const quantity = parseInt(quantityStr, 10);
-          // You can do further checks with quantity here if needed
         }
 
-
-        // Sale Price (must be > 0 and no leading zeros)
+        // Sale Price
         const salePriceValue = salePriceInput.value.trim();
-        if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || parseFloat(salePriceValue) <= 0) {
-          displayErrorMessage(section.querySelector('.sale-price-error'), 'Price must be a valid number greater than 0, without leading zeros.');
+        const salePriceNum = parseFloat(salePriceValue);
+        if (!salePriceValue) {
+          displayErrorMessage(section.querySelector('.sale-price-error'), 'Price is required.');
+          isValid = false;
+        } else if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || salePriceNum <= 0 || salePriceNum > 100000) {
+          displayErrorMessage(section.querySelector('.sale-price-error'), 'Price must be a valid number greater than 0 and up to 100,000, without leading zeros.');
           isValid = false;
         }
       });
@@ -551,12 +522,141 @@
         isValid = false;
       }
 
+      console.log('Form validation result:', isValid);
+      return isValid;
+    }
+
+    function setupRealTimeValidation() {
+      const fields = [
+        { id: 'productName', name: 'Product Name', required: true },
+        { id: 'category', name: 'Category', required: true },
+        { id: 'gender', name: 'Gender', required: true },
+        { id: 'productType', name: 'Fragrance Type', required: true },
+        { id: 'fragranceFamily', name: 'Fragrance Family', required: true },
+        { id: 'longevity', name: 'Fragrance Longevity', required: true },
+        { id: 'brand', name: 'Brand', required: true },
+        { id: 'usage', name: 'Usage', required: true },
+        { id: 'shortDescription', name: 'Short Description', required: true },
+        { id: 'productDescription', name: 'Description', required: true }
+      ];
+
+      fields.forEach(field => {
+        const element = document.getElementById(field.id);
+        if (element) {
+          element.addEventListener('input', () => {
+            console.log('Input event on:', field.id);
+            validateField(element, field);
+          });
+          element.addEventListener('change', () => {
+            console.log('Change event on:', field.id);
+            validateField(element, field);
+          });
+        }
+      });
+
+      document.getElementById('variants-container').addEventListener('input', (e) => {
+        if (
+          e.target.classList.contains('variant-size') ||
+          e.target.classList.contains('variant-sku') ||
+          e.target.classList.contains('variant-quantity') ||
+          e.target.classList.contains('variant-sale-price')
+        ) {
+          console.log('Input event on variant field:', e.target.className, 'Value:', e.target.value);
+          validateField(e.target);
+        }
+      });
+
+      document.getElementById('variants-container').addEventListener('change', (e) => {
+        if (e.target.classList.contains('variant-size')) {
+          console.log('Change event on variant-size');
+          validateField(e.target);
+          updateSizeOptions();
+        }
+      });
+    }
+
+    function validateField(element, fieldConfig = null) {
+      const errorElement = element.closest('.mb-4').querySelector('.error-message');
+      let isValid = true;
+      let errorMessage = '';
+
+      console.log('Validating field:', element.className, 'Value:', element.value, 'Error element:', errorElement);
+
+      if (element.classList.contains('variant-size')) {
+        if (!element.value) {
+          isValid = false;
+          errorMessage = 'Please select a size.';
+        }
+      } else if (element.classList.contains('variant-sku')) {
+        const sku = element.value.trim();
+        if (!sku) {
+          isValid = false;
+          errorMessage = 'SKU is required.';
+        } else if (!/^[a-zA-Z0-9-_]+$/.test(sku)) {
+          isValid = false;
+          errorMessage = 'SKU should contain only alphanumeric characters, hyphens, and underscores.';
+        }
+      } else if (element.classList.contains('variant-quantity')) {
+        const quantityStr = element.value.trim();
+        const isValidQuantityFormat = /^([1-9]\d*|0)$/.test(quantityStr);
+        if (!isValidQuantityFormat && quantityStr !== '') {
+          isValid = false;
+          errorMessage = 'Please enter a valid non-negative quantity without leading zeros.';
+        }
+      } else if (element.classList.contains('variant-sale-price')) {
+        const salePriceValue = element.value.trim();
+        const salePriceNum = parseFloat(salePriceValue);
+        console.log('Sale price validation:', {
+          value: salePriceValue,
+          regexTest: /^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue),
+          isPositive: salePriceNum > 0,
+          isWithinLimit: salePriceNum <= 100000,
+          isEmpty: salePriceValue === ''
+        });
+        if (salePriceValue === '') {
+          isValid = false;
+          errorMessage = 'Price is required.';
+        } else if (!/^(?!0\d)\d+(\.\d{1,2})?$/.test(salePriceValue) || salePriceNum <= 0 || salePriceNum > 100000) {
+          isValid = false;
+          errorMessage = 'Price must be a valid number greater than 0 and up to 100,000, without leading zeros.';
+        }
+      } else if (fieldConfig) {
+        if (fieldConfig.required && (!element.value || element.value.trim() === '')) {
+          isValid = false;
+          errorMessage = `${fieldConfig.name} is required.`;
+        } else if (element.id === 'productName') {
+          const productName = element.value.trim();
+          if (!/^(?=.*[A-Za-z])[A-Za-z\s-]+$/.test(productName)) {
+            isValid = false;
+            errorMessage = 'Product name must contain only letters, spaces, or hyphens, and include at least one letter.';
+          } else if (!/^.{3,100}$/.test(productName)) {
+            isValid = false;
+            errorMessage = 'Product name must be between 3 and 100 characters.';
+          }
+        } else if (element.id === 'shortDescription') {
+          const shortDescription = element.value.trim();
+          if (!/^.{10,200}$/.test(shortDescription)) {
+            isValid = false;
+            errorMessage = 'Short description must be between 10 and 200 characters.';
+          }
+        }
+      }
+
+      if (!isValid) {
+        console.log('Displaying error:', errorMessage, 'on:', errorElement);
+        displayErrorMessage(errorElement, errorMessage);
+      } else {
+        console.log('Clearing error for:', element.className, 'on:', errorElement);
+        clearErrorMessage(errorElement);
+      }
+
       return isValid;
     }
 
     // Form Submission with Fetch
     function validateAndSubmit(event) {
       event.preventDefault();
+      console.log('Submitting form...');
       if (validateForm()) {
         submitForm();
       } else {
@@ -576,7 +676,7 @@
       // Append form fields (excluding images)
       const inputs = form.querySelectorAll('input:not([type="file"]), select, textarea');
       inputs.forEach(input => {
-        formData.append(input.name, input.value);
+        formData.append(input.name, input.value.trim());
       });
 
       // Append cropped image blobs
@@ -586,7 +686,7 @@
         if (existingImage) {
           formData.append(`existingImages[${index}]`, existingImage);
         } else {
-          const dataUrl = thumbnail.style.backgroundImage.slice(5, -2); // Remove 'url("")'
+          const dataUrl = thumbnail.style.backgroundImage.slice(5, -2);
           const byteString = atob(dataUrl.split(',')[1]);
           const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
           const ab = new ArrayBuffer(byteString.length);
@@ -594,9 +694,7 @@
           for (let i = 0; i < byteString.length; i++) {
             ia[i] = byteString.charCodeAt(i);
           }
-          const blob = new Blob([ab], {
-            type: mimeString
-          });
+          const blob = new Blob([ab], { type: mimeString });
           formData.append('images', blob, `cropped-image-${index}.jpg`);
         }
       });
@@ -604,7 +702,11 @@
       // Append removed images
       formData.append('removedImages', document.getElementById('removedImages').value);
 
-      // Show loading Swal
+      // Debug FormData
+      for (let [key, value] of formData.entries()) {
+        console.log(`FormData: ${key} =`, value);
+      }
+
       Swal.fire({
         title: 'Updating Product...',
         html: 'Please wait while we update your product.',
@@ -621,7 +723,9 @@
           body: formData
         });
 
+        console.log('Response status:', response.status);
         const result = await response.json();
+        console.log('Response body:', result);
 
         if (result.success) {
           Swal.fire({
@@ -636,7 +740,7 @@
           Swal.fire({
             icon: 'error',
             title: 'Error',
-            text: result.message,
+            text: result.message || 'Failed to update product.',
             confirmButtonText: 'OK'
           });
         }
@@ -661,7 +765,7 @@
     window.removeExistingImage = function(index, imageUrl) {
       const thumbnail = document.querySelector(`#croppedThumbnails .thumbnail[data-existing-image="${imageUrl}"]`);
       if (thumbnail) {
-        thumbnail.remove();
+        thumbnail.parentElement.remove();
         removedImages.push(imageUrl);
         document.getElementById('removedImages').value = removedImages.join(',');
         Swal.fire({
@@ -753,11 +857,9 @@
 
     document.getElementById('cropBtn').addEventListener('click', function() {
       if (cropper) {
-        const canvas = cropper.getCroppedCanvas({
-          width: 300,
-          height: 300
-        });
+        const canvas = cropper.getCroppedCanvas({ width: 300, height: 300 });
         const dataUrl = canvas.toDataURL('image/jpeg');
+        console.log('Cropped image:', dataUrl);
 
         const thumbnailWrapper = document.createElement('div');
         thumbnailWrapper.className = 'image-wrapper';
@@ -797,10 +899,7 @@
     }
 
     function scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     window.addEventListener('scroll', function() {
@@ -817,6 +916,7 @@
     document.addEventListener('DOMContentLoaded', function() {
       updateSizeOptions();
       updateAddVariantButtonVisibility();
+      setupRealTimeValidation();
       $('select[name="category"]').select2();
     });
   </script>
