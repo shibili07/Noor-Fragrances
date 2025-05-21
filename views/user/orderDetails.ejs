@@ -31,181 +31,171 @@
           <div class="section-title">
             <span>Order Details <span class="text-muted">#<%= order.orderId %></span></span>
             <div class="action-buttons">
-              <% if (order.status !=='Cancelled' && order.status !=='Delivered' && order.status !=='Return Request' &&
-                  order.status !=='Returned' && order.status !=='Cancel requested' && order.status !=='Shipped' &&  order.status !=='Payment failed' ) { %>
+              <% if (order.status !== 'Cancelled' && order.status !== 'Delivered' && order.status !== 'Return Request' &&
+                  order.status !== 'Returned' && order.status !== 'Cancel requested' && order.status !== 'Shipped' && order.status !== 'Payment failed') { %>
               <button class="cancel-btn" id="cancelOrderBtn">
                 <i class="fas fa-times"></i> Cancel Order
               </button>
-              <%}else if(order.status==='Payment failed'){%>
+              <% } else if (order.status === 'Payment failed') { %>
               <button class="retry-btn" data-order-id="<%= order._id %>">
                 <i class="fas fa-redo"></i> Retry Payment
               </button>
-              <%}%>
-                    <button class="invoice-btn" id="downloadInvoiceBtn">
-                      <i class="fas fa-file-invoice"></i> Invoice
-                    </button>
-              </div>
-            </div>
-
-            <!-- Order Tracking -->
-            <div class="order-track-wrapper">
-              <div class="order-track">
-                <div
-                  class="order-track-step <%= order.status === 'Pending' || order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : '' %>">
-              <div class="order-track-step-dot">
-                <i class="fas fa-check"></i>
-              </div>
-              <div class="order-track-text">Order Placed</div>
-            </div>
-            <div class="order-track-step <%= order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : order.status === 'Pending' ? 'active' : '' %>">
-              <div class="order-track-step-dot">
-                <i class="<%= order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-spinner' %>"></i>
-              </div>
-              <div class="order-track-text">Processing</div>
-            </div>
-            <div class="order-track-step <%= order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : order.status === 'Processing' ? 'active' : '' %>">
-              <div class="order-track-step-dot">
-                <i class="<%= order.status === 'Shipped' || order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-truck' %>"></i>
-              </div>
-              <div class="order-track-text">Shipped</div>
-            </div>
-            <div class="order-track-step <%= order.status === 'Delivered' ? 'completed' : order.status === 'Shipped' ? 'active' : '' %>">
-              <div class="order-track-step-dot">
-                <i class="<%= order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-box' %>"></i>
-              </div>
-              <div class="order-track-text">Delivered</div>
-            </div>
-            <div class="order-track-progress">
-              <div class="order-track-progress-bar" style="width: <%= order.status === 'Pending' ? '12%' : order.status === 'Processing' ? '38%' : order.status === 'Shipped' ? '75%' : order.status === 'Delivered' ? '100%' : order.status === 'Cancelled' ? '0%' : '0%' %>"></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Order Status Badge -->
-        <div class="text-center mb-3">
-          <% if(order.status==='Return Request' ){%>
-          <span class="status-badge status-cancelrequested">
-            <%= order.status %>
-          </span>
-          <%}else if(order.status==="Payment failed"){%>
-          <span class="status-badge status-paymentfailed">
-            <%= order.status %>
-          </span>
-           <%}else if(order.status==="Return Rejected"){%>
-          <span class="status-badge status-return-rejected">
-            <%= order.status %>
-          </span>
-          <%}else{%>
-          <span class="status-badge status-<%= order.status.toLowerCase() %>">
-            <%= order.status %>
-          </span>
-          <%}%>
-                    <span class="ms-2 text-muted">Order Date: <%= new Date(order.createdOn).toLocaleDateString() %>
-          </span>
-        </div>
-      </div>
-
-      <!-- Address Details -->
-      <div class="row mb-4">
-        <div class="col-md-6 mb-3 mb-md-0">
-          <div class="address-box">
-            <div class="address-title">
-              <i class="fas fa-map-marker-alt me-2"></i> Shipping Address
-            </div>
-            <div class="address-content">
-              <%= address.name%>
-              <br>
-              <%= address.addressType %>, <%= address.landMark %>, <%= address.city %>
-              <br>
-              <%= address.state %>
-              <%= address.pincode %>
-              <br>
-              <%= address.phone %> / <%= address.altPhone %>
-              <br>
-              Order Method : <%= order.orderType%>
-              <br>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Product Details -->
-      <div class="info-container">
-        <h3 class="section-title">Order Items</h3>
-
-        <% order.orderedItems.forEach((item, index)=> { %>
-        <% if (item.product) { %>
-        <div class="product-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem; border: 1px solid #ddd; margin-bottom: 1rem; border-radius: 8px;">
-
-          <!-- Left: Image + Info -->
-          <div style="display: flex; flex: 1; gap: 1rem;">
-            <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="product-image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
-
-            <div class="product-details">
-              <div class="product-name"><strong>
-                  <%= item.product.productName %>
-                </strong></div>
-              <div class="product-meta">
-                <span class="product-price">₹<%= item.price.toFixed(2) %></span> |
-                <span class="product-quantity">Qty: <%= item.quantity %></span>
-              </div>
-
-              <div class="product-status">
-               <%if(order.status==="Payment failed"){%>
-                   <span class="status-badge status-paymentfailed">
-            <%= order.status %>
-          </span>
-               <%}else{%>
-                <span class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '-') %>">
-                  <%= item.status %>
-                </span>
-               <%}%>
-              </div>
+              <% } %>
+              <% if (order.status === 'Delivered') { %>
+              <button class="invoice-btn" id="downloadInvoiceBtn">
+                <i class="fas fa-file-invoice"></i> Invoice
+              </button>
+              <% } %>
             </div>
           </div>
 
-          <!-- Right: Cancel Button / Reason -->
-          <% if (['Pending', 'Processing' ].includes(item.status)) { %>
-          <div class="button-right-align">
-            <button class="btn btn-secondary" onclick="window.productOrderCancel('<%= item.product._id %>','<%= item.sku %>')">
-              <i class="fas fa-times"></i> Cancel Order
-            </button>
-          </div>
-          <% } else if (item.status==='Cancelled' ) { %>
-          <div style="margin-left: auto; color: red; text-align: right;">
-            <strong>Cancelled</strong>
-          </div>
-          <% } else if (order.status==='Cancelled' ) { %>
-          <div style="margin-left: auto; color: red; text-align: right;">
-            <strong>Cancelled</strong>
-          </div>
-          <% }else if(item.status==='Delivered'){%>
-          <% 
-  const now = new Date(); 
-  const orderDate = new Date(order.createdOn); 
-  const diffTime = Math.abs(now - orderDate); 
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-%>
-
-<% if (diffDays <= 7) { %>
-  <div class="button-right-align">
-    <button class="btn btn-warning" onclick="window.productOrderReturn('<%= order.orderId %>', '<%= item.product._id %>', '<%= item.sku %>')">
-      <i class="fa-solid fa-rotate-left"></i> Return Order
-    </button>
-  </div>
-<% } %>
-
-
-          <%}else if(item.status==='Return Rejected'){%>
-          <div style="padding: 10px; background-color: #fef3c7; border: 1px solid #facc15; border-radius: 6px; color: #92400e; font-weight: bold;">
-Reason: <%=item.returnRejectReason%>
-</div>
-
-
-          <%}%>
+          <!-- Order Tracking -->
+          <div class="order-track-wrapper">
+            <div class="order-track">
+              <div class="order-track-step <%= order.status === 'Pending' || order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : '' %>">
+                <div class="order-track-step-dot">
+                  <i class="fas fa-check"></i>
                 </div>
-                <% } else { %>
+                <div class="order-track-text">Order Placed</div>
+              </div>
+              <div class="order-track-step <%= order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : order.status === 'Pending' ? 'active' : '' %>">
+                <div class="order-track-step-dot">
+                  <i class="<%= order.status === 'Processing' || order.status === 'Shipped' || order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-spinner' %>"></i>
+                </div>
+                <div class="order-track-text">Processing</div>
+              </div>
+              <div class="order-track-step <%= order.status === 'Shipped' || order.status === 'Delivered' ? 'completed' : order.status === 'Processing' ? 'active' : '' %>">
+                <div class="order-track-step-dot">
+                  <i class="<%= order.status === 'Shipped' || order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-truck' %>"></i>
+                </div>
+                <div class="order-track-text">Shipped</div>
+              </div>
+              <div class="order-track-step <%= order.status === 'Delivered' ? 'completed' : order.status === 'Shipped' ? 'active' : '' %>">
+                <div class="order-track-step-dot">
+                  <i class="<%= order.status === 'Delivered' ? 'fas fa-check' : 'fas fa-box' %>"></i>
+                </div>
+                <div class="order-track-text">Delivered</div>
+              </div>
+              <div class="order-track-progress">
+                <div class="order-track-progress-bar" style="width: <%= order.status === 'Pending' ? '12%' : order.status === 'Processing' ? '38%' : order.status === 'Shipped' ? '75%' : order.status === 'Delivered' ? '100%' : order.status === 'Cancelled' ? '0%' : '0%' %>"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Status Badge -->
+          <div class="text-center mb-3">
+            <% if(order.status === 'Return Request') { %>
+            <span class="status-badge status-cancelrequested">
+              <%= order.status %>
+            </span>
+            <% } else if(order.status === 'Payment failed') { %>
+            <span class="status-badge status-paymentfailed">
+              <%= order.status %>
+            </span>
+            <% } else if(order.status === 'Return Rejected') { %>
+            <span class="status-badge status-return-rejected">
+              <%= order.status %>
+            </span>
+            <% } else { %>
+            <span class="status-badge status-<%= order.status.toLowerCase() %>">
+              <%= order.status %>
+            </span>
+            <% } %>
+            <span class="ms-2 text-muted">Order Date: <%= new Date(order.createdOn).toLocaleDateString() %></span>
+          </div>
+        </div>
+
+        <!-- Address Details -->
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3 mb-md-0">
+            <div class="address-box">
+              <div class="address-title">
+                <i class="fas fa-map-marker-alt me-2"></i> Shipping Address
+              </div>
+              <div class="address-content">
+                <%= address.name %>
+                <br>
+                <%= address.addressType %>, <%= address.landMark %>, <%= address.city %>
+                <br>
+                <%= address.state %>
+                <%= address.pincode %>
+                <br>
+                <%= address.phone %> / <%= address.altPhone %>
+                <br>
+                Order Method: <%= order.orderType %>
+                <br>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="info-container">
+          <h3 class="section-title">Order Items</h3>
+
+          <% order.orderedItems.forEach((item, index) => { %>
+          <% if (item.product) { %>
+          <div class="product-card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; padding: 1rem; border: 1px solid #ddd; margin-bottom: 1rem; border-radius: 8px;">
+            <!-- Left: Image + Info -->
+            <div style="display: flex; flex: 1; gap: 1rem;">
+              <img src="<%= item.product.productImage[0] %>" alt="<%= item.product.productName %>" class="product-image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 6px;">
+              <div class="product-details">
+                <div class="product-name"><strong>
+                    <%= item.product.productName %>
+                  </strong></div>
+                <div class="product-meta">
+                  <span class="product-price">₹<%= item.price.toFixed(2) %></span> |
+                  <span class="product-quantity">Qty: <%= item.quantity %></span>
+                </div>
+                <div class="product-status">
+                  <% if(order.status === 'Payment failed') { %>
+                  <span class="status-badge status-paymentfailed">
+                    <%= order.status %>
+                  </span>
+                  <% } else { %>
+                  <span class="status-badge status-<%= item.status.toLowerCase().replace(/\s+/g, '-') %>">
+                    <%= item.status %>
+                  </span>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <!-- Right: Cancel Button / Reason -->
+            <% if (['Pending', 'Processing'].includes(item.status)) { %>
+            <div class="button-right-align">
+              <button class="btn btn-secondary" onclick="window.productOrderCancel('<%= item.product._id %>','<%= item.sku %>')">
+                <i class="fas fa-times"></i> Cancel Order
+              </button>
+            </div>
+            <% } else if (item.status === 'Cancelled') { %>
+            <div style="margin-left: auto; color: red; text-align: right;">
+              <strong>Cancelled</strong>
+            </div>
+            <% } else if (order.status === 'Cancelled') { %>
+            <div style="margin-left: auto; color: red; text-align: right;">
+              <strong>Cancelled</strong>
+            </div>
+            <% } else if(item.status === 'Delivered') { %>
+            <% 
+              const now = new Date(); 
+              const orderDate = new Date(order.createdOn); 
+              const diffTime = Math.abs(now - orderDate); 
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+            %>
+            <% if (diffDays <= 7) { %>
+            <div class="button-right-align">
+              <button class="btn btn-warning" onclick="window.productOrderReturn('<%= order.orderId %>', '<%= item.product._id %>', '<%= item.sku %>')">
+                <i class="fa-solid fa-rotate-left"></i> Return Order
+              </button>
+            </div>
+            <% } %>
+            <% } else if(item.status === 'Return Rejected') { %>
+            <div style="padding: 10px; background-color: #fef3c7; border: 1px solid #facc15; border-radius: 6px; color: #92400e; font-weight: bold;">
+              Reason: <%= item.returnRejectReason %>
+            </div>
+            <% } %>
+          </div>
+          <% } else { %>
           <div class="product-card" style="padding: 1rem; border: 1px solid #ddd; margin-bottom: 1rem; border-radius: 8px;">
             <div class="product-name">Product not found</div>
           </div>
@@ -213,6 +203,15 @@ Reason: <%=item.returnRejectReason%>
           <% }); %>
         </div>
 
+        <!-- Return Policy -->
+        <div class="info-container mt-4">
+          <h3 class="section-title">Return Policy</h3>
+          <div class="return-policy-box" style="padding: 1rem; border: 1px solid #ddd; border-radius: 8px; background-color: #f8f9fa;">
+            <p style="margin: 0; color: #333; font-size: 0.9rem;">
+              Products can only be returned within 7 days of delivery. Please ensure the item is in its original condition and packaging to be eligible for a return.
+            </p>
+          </div>
+        </div>
 
         <!-- Order Summary -->
         <div class="row mt-4">
@@ -230,7 +229,7 @@ Reason: <%=item.returnRejectReason%>
               <% if (order.offerDiscount) { %>
               <div class="summary-row">
                 <span>Offer Discount:</span>
-                <span>-₹<%= order.offerDiscount.toFixed(2)%></span>
+                <span>-₹<%= order.offerDiscount.toFixed(2) %></span>
               </div>
               <% } %>
               <div class="summary-row total">
@@ -243,7 +242,6 @@ Reason: <%=item.returnRejectReason%>
       </div>
     </div>
   </div>
-  </div>
 
   <!-- Invoice Template for PDF Generation (Hidden) -->
   <div id="invoice-template" style="width: 800px; padding: 40px; font-family: Arial, sans-serif;">
@@ -253,20 +251,16 @@ Reason: <%=item.returnRejectReason%>
         <p style="margin: 5px 0; color: #666;">NOOR Fragrance</p>
       </div>
       <div style="text-align: right;">
-        <h2 style="margin: 0; color: #fd334e;">#<%= order.orderId %>
-        </h2>
-        <p style="margin: 5px 0; color: #666;">Date: <%= new Date(order.createdOn).toLocaleDateString() %>
-        </p>
+        <h2 style="margin: 0; color: #fd334e;">#<%= order.orderId %></h2>
+        <p style="margin: 5px 0; color: #666;">Date: <%= new Date(order.createdOn).toLocaleDateString() %></p>
       </div>
     </div>
-
     <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
       <div style="width: 45%;">
         <h3 style="margin: 0 0 10px; color: #333;">Bill To:</h3>
         <p style="margin: 0; color: #666;">
           <%= order.address.name %>
         </p>
-
         <p style="margin: 0; color: #666;">
           <%= order.address.city %>, <%= order.address.state %>
           <%= order.address.zipCode %>
@@ -274,25 +268,18 @@ Reason: <%=item.returnRejectReason%>
         <p style="margin: 0; color: #666;">
           <%= order.address.country %>
         </p>
-        <p style="margin: 0; color: #666;">Phone: <%= order.address.phone %>
-        </p>
+        <p style="margin: 0; color: #666;">Phone: <%= order.address.phone %></p>
       </div>
       <div style="width: 45%;">
         <h3 style="margin: 0 0 10px; color: #333;">Payment Information:</h3>
-        <p style="margin: 0; color: #666;">Status: <%= order.status %>
-        </p>
-        <p style="margin: 0; color: #666;"> Order Method : <%= order.orderType%>
-        </p>
-
-        <p style="margin: 0; color: #666;">Order Date: <%= new Date(order.createdOn).toLocaleDateString() %>
-        </p>
+        <p style="margin: 0; color: #666;">Status: <%= order.status %></p>
+        <p style="margin: 0; color: #666;">Order Method: <%= order.orderType %></p>
+        <p style="margin: 0; color: #666;">Order Date: <%= new Date(order.createdOn).toLocaleDateString() %></p>
         <% if (order.invoiceDate) { %>
-        <p style="margin: 0; color: #666;">Invoice Date: <%= new Date(order.invoiceDate).toLocaleDateString() %>
-        </p>
+        <p style="margin: 0; color: #666;">Invoice Date: <%= new Date(order.invoiceDate).toLocaleDateString() %></p>
         <% } %>
       </div>
     </div>
-
     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
       <thead>
         <tr style="background-color: #f8f9fa;">
@@ -303,66 +290,57 @@ Reason: <%=item.returnRejectReason%>
         </tr>
       </thead>
       <tbody>
-        <% order.orderedItems.forEach(item=> { %>
+        <% order.orderedItems.forEach(item => { %>
         <tr>
           <td style="padding: 10px; border-bottom: 1px solid #eee;">
             <%= item.product.productName %>
           </td>
-          <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹<%= item.price.toFixed(2) %>
-          </td>
+          <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹<%= item.price.toFixed(2) %></td>
           <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">
             <%= item.quantity %>
           </td>
-          <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹<%= (item.price *
-                  item.quantity).toFixed(2) %>
-          </td>
+          <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹<%= (item.price * item.quantity).toFixed(2) %></td>
         </tr>
         <% }); %>
       </tbody>
     </table>
-
     <div style="margin-left: auto; width: 300px;">
       <div style="display: flex; justify-content: space-between; padding: 5px 0;">
         <span>Subtotal:</span>
         <span>₹<%= order.totalPrice.toFixed(2) %></span>
       </div>
-
-      <% if (order.offerDiscount> 0) { %>
+      <% if (order.offerDiscount > 0) { %>
       <div style="display: flex; justify-content: space-between; padding: 5px 0;">
         <span>Offer Discount:</span>
-        <span>-<%= order.offerDiscount.toFixed(2)%></span>
+        <span>-<%= order.offerDiscount.toFixed(2) %></span>
       </div>
       <% } %>
       <div style="display: flex; justify-content: space-between; padding: 5px 0;">
-        <span>
-          couponDiscount :
-        </span>
-        <span>-<%= order.couponDiscount.toFixed(2)%></span>
+        <span>Coupon Discount:</span>
+        <span>-<%= order.couponDiscount.toFixed(2) %></span>
       </div>
       <div style="display: flex; justify-content: space-between; padding: 10px 0; font-weight: bold; border-top: 1px solid #ddd; margin-top: 5px;">
         <span>Total:</span>
         <span>₹<%= order.finalAmount.toFixed(2) %></span>
       </div>
     </div>
-
     <div style="margin-top: 40px; text-align: center; color: #666; font-size: 14px;">
       <p>Thank you for shopping with NOOR Fragrance!</p>
       <p>If you have any questions, please contact our customer service at support@noor.com</p>
     </div>
   </div>
 
-
+  <!-- Retry Payment Modal -->
   <div id="retryPaymentModal" class="modal">
     <div class="modal-content">
       <div class="modal-header">
         <h2>Retry Payment</h2>
-        <span class="modal-close" id="closeRetryPaymentModal">&times;</span>
+        <span class="modal-close" id="closeRetryPaymentModal">×</span>
       </div>
       <p>Please complete the payment to process your order.</p>
       <button class="btn btn-primary" id="payNowBtn">Pay Now</button>
     </div>
   </div>
-
 
   <%- include("../../views/partials/user/footer") %>
 </body>
@@ -379,7 +357,7 @@ Reason: <%=item.returnRejectReason%>
       },
       types: [{
           type: "success",
-          background: "#fd334e",
+          background: "#00ff00",
           icon: {
             className: "fas fa-check",
             tagName: "i",
@@ -416,9 +394,12 @@ Reason: <%=item.returnRejectReason%>
     const currentStep = statusProgress[currentStatus];
 
     // Invoice download functionality
-    document.getElementById('downloadInvoiceBtn').addEventListener('click', function() {
-      generateInvoicePDF();
-    });
+    const downloadInvoiceBtn = document.getElementById('downloadInvoiceBtn');
+    if (downloadInvoiceBtn) {
+      downloadInvoiceBtn.addEventListener('click', function() {
+        generateInvoicePDF();
+      });
+    }
 
     // Modified Cancel order functionality
     const cancelOrderBtn = document.getElementById('cancelOrderBtn');
@@ -680,8 +661,6 @@ Reason: <%=item.returnRejectReason%>
       });
     }
 
-
-
     function openRetryPaymentModal(orderId) {
       console.log('Opening retry payment modal for order:', orderId);
       currentOrderId = orderId;
@@ -691,8 +670,6 @@ Reason: <%=item.returnRejectReason%>
     function closeRetryPaymentModal() {
       document.getElementById('retryPaymentModal').style.display = 'none';
     }
-
-
 
     async function initiateRetryPayment() {
       if (!currentOrderId) {
@@ -828,7 +805,6 @@ Reason: <%=item.returnRejectReason%>
       }
     }
 
-
     // Bind Retry Payment Button
     const retryBtn = document.querySelector('.retry-btn');
     if (retryBtn) {
@@ -885,7 +861,5 @@ Reason: <%=item.returnRejectReason%>
     }, 30 * 60 * 1000); // 30 minutes
   });
 </script>
-
-
 
 </html>
