@@ -429,6 +429,8 @@ const getEditOffer = async (req, res) => {
         .render("error", { message: "Internal server error" });
     }
   };
+
+  
   const editOffer = async (req, res) => {
     try {
       const { id } = req.params;
@@ -608,7 +610,6 @@ const getEditOffer = async (req, res) => {
       if (exactMatch) {
         return res.status(400).json({ success: false, message: "Offer already exists!" });
       }
-      
       
       
       // Prepare update object
