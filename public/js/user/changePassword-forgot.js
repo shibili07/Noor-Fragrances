@@ -30,9 +30,9 @@
       error4.style.display = "none";
       error5.style.display = "none";
 
-      if (passval.length < 6) {
+      if (passval.length < 8) {
         error4.style.display = "block";
-        error4.textContent = "Password must be at least 6 characters long.";
+        error4.textContent = "Password must be at least 8 characters long.";
         isValid = false;
       } else if (!alpha.test(passval)) {
         error4.style.display = "block";
