@@ -135,7 +135,7 @@
                   <div class="payment-details">
                     <div class="payment-label">Cash on Delivery</div>
                     <div class="payment-sublabel">Pay with cash upon delivery, <br>COD is only available for orders
-                      above ₹1,000.</div>
+                      bellow ₹1,000.</div>
                   </div>
                 </label>
                 <label class="payment-option">
@@ -781,12 +781,12 @@
             const numericAmount = amountString.replace(/[^\d.-]/g, '');
             const amount = parseFloat(numericAmount);
 
-            if (amount < 1000) {
+            if (amount > 1000) {
               e.preventDefault();
               Swal.fire({
                 icon: 'warning',
                 title: 'COD Unavailable',
-                text: 'Cash on Delivery is only available for orders above ₹1,000.',
+                text: 'Cash on Delivery is only available for orders bellow ₹1,000.',
                 confirmButtonText: 'OK'
               });
               paymentBtn.innerHTML = '<i class="fas fa-check-circle"></i> Place Order';
