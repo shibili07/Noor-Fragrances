@@ -4,7 +4,11 @@
       background-color: #f9f9f9;
       color: #333;
     }
-   
+     .status-return-rejected{
+        background-color: #070808;
+      color: white;
+
+     }
     .retry-btn {
       background-color: #fd334e;
       color: white;

@@ -91,3 +91,9 @@ HOSTING  WEEK ERRORS
 
 
 payment failed deesign\
+
+
+// solves 
+
+1) EMAIL REGEX
+2)forget password regex
