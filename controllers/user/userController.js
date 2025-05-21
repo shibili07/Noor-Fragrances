@@ -407,9 +407,17 @@ const login = async (req, res) => {
         if (!findUser) {
             return res.status(400).json({ success: false, message: "User Does not Exist!" });
         }
-
+          
+      
         if (findUser.isBlocked) {
             return res.status(400).json({ success: false, message: "User is blocked by admin!" });
+        }
+        
+        if (findUser.googleId) {
+            return res.status(400).json({
+                success: false,
+                message: "This account uses Google Sign-In. Please use Google Sign-In to log in."
+            });
         }
 
         
