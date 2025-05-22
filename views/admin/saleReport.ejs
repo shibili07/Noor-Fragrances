@@ -5,6 +5,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <!-- Flatpickr CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- SweetAlert2 CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
 <link rel="stylesheet" href="/styles/admin/salesReport.css">
 
@@ -35,19 +37,10 @@
                                 <option value="week" <%= dateRange === 'week' ? 'selected' : '' %>>This Week</option>
                                 <option value="month" <%= dateRange === 'month' ? 'selected' : '' %>>This Month</option>
                                 <option value="year" <%= dateRange === 'year' ? 'selected' : '' %>>This Year</option>
-                                <option value="custom" <%= dateRange === 'custom' ? 'selected' : '' %>>Custom Range</option>
+                               
                             </select>
                         </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control date-picker" id="startDate" name="startDate" placeholder="Start Date" value="<%= startDate %>">
-                            </div>
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <div class="input-group">
-                                <input type="text" class="form-control date-picker" id="endDate" name="endDate" placeholder="End Date" value="<%= endDate %>">
-                            </div>
-                        </div>
+                       
                         <div class="col-md-3">
                             <div class="d-flex gap-2 button-group">
                                 <button type="submit" class="btn btn-primary">Search</button>
@@ -201,134 +194,173 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <!-- Flatpickr JS -->
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        // Initialize Flatpickr with date restrictions
-        const startDatePicker = flatpickr("#startDate", {
-            dateFormat: "d-m-Y",
-            maxDate: "today",
-            onChange: function(selectedDates) {
-                // Update endDate minDate when startDate changes
-                if (selectedDates.length > 0) {
-                    endDatePicker.set('minDate', selectedDates[0]);
-                } else {
-                    endDatePicker.set('minDate', null);
-                }
-            }
-        });
-
-        const endDatePicker = flatpickr("#endDate", {
-            dateFormat: "d-m-Y",
-            maxDate: "today",
-            minDate: document.getElementById('startDate').value || null
-        });
-
-        // Handle date range selection
-        document.getElementById('dateRange').addEventListener('change', function() {
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
-            const now = new Date();
-            
-            switch(this.value) {
-                case 'today':
-                    startDateInput.value = formatDate(now);
-                    endDateInput.value = formatDate(now);
-                    break;
-                case 'yesterday':
-                    const yesterday = new Date(now);
-                    yesterday.setDate(yesterday.getDate() - 1);
-                    startDateInput.value = formatDate(yesterday);
-                    endDateInput.value = formatDate(yesterday);
-                    break;
-                case 'week':
-                    const weekStart = new Date(now);
-                    weekStart.setDate(now.getDate() - now.getDay());
-                    startDateInput.value = formatDate(weekStart);
-                    endDateInput.value = formatDate(now);
-                    break;
-                case 'month':
-                    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-                    startDateInput.value = formatDate(monthStart);
-                    endDateInput.value = formatDate(now);
-                    break;
-                case 'year':
-                    const yearStart = new Date(now.getFullYear(), 0, 1);
-                    startDateInput.value = formatDate(yearStart);
-                    endDateInput.value = formatDate(now);
-                    break;
-                case 'custom':
-                    startDateInput.value = '';
-                    endDateInput.value = '';
-                    break;
-                default:
-                    startDateInput.value = '';
-                    endDateInput.value = '';
-            }
-            // Update endDate minDate after setting startDate
-            if (startDateInput.value) {
-                endDatePicker.set('minDate', startDateInput.value);
-            } else {
-                endDatePicker.set('minDate', null);
-            }
-        });
-
-        // Helper function to format date to dd-mm-yyyy
-        function formatDate(date) {
-            const d = new Date(date);
-            return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
-        }
-
-        // Handle form reset
-        function resetForm() {
-            document.getElementById('dateRange').value = '';
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            document.getElementById('searchOrderId').value = '';
-            document.getElementById('orderIdInput').value = '';
-            document.getElementById('sortInput').value = 'desc';
-            document.getElementById('sortFieldInput').value = 'createdOn';
+       // Initialize Flatpickr with date restrictions
+const startDatePicker = flatpickr("#startDate", {
+    dateFormat: "d-m-Y",
+    maxDate: "today",
+    onChange: function(selectedDates) {
+        if (selectedDates.length > 0) {
+            endDatePicker.set('minDate', selectedDates[0]);
+            validateDates(); // Validate on start date change
+        } else {
             endDatePicker.set('minDate', null);
-            document.getElementById('filterForm').submit();
         }
+    }
+});
 
-        // Handle search by order ID
-        function searchOrders() {
-            const orderId = document.getElementById('searchOrderId').value;
-            document.getElementById('orderIdInput').value = orderId;
-            document.getElementById('filterForm').submit();
+const endDatePicker = flatpickr("#endDate", {
+    dateFormat: "d-m-Y",
+    maxDate: "today",
+    minDate: document.getElementById('startDate').value || null,
+    onChange: function() {
+        validateDates(); // Validate on end date change
+    }
+});
+
+// Parse date in dd-mm-yyyy format
+function parseDate(dateStr) {
+    if (!dateStr) return null;
+    const [day, month, year] = dateStr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
+// Validate date range
+function validateDates() {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+
+    if (startDate && endDate) {
+        const start = parseDate(startDate);
+        const end = parseDate(endDate);
+
+        if (end < start) {
+            document.getElementById('endDate').value = '';
+            const endDatePicker = flatpickr("#endDate");
+            endDatePicker.clear();
+            return false;
         }
+    }
+    return true;
+}
 
-        // Handle clear search
-        function clearSearch() {
-            document.getElementById('searchOrderId').value = '';
-            document.getElementById('orderIdInput').value = '';
-            document.getElementById('filterForm').submit();
-        }
+// Toggle date input visibility
+function toggleDateInputs() {
+    const dateRange = document.getElementById('dateRange').value;
+    const dateInputs = document.querySelectorAll('.date-input-container');
+    dateInputs.forEach(input => {
+        input.classList.toggle('d-none', dateRange !== 'custom');
+    });
+}
 
-        // Handle table sorting
-        function sortTable(field) {
-            const currentSort = '<%= sort %>';
-            const currentField = '<%= sortField %>';
-            let newSort = 'asc';
-            if (currentField === field && currentSort === 'asc') {
-                newSort = 'desc';
-            }
-            document.getElementById('sortInput').value = newSort;
-            document.getElementById('sortFieldInput').value = field;
-            document.getElementById('filterForm').submit();
-        }
+// Handle date range selection
+document.getElementById('dateRange').addEventListener('change', function() {
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const now = new Date();
+    
+    toggleDateInputs(); // Show/hide date inputs
 
-        // Validate dates before form submission
-        document.getElementById('filterForm').addEventListener('submit', function(e) {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
-            if (startDate && endDate) {
-                const start = new Date(startDate.split('-').reverse().join('-'));
-                const end = new Date(endDate.split('-').reverse().join('-'));
-                if (end < start) {
-                    e.preventDefault();
-                    alert('End date cannot be earlier than start date');
-                }
-            }
-        });
+    switch(this.value) {
+        case 'today':
+            startDateInput.value = formatDate(now);
+            endDateInput.value = formatDate(now);
+            break;
+        case 'yesterday':
+            const yesterday = new Date(now);
+            yesterday.setDate(yesterday.getDate() - 1);
+            startDateInput.value = formatDate(yesterday);
+            endDateInput.value = formatDate(yesterday);
+            break;
+        case 'week':
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay());
+            startDateInput.value = formatDate(weekStart);
+            endDateInput.value = formatDate(now);
+            break;
+        case 'month':
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            startDateInput.value = formatDate(monthStart);
+            endDateInput.value = formatDate(now);
+            break;
+        case 'year':
+            const yearStart = new Date(now.getFullYear(), 0, 1);
+            startDateInput.value = formatDate(yearStart);
+            endDateInput.value = formatDate(now);
+            break;
+        case 'custom':
+            startDateInput.value = '';
+            endDateInput.value = '';
+            break;
+        default:
+            startDateInput.value = '';
+            endDateInput.value = '';
+    }
+    if (startDateInput.value) {
+        endDatePicker.set('minDate', startDateInput.value);
+    } else {
+        endDatePicker.set('minDate', null);
+    }
+    validateDates(); // Validate after date range change
+});
+
+// Initial toggle of date inputs on page load
+toggleDateInputs();
+
+// Helper function to format date to dd-mm-yyyy
+function formatDate(date) {
+    const d = new Date(date);
+    return `${d.getDate().toString().padStart(2, '0')}-${(d.getMonth() + 1).toString().padStart(2, '0')}-${d.getFullYear()}`;
+}
+
+// Handle form reset
+function resetForm() {
+    document.getElementById('dateRange').value = '';
+    document.getElementById('startDate').value = '';
+    document.getElementById('endDate').value = '';
+    document.getElementById('searchOrderId').value = '';
+    document.getElementById('orderIdInput').value = '';
+    document.getElementById('sortInput').value = 'desc';
+    document.getElementById('sortFieldInput').value = 'createdOn';
+    endDatePicker.set('minDate', null);
+    toggleDateInputs();
+    document.getElementById('filterForm').submit();
+}
+
+// Handle search by order ID
+function searchOrders() {
+    const orderId = document.getElementById('searchOrderId').value;
+    document.getElementById('orderIdInput').value = orderId;
+    document.getElementById('filterForm').submit();
+}
+
+// Handle clear search
+function clearSearch() {
+    document.getElementById('searchOrderId').value = '';
+    document.getElementById('orderIdInput').value = '';
+    document.getElementById('filterForm').submit();
+}
+
+// Handle table sorting
+function sortTable(field) {
+    const currentSort = '<%= sort %>';
+    const currentField = '<%= sortField %>';
+    let newSort = 'asc';
+    if (currentField === field && currentSort === 'asc') {
+        newSort = 'desc';
+    }
+    document.getElementById('sortInput').value = newSort;
+    document.getElementById('sortFieldInput').value = field;
+    document.getElementById('filterForm').submit();
+}
+
+// Validate dates before form submission
+document.getElementById('filterForm').addEventListener('submit', function(e) {
+    if (!validateDates()) {
+        e.preventDefault();
+    }
+});
     </script>
 </body>

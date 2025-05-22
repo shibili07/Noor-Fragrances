@@ -123,6 +123,7 @@ if (/^([a-zA-Z])\1{2,}$/.test(name)) {
   }
 };
 
+
 const deleteCategory = async (req, res) => {
   try {
     const { id } = req.body;
@@ -143,6 +144,7 @@ const loadEditCategoryPage = async (req, res) => {
     res.redirect('/admin/pageError');
   }
 };
+
 const editCategory = async (req, res) => {
     let { id, name, description } = req.body;
   

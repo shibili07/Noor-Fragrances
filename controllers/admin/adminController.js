@@ -80,12 +80,6 @@ const salesReport = async (req, res) => {
         if (dateRange === 'custom' && startDate && endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
-            if (end < start) {
-                return res.status(400).render('error', {
-                    message: 'End date cannot be earlier than start date',
-                    error: process.env.NODE_ENV === 'development' ? 'Invalid date range' : undefined
-                });
-            }
         }
 
     
